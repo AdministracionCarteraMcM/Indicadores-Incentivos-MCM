@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indicadores McM - Acumulado 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{
+  --bg-header:#0d2b23; --header2:#164438; --accent:#1fa97c; --accent-dark:#0f6e56; --accent-light:#e1f5ee;
+  --blue:#3d7fd6; --orange:#e8912a; --purple:#6b4fc9; --red:#d64545;
+  --bg-page:#f2f4f1; --bg-card:#ffffff; --text-primary:#151f1c; --text-secondary:#65746f;
+  --border:#e5e8e3; --radius:12px; --gap:16px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-page);color:var(--text-primary);}
+
+/* ---------- LOGIN ---------- */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at top left,#1a4a3c,#0a201a 70%);}
+.login-card{background:var(--bg-card);border-radius:18px;padding:42px 38px;width:370px;max-width:90vw;box-shadow:0 25px 70px rgba(0,0,0,.4);text-align:center;}
+.login-card .logo{width:58px;height:58px;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;margin:0 auto 18px;box-shadow:0 8px 20px rgba(31,169,124,.35);}
+.login-card h1{font-size:20px;margin:0 0 4px;}
+.login-card p{font-size:13px;color:var(--text-secondary);margin:0 0 24px;}
+.login-card input{width:100%;padding:12px 14px;border-radius:9px;border:1px solid var(--border);font-size:14px;margin-bottom:10px;background:#fafbfa;}
+.login-card input:focus{outline:2px solid var(--accent);border-color:var(--accent);background:#fff;}
+.login-card button{width:100%;padding:12px 14px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:background .15s;}
+.login-card button:hover{background:var(--accent-dark);}
+#login-error{color:var(--red);font-size:12px;height:16px;margin-top:8px;}
+.login-hint{font-size:11px;color:#9aa39e;margin-top:20px;line-height:1.5;}
+
+/* ---------- DASHBOARD ---------- */
+#dashboard-screen{display:none;}
+.dashboard-container{max-width:1500px;margin:0 auto;padding:18px;}
+.dashboard-header{background:linear-gradient(120deg,var(--bg-header),var(--header2));color:#fff;padding:18px 26px;border-radius:var(--radius);margin-bottom:var(--gap);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;box-shadow:0 4px 20px rgba(13,43,35,.25);}
+.dashboard-header h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.2px;}
+.dashboard-header .sub{font-size:12px;color:#a9c4bb;margin-top:2px;}
+.hdr-right{display:flex;align-items:center;gap:14px;}
+.user-badge{display:flex;flex-direction:column;align-items:flex-end;line-height:1.3;}
+.user-badge .name{font-size:13px;font-weight:600;}
+.role-pill{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(31,169,124,.25);color:#a8f0d4;text-transform:uppercase;letter-spacing:.4px;font-weight:700;}
+.hdr-right button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;cursor:pointer;}
+.hdr-right button:hover{background:rgba(255,255,255,.22);}
+
+.tabs-bar{display:flex;gap:6px;margin-bottom:var(--gap);}
+.tab-btn{padding:11px 22px;border-radius:9px 9px 0 0;border:1px solid var(--border);border-bottom:none;background:#e8ebe6;color:var(--text-secondary);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.2px;}
+.tab-btn.active{background:var(--bg-card);color:var(--accent-dark);box-shadow:0 -3px 0 var(--accent) inset;}
+.tab-btn:hover:not(.active){background:#dfe3da;}
+
+.filters-bar{background:var(--bg-card);border-radius:var(--radius);padding:14px 18px;margin-bottom:var(--gap);display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.filter-group{display:flex;flex-direction:column;gap:4px;}
+.filter-group label{font-size:10.5px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.filter-group select,.filter-group input{padding:8px 10px;border-radius:7px;border:1px solid var(--border);font-size:13px;min-width:150px;background:#fff;}
+.filter-group input[type=text]{min-width:200px;}
+.reset-btn{padding:9px 14px;border-radius:7px;border:1px solid var(--border);background:#fff;font-size:12px;cursor:pointer;color:var(--text-secondary);font-weight:600;}
+.reset-btn:hover{background:#f0f2ef;}
+.scope-note{font-size:11.5px;color:var(--accent-dark);background:var(--accent-light);padding:4px 10px;border-radius:6px;font-weight:600;}
+.scope-hint{font-size:12.5px;color:var(--accent-dark);background:var(--accent-light);padding:10px 14px;border-radius:8px;font-weight:600;margin-bottom:var(--gap);border-left:3px solid var(--accent);}
+
+/* multi-select corte */
+.ms-dropdown{position:relative;}
+.ms-toggle{padding:8px 12px;border-radius:7px;border:1px solid var(--border);background:#fff;font-size:13px;cursor:pointer;min-width:190px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.ms-toggle:hover{border-color:var(--accent);}
+.ms-panel{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--border);border-radius:9px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:50;width:max-content;min-width:260px;max-width:92vw;max-height:320px;overflow-y:auto;overflow-x:hidden;padding:8px;}
+.ms-panel label{display:flex;align-items:center;gap:8px;padding:5px 6px;font-size:12.5px;border-radius:5px;cursor:pointer;white-space:nowrap;}
+.ms-panel label:hover{background:#f2f4f1;}
+.ms-panel hr{border:none;border-top:1px solid var(--border);margin:4px 0;}
+.ms-panel .ms-all{font-weight:700;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:var(--gap);}
+.kpi-card{background:var(--bg-card);border-radius:var(--radius);padding:15px 17px;box-shadow:0 1px 4px rgba(0,0,0,.05);border-left:4px solid var(--accent);position:relative;overflow:hidden;transition:transform .15s, box-shadow .15s;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08);}
+.kpi-card.c-blue{border-left-color:var(--blue);}
+.kpi-card.c-orange{border-left-color:var(--orange);}
+.kpi-card.c-purple{border-left-color:var(--purple);}
+.kpi-card.c-red{border-left-color:var(--red);}
+.kpi-icon{position:absolute;right:12px;top:12px;font-size:22px;opacity:.15;}
+.kpi-label{font-size:10.5px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:700;}
+.kpi-value{font-size:21px;font-weight:800;letter-spacing:-.3px;}
+.kpi-sub{font-size:11px;color:var(--text-secondary);margin-top:4px;}
+.kpi-sub-highlight{font-size:19px;font-weight:800;color:var(--accent-dark);margin-top:6px;letter-spacing:-.2px;}
+
+.chart-row{display:grid;grid-template-columns:1.4fr 1fr;gap:var(--gap);margin-bottom:var(--gap);}
+.chart-row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-bottom:var(--gap);}
+.chart-row3{display:grid;grid-template-columns:1fr;gap:var(--gap);margin-bottom:var(--gap);}
+.chart-container{background:var(--bg-card);border-radius:var(--radius);padding:17px 19px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.chart-container h3{font-size:13px;font-weight:700;margin:0 0 12px;color:var(--text-primary);}
+.chart-container .wrap{position:relative;height:270px;}
+.chart-container .wrap.tall{height:340px;}
+
+.table-section{background:var(--bg-card);border-radius:var(--radius);padding:17px 19px;box-shadow:0 1px 4px rgba(0,0,0,.05);overflow-x:auto;}
+.table-section h3{font-size:13px;font-weight:700;margin:0 0 4px;}
+.table-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin:-24px 0 10px;}
+.export-btn{padding:7px 11px;border-radius:7px;border:1px solid var(--border);background:#fff;font-size:11.5px;cursor:pointer;font-weight:700;color:var(--accent-dark);}
+.export-btn:hover{background:var(--accent-light);border-color:var(--accent);}
+.kpi-card.has-breakdown{cursor:help;}
+.table-meta{font-size:12px;color:var(--text-secondary);margin-bottom:10px;}
+table.data-table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap;}
+.data-table thead th{position:sticky;top:0;background:#f7f8f6;text-align:left;padding:9px 11px;border-bottom:2px solid var(--border);color:var(--text-secondary);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;cursor:pointer;user-select:none;}
+.data-table thead th:hover{color:var(--text-primary);}
+.data-table thead th.sorted{color:var(--accent-dark);}
+.data-table thead th.sorted::after{content:' \25BE';}
+.data-table tbody td{padding:8px 11px;border-bottom:1px solid #f0f1ee;}
+.data-table tbody tr:nth-child(even){background:#fafbf9;}
+.data-table tbody tr:hover{background:#eef6f1;}
+.status-pill{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.status-activo{background:#e1f5ee;color:#0f6e56;}
+.status-baja{background:#fcebeb;color:#a32d2d;}
+.orphan-pill{display:inline-block;background:#fff3d6;color:#8a6300;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:5px;text-transform:uppercase;letter-spacing:.2px;vertical-align:middle;}
+.data-table tbody tr.orphan-row{background:#fffaf0;}
+.data-table tbody tr.orphan-row:hover{background:#fef3dc;}
+.num-neg{color:var(--red);font-weight:600;}
+.pagination{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;color:var(--text-secondary);}
+.pagination button{padding:6px 11px;border-radius:7px;border:1px solid var(--border);background:#fff;cursor:pointer;margin-left:6px;font-weight:600;}
+.pagination button:disabled{opacity:.4;cursor:default;}
+
+.dashboard-footer{text-align:center;font-size:11px;color:var(--text-secondary);padding:16px 0 6px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.subgroup-title{font-size:14px;font-weight:800;margin:20px 0 10px;color:var(--text-primary);display:flex;align-items:center;gap:8px;}
+.subgroup-title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);}
+
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:12px;}
+.comp-box{background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.05);border-top:3px solid var(--accent);}
+.comp-box-title{font-size:12px;font-weight:800;color:var(--text-primary);text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.comp-box-items{display:flex;flex-direction:column;gap:8px;}
+.comp-item{display:flex;flex-direction:column;}
+.comp-val{font-size:15px;font-weight:800;color:var(--text-primary);}
+.comp-lbl{font-size:10.5px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.3px;}
+.comp-total-box{background:linear-gradient(120deg,var(--bg-header),var(--header2));color:#fff;border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:var(--gap);box-shadow:0 4px 20px rgba(13,43,35,.25);}
+.comp-total-label{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#a9c4bb;margin-bottom:6px;font-weight:700;}
+.comp-total-value{font-size:30px;font-weight:800;letter-spacing:-.5px;}
+
+.exec-history{background:var(--bg-card);border-radius:var(--radius);padding:17px 19px;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:var(--gap);}
+.exec-history h3{font-size:13px;font-weight:700;margin:0 0 10px;}
+.history-chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent-dark);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;margin:3px 4px 3px 0;}
+
+@media (max-width:900px){
+  .chart-row,.chart-row2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo">McM</div>
+    <h1>Indicadores McM</h1>
+    <p>Acumulado de comisiones e indicadores 2026</p>
+    <input type="text" id="user-input" placeholder="Usuario" autocomplete="off">
+    <input type="password" id="pw-input" placeholder="Contraseña" autocomplete="off">
+    <button id="pw-btn">Ingresar</button>
+    <div id="login-error"></div>
+    <div class="login-hint">Cada usuario tiene su propio usuario y contraseña (ejecutivo, coordinador, gerente, regional o dirección). El acceso muestra únicamente la información correspondiente a tu rol.</div>
+  </div>
+</div>
+
+<!-- ===================== DASHBOARD ===================== -->
+<div id="dashboard-screen">
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <div>
+        <h1>Indicadores McM</h1>
+        <div class="sub">Acumulado semanal 2026</div>
+      </div>
+      <div class="hdr-right">
+        <div class="user-badge">
+          <span class="name" id="hdr-username"></span>
+          <span class="role-pill" id="hdr-role"></span>
+        </div>
+        <button id="logout-btn">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <div class="tabs-bar" id="tabs-bar">
+      <button class="tab-btn active" data-tab="indicadores">Indicadores</button>
+      <button class="tab-btn" data-tab="comisiones">Comisiones</button>
+    </div>
+
+    <section class="filters-bar" id="filters-bar">
+      <div class="filter-group">
+        <label>Corte(s)</label>
+        <div class="ms-dropdown" id="corte-ms">
+          <button class="ms-toggle" id="corte-ms-toggle" type="button">Cargando... <span>▾</span></button>
+          <div class="ms-panel" id="corte-ms-panel" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Región</label>
+        <select id="f-region"><option value="">Todas</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Agencia / Sucursal</label>
+        <select id="f-agencia"><option value="">Todas</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Estatus</label>
+        <select id="f-estatus"><option value="">Todos</option></select>
+      </div>
+      <div class="filter-group" id="ejecutivo-filter-group">
+        <label>Ejecutivo</label>
+        <input type="text" id="f-ejecutivo" list="ejecutivo-list" placeholder="Todos">
+        <datalist id="ejecutivo-list"></datalist>
+      </div>
+      <button class="reset-btn" id="reset-filters">Limpiar filtros</button>
+      <span class="scope-note" id="scope-note" style="display:none;"></span>
+    </section>
+
+    <!-- =============== TAB: INDICADORES =============== -->
+    <div class="tab-panel active" id="tab-indicadores"></div>
+
+    <!-- =============== TAB: COMISIONES =============== -->
+    <div class="tab-panel" id="tab-comisiones"></div>
+
+    <footer class="dashboard-footer">
+      Datos acumulados 2026 &middot; Fuente: EJECUTIVO / INDICADORES / COORDINADOR / GERENTE / GERENTE REGIONAL
+    </footer>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Indicadores McM - lógica de aplicación
+   ============================================================ */
+
+/* URL de la aplicación web publicada en Apps Script (Fase 3). */
+const API_URL = 'https://script.google.com/macros/s/AKfycbwrsPmUbTW6O2-dSPuPBWfigmBmaRzzPPjLB6r4VeMQsrRR-utED7szi3reJiFOZjcu0w/exec';
+const HTML_VERSION = '2026-08-25-cortes-historico-v2';
+
+let CORTES = [];
+let EJ_COM = [];
+let EJ_IND = [];
+let NIVEL_PROPIO = [];
+let ALL_CORTES = [];
+let LAST_CORTE = null;
+
+let session = null;
+let state = {
+  selectedCortes: [],
+  region:'', agencia:'', estatus:'', ejecutivo:'',
+  activeTab:'indicadores',
+  sortI:'monto_recibido', dirI:-1, pageI:0,
+  sortC:'comision_final', dirC:-1, pageC:0,
+  pageSize:50
+};
+let charts = {};
+
+/* ---------------- LOGIN ---------------- */
+document.getElementById('pw-btn').addEventListener('click', tryLogin);
+document.getElementById('pw-input').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+document.getElementById('user-input').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+
+async function tryLogin(){
+  const u = document.getElementById('user-input').value.trim().toLowerCase();
+  const p = document.getElementById('pw-input').value.trim();
+  if(!u || !p){
+    document.getElementById('login-error').textContent = 'Escribe usuario y contraseña';
+    return;
+  }
+  setLoginLoading(true);
+  document.getElementById('login-error').textContent = '';
+  try{
+    const resp = await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({username:u,password:p})
+    });
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if(!data.ok){
+      document.getElementById('login-error').textContent = data.error || 'Usuario o contraseña incorrectos';
+      setLoginLoading(false);
+      return;
+    }
+    session = { username: data.username, role: data.role, nombre: data.nombre };
+    CORTES = data.cortes || [];
+    EJ_COM = data.ejecutivo_comisiones || [];
+    EJ_IND = data.ejecutivo_indicadores || [];
+    NIVEL_PROPIO = data.nivel_propio || [];
+    ALL_CORTES = CORTES.map(c=>c.CORTE);
+    LAST_CORTE = ALL_CORTES.length ? ALL_CORTES[ALL_CORTES.length-1] : null;
+
+    setLoginLoading(false);
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('dashboard-screen').style.display='block';
+    initDashboard();
+  } catch(err){
+    setLoginLoading(false);
+    document.getElementById('login-error').textContent = 'No se pudo conectar con el servidor. Revisa tu conexión e intenta de nuevo.';
+  }
+}
+
+function setLoginLoading(isLoading){
+  const btn = document.getElementById('pw-btn');
+  btn.disabled = isLoading;
+  btn.textContent = isLoading ? 'Ingresando...' : 'Ingresar';
+}
+
+document.getElementById('logout-btn').addEventListener('click', ()=>{
+  session = null;
+  CORTES = []; EJ_COM = []; EJ_IND = []; ALL_CORTES = []; LAST_CORTE = null; NIVEL_PROPIO = [];
+  document.getElementById('dashboard-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pw-input').value='';
+  document.getElementById('user-input').value='';
+});
+
+const ROLE_LABELS = {ejecutivo:'Ejecutivo', coordinador:'Coordinador', gerente:'Gerente', regional:'Gerente Regional', directivo:'Dirección'};
+
+/* ---------------- INIT ---------------- */
+let _listenersReady = false;
+
+function initDashboard(){
+  document.getElementById('hdr-username').textContent = session.nombre;
+  document.getElementById('hdr-role').textContent = ROLE_LABELS[session.role];
+
+  document.getElementById('ejecutivo-filter-group').style.display = '';
+  document.getElementById('f-region').parentElement.style.display = '';
+  document.getElementById('f-agencia').parentElement.style.display = '';
+  document.getElementById('scope-note').style.display = 'none';
+  state.region=''; state.agencia=''; state.estatus=''; state.ejecutivo='';
+  document.getElementById('f-region').value=''; document.getElementById('f-agencia').value='';
+  document.getElementById('f-estatus').value=''; document.getElementById('f-ejecutivo').value='';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.tab-btn[data-tab="indicadores"]').classList.add('active');
+  document.getElementById('tab-indicadores').classList.add('active');
+  state.activeTab = 'indicadores'; state.pageI=0; state.pageC=0;
+
+  buildCorteMultiselect();
+  populateStaticFilters();
+  if(!_listenersReady){
+    attachFilterEvents();
+    attachTabEvents();
+    _listenersReady = true;
+  }
+  applyRoleUIRestrictions();
+  updateFilterOptions(true);
+  renderScopeNote();
+  refreshAll();
+}
+
+function applyRoleUIRestrictions(){
+  if(session.role==='ejecutivo'){
+    document.getElementById('ejecutivo-filter-group').style.display='none';
+    document.getElementById('f-region').parentElement.style.display='none';
+    document.getElementById('f-agencia').parentElement.style.display='none';
+  }
+}
+
+function renderScopeNote(){
+  const el = document.getElementById('scope-note');
+  const txt = {
+    ejecutivo:'Viendo tus datos como ejecutivo',
+    coordinador:'Alcance: sucursales asignadas como coordinador(a)',
+    gerente:'Alcance: tus sucursales como gerente',
+    regional:'Alcance: tu(s) región(es) como gerente regional',
+  }[session.role] || '';
+  if(txt){ el.textContent = txt; el.style.display='inline-block'; }
+}
+
+/* ---------------- CORTE MULTISELECT ---------------- */
+function shortPeriodo(periodo){
+  if(!periodo) return '';
+  const monthAbbr = {enero:'ene',febrero:'feb',marzo:'mar',abril:'abr',mayo:'may',junio:'jun',
+    julio:'jul',agosto:'ago',septiembre:'sep',octubre:'oct',noviembre:'nov',diciembre:'dic'};
+  const parse = s => { const m = s.trim().match(/(\d+)\s+(\S+)\s+\d+/); return m ? {day:m[1], month:(monthAbbr[m[2].toLowerCase()]||m[2].slice(0,3))} : null; };
+  const raw = periodo.split(' - ');
+  if(raw.length<2) return periodo;
+  const a = parse(raw[0]), b = parse(raw[1]);
+  if(!a || !b) return periodo;
+  return a.month===b.month ? (a.day+'-'+b.day+' '+a.month) : (a.day+' '+a.month+' - '+b.day+' '+b.month);
+}
+
+function buildCorteMultiselect(){
+  const panel = document.getElementById('corte-ms-panel');
+  const toggle = document.getElementById('corte-ms-toggle');
+
+  // Cortes disponibles: usar la unión histórica de todas las fuentes ya limitadas
+  // por el Apps Script al alcance del usuario. No depender solo de NIVEL_PROPIO,
+  // porque algunas tablas de gerente/coordinador/regional pueden traer únicamente
+  // el corte más reciente aunque EJECUTIVO e INDICADORES sí tengan histórico.
+  let availableCorteSet;
+  if(session.role==='directivo'){
+    availableCorteSet = new Set(ALL_CORTES.map(Number));
+  } else {
+    const unionCortes = [
+      ...EJ_COM.map(r=>Number(r.corte)),
+      ...EJ_IND.map(r=>Number(r.corte)),
+      ...NIVEL_PROPIO.map(r=>Number(r.corte))
+    ].filter(Number.isFinite);
+    availableCorteSet = new Set(unionCortes);
+  }
+  if(!availableCorteSet.size) availableCorteSet = new Set(ALL_CORTES.map(Number));
+
+  const availableCortesList = CORTES
+    .filter(c=>availableCorteSet.has(Number(c.CORTE)))
+    .sort((a,b)=>Number(a.CORTE)-Number(b.CORTE));
+
+  const dataCorteSet = new Set([
+    ...EJ_COM.map(r=>Number(r.corte)),
+    ...EJ_IND.map(r=>Number(r.corte)),
+    ...NIVEL_PROPIO.map(r=>Number(r.corte))
+  ].filter(Number.isFinite));
+  const withData = availableCortesList.filter(c=>dataCorteSet.has(Number(c.CORTE)));
+  const lastAvailable = withData.length
+    ? withData[withData.length-1].CORTE
+    : (availableCortesList.length ? availableCortesList[availableCortesList.length-1].CORTE : LAST_CORTE);
+
+  let html = '<label class="ms-all"><input type="checkbox" id="corte-all-cb"> Seleccionar todos</label><hr>';
+  availableCortesList.forEach(c=>{
+    html += `<label><input type="checkbox" class="corte-cb" value="${c.CORTE}"> Semana ${c.SEMANA} · ${shortPeriodo(c.PERIODO)}</label>`;
+  });
+  panel.innerHTML = html;
+
+  panel.querySelector(`.corte-cb[value="${lastAvailable}"]`).checked = true;
+  document.getElementById('corte-all-cb').checked = false;
+  state.selectedCortes = [lastAvailable];
+
+  toggle.addEventListener('click', (e)=>{ e.stopPropagation(); panel.style.display = panel.style.display==='none' ? 'block' : 'none'; });
+  document.addEventListener('click', (e)=>{ if(!document.getElementById('corte-ms').contains(e.target)) panel.style.display='none'; });
+
+  document.getElementById('corte-all-cb').addEventListener('change', (e)=>{
+    panel.querySelectorAll('.corte-cb').forEach(cb=> cb.checked = e.target.checked);
+    onCorteChange();
+  });
+  panel.querySelectorAll('.corte-cb').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const all = panel.querySelectorAll('.corte-cb');
+      const checked = panel.querySelectorAll('.corte-cb:checked');
+      document.getElementById('corte-all-cb').checked = all.length===checked.length;
+      onCorteChange();
+    });
+  });
+  updateCorteToggleLabel();
+}
+
+function onCorteChange(){
+  const panel = document.getElementById('corte-ms-panel');
+  const checked = [...panel.querySelectorAll('.corte-cb:checked')].map(cb=>Number(cb.value));
+  const available = [...panel.querySelectorAll('.corte-cb')].map(cb=>Number(cb.value)).filter(Number.isFinite);
+  const fallbackCorte = available.length ? available[available.length-1] : LAST_CORTE;
+  state.selectedCortes = checked.length ? checked : [fallbackCorte];
+  state.pageI=0; state.pageC=0;
+  updateCorteToggleLabel();
+  updateFilterOptions(false);
+  refreshAll();
+}
+
+function updateCorteToggleLabel(){
+  const toggle = document.getElementById('corte-ms-toggle');
+  const panel = document.getElementById('corte-ms-panel');
+  const totalAvailable = panel.querySelectorAll('.corte-cb').length;
+  const n = state.selectedCortes.length;
+  let label;
+  if(n===totalAvailable && n>1) label = 'Todos tus cortes (acumulado)';
+  else if(n===1){
+    const c = CORTES.find(x=>x.CORTE===state.selectedCortes[0]);
+    label = c ? ('Semana '+c.SEMANA+' · '+c.PERIODO) : 'Corte';
+  } else label = n + ' cortes seleccionados';
+  toggle.innerHTML = label + ' <span>▾</span>';
+}
+
+/* ---------------- FILTROS ESTÁTICOS / CASCADA ---------------- */
+function populateStaticFilters(){
+  const selEstatus = document.getElementById('f-estatus');
+  selEstatus.innerHTML = '<option value="">Todos</option>';
+  ['ACTIVO','BAJA'].forEach(e=>{ const o=document.createElement('option'); o.value=e; o.textContent=e; selEstatus.appendChild(o); });
+}
+
+function attachFilterEvents(){
+  document.getElementById('f-region').addEventListener('change', e=>{ state.region=e.target.value; state.agencia=''; state.pageI=0; state.pageC=0; updateFilterOptions(false); refreshAll(); });
+  document.getElementById('f-agencia').addEventListener('change', e=>{ state.agencia=e.target.value; state.pageI=0; state.pageC=0; updateFilterOptions(false); refreshAll(); });
+  document.getElementById('f-estatus').addEventListener('change', e=>{ state.estatus=e.target.value; state.pageI=0; state.pageC=0; refreshAll(); });
+  document.getElementById('f-ejecutivo').addEventListener('input', e=>{ state.ejecutivo=e.target.value.toUpperCase(); state.pageI=0; state.pageC=0; refreshAll(); });
+  document.getElementById('reset-filters').addEventListener('click', ()=>{
+    state.region=''; state.agencia=''; state.estatus=''; state.ejecutivo='';
+    document.getElementById('f-region').value='';
+    document.getElementById('f-agencia').value='';
+    document.getElementById('f-estatus').value='';
+    document.getElementById('f-ejecutivo').value='';
+    state.pageI=0; state.pageC=0;
+    updateFilterOptions(false);
+    refreshAll();
+  });
+}
+
+function attachTabEvents(){
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      state.activeTab = btn.dataset.tab;
+      document.getElementById('tab-'+state.activeTab).classList.add('active');
+      refreshAll();
+    });
+  });
+}
+
+function scopedRows(rows){
+  return rows;
+}
+
+function corteScopedRows(rows){
+  return rows.filter(r=> state.selectedCortes.includes(r.corte));
+}
+
+function updateFilterOptions(isInit){
+  let rows = corteScopedRows(scopedRows(EJ_COM));
+
+  const regions = [...new Set(rows.map(r=>r.region))].sort();
+  const selRegion = document.getElementById('f-region');
+  if(!regions.includes(state.region)) state.region='';
+  selRegion.innerHTML = '<option value="">Todas</option>' + regions.map(r=>`<option value="${r}">${regionDisplayName(r)}</option>`).join('');
+  selRegion.value = state.region;
+
+  let rowsAg = state.region ? rows.filter(r=>r.region===state.region) : rows;
+  const agencias = [...new Set(rowsAg.map(r=>r.agencia))].sort();
+  const selAgencia = document.getElementById('f-agencia');
+  if(!agencias.includes(state.agencia)) state.agencia='';
+  selAgencia.innerHTML = '<option value="">Todas</option>' + agencias.map(a=>`<option value="${a}">${a}</option>`).join('');
+  selAgencia.value = state.agencia;
+
+  let rowsEj = state.agencia ? rowsAg.filter(r=>r.agencia===state.agencia) : rowsAg;
+  const ejecutivos = [...new Set(rowsEj.map(r=>r.ejecutivo))].sort();
+  const dl = document.getElementById('ejecutivo-list');
+  dl.innerHTML = ejecutivos.map(nm=>`<option value="${nm}">`).join('');
+}
+
+/* ---------------- UTILIDADES DE FORMATO ---------------- */
+function fmtMoney(v){
+  if(v===null||v===undefined||isNaN(v)) return '-';
+  const sign = v<0 ? '-' : '';
+  const abs = Math.abs(v);
+  return sign+'$'+abs.toLocaleString('es-MX',{minimumFractionDigits:0,maximumFractionDigits:0})+' MXN';
+}
+function fmtMoneyShort(v){
+  if(v===null||v===undefined||isNaN(v)) return '-';
+  const sign = v<0 ? '-' : '';
+  const abs = Math.abs(v);
+  if(abs>=1e6) return sign+'$'+(abs/1e6).toFixed(1)+'M';
+  if(abs>=1e3) return sign+'$'+(abs/1e3).toFixed(0)+'K';
+  return sign+'$'+abs.toLocaleString('es-MX',{maximumFractionDigits:0});
+}
+function fmtNum(v){ return v===null||v===undefined ? '-' : Math.round(v).toLocaleString('es-MX'); }
+function fmtPct(v){ return v===null||v===undefined||isNaN(v) ? '-' : (v*100).toFixed(2)+'%'; }
+function chartColors(){ return ['#1fa97c','#3d7fd6','#e8912a','#6b4fc9','#d64545','#0f6e56','#85B7EB','#f2b705','#8e44ad','#16a085']; }
+
+const REGION_DISPLAY_NAMES = { 'EDO. MEXICO 2': 'METROPOLITANO' };
+function regionDisplayName(region){ return REGION_DISPLAY_NAMES[region] || region; }
+
+function sortRows(rows, key, dir){
+  return rows.slice().sort((a,b)=>{
+    let va=a[key], vb=b[key];
+    if(va===null||va===undefined) va = typeof vb==='string' ? '' : -Infinity;
+    if(vb===null||vb===undefined) vb = typeof va==='string' ? '' : -Infinity;
+    if(typeof va==='string') return va.localeCompare(vb)*dir;
+    return (va-vb)*dir;
+  });
+}
+function markSorted(tableId, key){
+  const table = document.getElementById(tableId);
+  if(!table) return;
+  table.querySelectorAll('thead th').forEach(th=>th.classList.remove('sorted'));
+  const th = table.querySelector('th[data-key="'+key+'"]');
+  if(th) th.classList.add('sorted');
+}
+
+/* ---------------- CAMPOS ACUMULABLES ---------------- */
+const FLOW_FIELDS_COM = ['pagos_esperados','pagos_recibidos','monto_esperado','monto_recibido','monto_recibido_no_esperado',
+  'cobranza_total','comision_cobranza','bono_excelencia','cobranza_credito_adicional','comision_cobranza_adicional',
+  'comision_cartera_heredada','recuperacion_cartera_heredada','clientes_nuevos','clientes_en_tiempo','clientes_tardias','total_clientes','monto_nuevos',
+  'monto_en_tiempo','monto_tardias','total_colocado','comision_colocacion_total','comision_colocacion_nuevos',
+  'comision_colocacion_tiempo','comision_colocacion_tardias','comision_apoyo_familiar',
+  'comision_modelo_tradicional','apoyo_economico','comision_modelo_ej_nuevo','bono_mensual','campanas','bono_crecimiento_neto',
+  'multas','penalizacion_traspaso','penalizacion_decremento','prestamo_capital_humano','prestamo_caja_ahorro',
+  'descuentos_prestamos','comision_final','retencion_caja_ahorro','retroactivos_otros_apoyos','total_a_cobrar'];
+const SNAPSHOT_FIELDS_COM = ['num_creditos','cartera_meta','pagare','pct_productividad'];
+
+const FLOW_FIELDS_IND = ['pagos_esperados','pagos_recibidos','monto_esperado','monto_recibido','monto_recibido_no_esperado',
+  'colocacion_semanal','monto_colocacion_semanal','clientes_nuevos','renovaciones','renov_tiempo','renov_tardia','monto_nuevos','monto_renovaciones','monto_nuevos_dashboard','monto_renovaciones_dashboard',
+  'comision_cartera_heredada','apoyo_familiar','desembolso'];
+const SNAPSHOT_FIELDS_IND = ['num_creditos','clientes_vigentes','saldo_capital','saldo_total','mora_capital','mora_total','dias_mora_prom','pagare'];
+
+function aggregateByEjecutivo(rows, flowFields, snapFields){
+  const sorted = rows.slice().sort((a,b)=> a.corte - b.corte);
+  const byExec = {};
+  sorted.forEach(r=>{
+    if(!byExec[r.ejecutivo]){
+      byExec[r.ejecutivo] = Object.assign({}, r);
+      flowFields.forEach(f=> byExec[r.ejecutivo][f]=0);
+    }
+    const a = byExec[r.ejecutivo];
+    flowFields.forEach(f=> a[f] += (r[f]||0));
+    snapFields.forEach(f=>{ if(r[f]!==null && r[f]!==undefined) a[f]=r[f]; });
+    a.estatus = r.estatus; a.corte = r.corte; a.fecha_baja = r.fecha_baja || a.fecha_baja;
+  });
+  return Object.values(byExec).map(a=>{
+    a.pct_normalidad = a.pagos_esperados ? a.pagos_recibidos/a.pagos_esperados : null;
+    return a;
+  });
+}
+
+function weightedNormalidad(rows){
+  const esp = rows.reduce((s,r)=>s+(r.pagos_esperados||0),0);
+  const rec = rows.reduce((s,r)=>s+(r.pagos_recibidos||0),0);
+  return esp? rec/esp : 0;
+}
+
+function finalRows(dataset, flowFields, snapFields){
+  let rows = scopedRows(dataset);
+  rows = corteScopedRows(rows);
+  rows = rows.filter(r=>
+    (!state.region || r.region===state.region) &&
+    (!state.agencia || r.agencia===state.agencia) &&
+    (!state.estatus || r.estatus===state.estatus) &&
+    (!state.ejecutivo || (r.ejecutivo||'').toUpperCase().includes(state.ejecutivo))
+  );
+  if(state.selectedCortes.length>1) rows = aggregateByEjecutivo(rows, flowFields, snapFields);
+  return rows;
+}
+
+function baseRowsForTrend(dataset){
+  let rows = scopedRows(dataset);
+  rows = rows.filter(r=>
+    (!state.region || r.region===state.region) &&
+    (!state.agencia || r.agencia===state.agencia) &&
+    (!state.estatus || r.estatus===state.estatus) &&
+    (!state.ejecutivo || (r.ejecutivo||'').toUpperCase().includes(state.ejecutivo))
+  );
+  return rows;
+}
+
+/* ---------------- REFRESH GENERAL ---------------- */
+function refreshAll(){
+  if(state.activeTab==='indicadores') renderIndicadores();
+  else renderComisiones();
+}
+
+/* ================================================================
+   TAB: INDICADORES
+   ================================================================ */
+function renderIndicadores(){
+  const panel = document.getElementById('tab-indicadores');
+  const isEjecutivo = session.role==='ejecutivo';
+  const hideRegionChart = ['gerente','coordinador'].includes(session.role);
+  panel.innerHTML = isEjecutivo ? indicadoresPersonalTemplate() : indicadoresTemplate();
+
+  const rows = finalRows(EJ_IND, FLOW_FIELDS_IND, SNAPSHOT_FIELDS_IND);
+
+  if(isEjecutivo){ renderIndicadoresPersonal(rows); return; }
+
+  // Indicadores muestra solo el universo operativo de INDICADORES.
+  // EJECUTIVO puede conservar altas/independientes adicionales sin inflar este KPI.
+  const rosterRows = rows.filter(r => !(r.sin_roster===true || String(r.sin_roster).toUpperCase()==='VERDADERO' || String(r.sin_roster).toUpperCase()==='TRUE' || String(r.sin_roster).includes('#')));
+  const total = new Set(rosterRows.map(r=>r.ejecutivo).filter(Boolean)).size;
+  // Los KPIs de pagos y cobranza monetaria usan TODO INDICADORES del corte.
+  // sin_roster solo se excluye del conteo/detalle de ejecutivos, no de los totales globales.
+  const normalidad = weightedNormalidad(rows);
+  const pagosEsp = sum(rows,'pagos_esperados'), pagosRec = sum(rows,'pagos_recibidos');
+  const montoEsp = sum(rows,'monto_esperado'), montoRec = sum(rows,'monto_recibido');
+  const colocado = sum(rows,'monto_colocacion_semanal');
+  const clientesNuevos = sum(rows,'clientes_nuevos');
+  const clientesRenovados = sum(rows,'renovaciones');
+  const montoNuevos = rows.reduce((s,r)=>s+Number(r.monto_nuevos_dashboard ?? r.monto_nuevos ?? 0),0);
+  const montoRenovaciones = rows.reduce((s,r)=>s+Number(r.monto_renovaciones_dashboard ?? r.monto_renovaciones ?? 0),0);
+  const mora = sum(rows,'mora_total');
+  const saldoTotal = sum(rows,'saldo_total');
+  const pagareTotal = sum(rows,'desembolso');
+  const pctMora = saldoTotal ? mora/saldoTotal : 0;
+
+  setText('i-kpi-pagare', fmtMoney(pagareTotal));
+  setText('i-kpi-count', total);
+  setText('i-kpi-count-sub', '');
+  setText('i-kpi-pagos', fmtNum(pagosRec)+' / '+fmtNum(pagosEsp));
+  setText('i-kpi-normalidad-sub', fmtPct(normalidad));
+  setText('i-kpi-monto', fmtMoney(montoRec)+' / '+fmtMoney(montoEsp));
+  setText('i-kpi-colocado', fmtMoney(colocado));
+  setText('i-kpi-clientes-nuevos', fmtNum(clientesNuevos));
+  setText('i-kpi-clientes-nuevos-monto', fmtMoney(montoNuevos));
+  setText('i-kpi-clientes-renovados', fmtNum(clientesRenovados));
+  setText('i-kpi-clientes-renovados-monto', fmtMoney(montoRenovaciones));
+  setText('i-kpi-saldo', fmtMoney(saldoTotal));
+  setText('i-kpi-mora', fmtMoney(mora)+' ('+fmtPct(pctMora)+')');
+
+  const periodoLabel = state.selectedCortes.length>1 ? 'acumulado de '+state.selectedCortes.length+' cortes' : 'semanal';
+  setText('chart-i-top-ejecutivo-title', 'Top 10 ejecutivos por $ Cobranza recibida en '+(state.selectedCortes.length>1?periodoLabel:'semana'));
+
+  const trendBase = baseRowsForTrend(EJ_IND);
+  const cortesToShow = CORTES; // siempre muestra la historia completa hasta la última semana disponible
+  const labels = cortesToShow.map(c=>'S'+c.SEMANA);
+  const data = cortesToShow.map(c=> weightedNormalidad(trendBase.filter(r=>r.corte===c.CORTE))*100);
+  drawLine('chart-i-trend', labels, data, '% Normalidad', '#1fa97c', v=>v.toFixed(2)+'%', v=>v.toFixed(0)+'%', true, true);
+
+  // Top 10 ejecutivos por monto recibido con paleta de colores contrastante
+  const topEj = rosterRows.slice().sort((a,b)=>(b.monto_recibido||0)-(a.monto_recibido||0)).slice(0,10);
+  drawHBar('chart-i-top-ejecutivo', topEj.map(r=>truncate(r.ejecutivo,22)), topEj.map(r=>r.monto_recibido||0), chartColors(), fmtMoney, fmtMoneyShort);
+
+  if(!hideRegionChart){
+    const regionRows = regionScopeRows(EJ_IND);
+    setText('chart-i-region-title', 'Colocación '+(state.selectedCortes.length>1?('('+periodoLabel+')'):'Semanal')+' por Región');
+    const byRegion = groupSum(regionRows, 'region', 'monto_colocacion_semanal');
+    const byRegionDisplay = {};
+    Object.keys(byRegion).forEach(k=> byRegionDisplay[regionDisplayName(k)] = byRegion[k]);
+    drawDoughnutPct('chart-i-region', byRegionDisplay, fmtMoney);
+
+    setText('chart-i-top-sucursal-title', 'Top 10 sucursales por $ Cobranza recibida en '+(state.selectedCortes.length>1?periodoLabel:'semana'));
+    const byAgencia = groupSum(regionRows, 'agencia', 'monto_recibido');
+    drawTopBar('chart-i-top-sucursal', byAgencia, 10, fmtMoney, fmtMoneyShort);
+  }
+
+  const periodo = state.selectedCortes.length>1 ? '(acumulado de '+state.selectedCortes.length+' cortes)' : '(semanal)';
+  setText('chart-i-clientes-title', 'Desembolsos por tipo '+periodo);
+  const nuevos = sum(rows,'clientes_nuevos'), renovaciones = sum(rows,'renovaciones');
+  drawBarCountMoney('chart-i-clientes', ['Nuevos','Renovaciones'], [nuevos,renovaciones], [montoNuevos,montoRenovaciones], ['#3d7fd6','#1fa97c']);
+
+  renderTableIndicadores(rosterRows);
+}
+
+function regionScopeRows(dataset){
+  return corteScopedRows(scopedRows(dataset));
+}
+
+function monthlyAggByEjecutivo(){
+  if(!state.selectedCortes.length) return {};
+  const refCorte = Math.max(...state.selectedCortes);
+  const refInfo = CORTES.find(c=>c.CORTE===refCorte);
+  if(!refInfo) return {};
+  const mesCortes = new Set(CORTES.filter(c=>c.MES===refInfo.MES).map(c=>c.CORTE));
+  const scoped = scopedRows(EJ_IND).filter(r=> mesCortes.has(r.corte));
+  const agg = {};
+  scoped.forEach(r=>{
+    if(!agg[r.ejecutivo]) agg[r.ejecutivo] = { colocacion_mensual:0, desembolsos_mes:0 };
+    agg[r.ejecutivo].colocacion_mensual += r.monto_colocacion_semanal||0;
+    agg[r.ejecutivo].desembolsos_mes += r.colocacion_semanal||0;
+  });
+  return agg;
+}
+
+function indicadoresTemplate(){
+  const hideRegionChart = ['gerente','coordinador'].includes(session.role);
+  return `
+    <section class="kpi-row">
+      <div class="kpi-card"><div class="kpi-icon">👥</div><div class="kpi-label">Ejecutivos</div><div class="kpi-value" id="i-kpi-count">-</div><div class="kpi-sub" id="i-kpi-count-sub"></div></div>
+      <div class="kpi-card"><div class="kpi-icon">🧾</div><div class="kpi-label">Pagaré Total</div><div class="kpi-value" id="i-kpi-pagare">-</div></div>
+      <div class="kpi-card"><div class="kpi-icon">📄</div><div class="kpi-label">Saldo Total</div><div class="kpi-value" id="i-kpi-saldo">-</div></div>
+      <div class="kpi-card c-red"><div class="kpi-icon">⚠</div><div class="kpi-label">Mora Total (% Mora)</div><div class="kpi-value" id="i-kpi-mora">-</div></div>
+      <div class="kpi-card c-blue"><div class="kpi-icon">✓</div><div class="kpi-label">Pagos Rec. / Esp. &middot; % Normalidad</div><div class="kpi-value" id="i-kpi-pagos">-</div><div class="kpi-sub-highlight" id="i-kpi-normalidad-sub"></div></div>
+      <div class="kpi-card c-blue"><div class="kpi-icon">💰</div><div class="kpi-label">$ Recibida / Esperada</div><div class="kpi-value" id="i-kpi-monto">-</div></div>
+      <div class="kpi-card c-purple"><div class="kpi-icon">📈</div><div class="kpi-label">Colocación Semanal</div><div class="kpi-value" id="i-kpi-colocado">-</div></div>
+      <div class="kpi-card c-orange"><div class="kpi-icon">🆕</div><div class="kpi-label">Desembolsos Clientes Nuevos</div><div class="kpi-value" id="i-kpi-clientes-nuevos">-</div><div class="kpi-sub" id="i-kpi-clientes-nuevos-monto">-</div></div>
+      <div class="kpi-card c-orange"><div class="kpi-icon">🔁</div><div class="kpi-label">Desembolsos Renovaciones</div><div class="kpi-value" id="i-kpi-clientes-renovados">-</div><div class="kpi-sub" id="i-kpi-clientes-renovados-monto">-</div></div>
+    </section>
+    <section class="chart-row">
+      <div class="chart-container"><h3 title="Normalidad ponderada = total de pagos recibidos entre total de pagos esperados de todo el grupo filtrado (no es el promedio simple de los % individuales de cada ejecutivo)">% Normalidad por corte (recibidos / esperados totales)</h3><div class="wrap"><canvas id="chart-i-trend"></canvas></div></div>
+      ${hideRegionChart?'':'<div class="chart-container"><h3 id="chart-i-region-title">Colocación Semanal por Región</h3><div class="wrap"><canvas id="chart-i-region"></canvas></div></div>'}
+    </section>
+    <section class="chart-row2">
+      ${hideRegionChart?'':'<div class="chart-container"><h3 id="chart-i-top-sucursal-title">Top 10 sucursales por $ Cobranza recibida en semana</h3><div class="wrap"><canvas id="chart-i-top-sucursal"></canvas></div></div>'}
+      <div class="chart-container"><h3 id="chart-i-top-ejecutivo-title">Top 10 ejecutivos por $ Cobranza recibida en semana</h3><div class="wrap"><canvas id="chart-i-top-ejecutivo"></canvas></div></div>
+    </section>
+    <section class="chart-row3">
+      <div class="chart-container"><h3 id="chart-i-clientes-title">Desembolsos por tipo</h3><div class="wrap"><canvas id="chart-i-clientes"></canvas></div></div>
+    </section>
+    <section class="table-section">
+      <h3>Detalle de indicadores por ejecutivo</h3>
+      <div class="table-meta" id="i-table-meta"></div>
+      <div class="table-actions"><button class="export-btn" id="export-i-xlsx">Exportar Excel</button><button class="export-btn" id="export-i-pdf">Exportar PDF</button></div>
+      <div style="max-height:520px;overflow:auto;">
+      <table class="data-table" id="table-indicadores">
+        <thead><tr>
+          <th data-key="ejecutivo">Ejecutivo</th><th data-key="region">Región</th><th data-key="agencia">Agencia</th>
+          <th data-key="clientes_vigentes"># Clientes vigentes</th>
+          <th data-key="pagos_esperados">Pagos Esp.</th><th data-key="pagos_recibidos">Pagos Rec.</th>
+          <th data-key="pct_normalidad">% Normal.</th><th data-key="monto_esperado">$ Esperada</th>
+          <th data-key="monto_recibido">$ Recibida</th><th data-key="saldo_total">Saldo Total</th>
+          <th data-key="mora_total">Mora Total</th><th data-key="colocacion_mensual" title="Suma de colocación semanal dentro del mes calendario del corte seleccionado">Colocación (mensual)</th>
+          <th data-key="desembolsos_mes" title="Número de créditos desembolsados en el mes calendario del corte seleccionado"># Desembolsos (mes)</th>
+          <th data-key="desembolso">Pagaré</th>
+          <th data-key="clientes_nuevos">Clientes Nuevos</th><th data-key="coordinador">Coordinador</th><th data-key="estatus">Estatus</th>
+        </tr></thead>
+        <tbody id="table-indicadores-body"></tbody>
+      </table>
+      </div>
+      <div class="pagination"><span id="i-page-info"></span><div><button id="i-prev-page">Anterior</button><button id="i-next-page">Siguiente</button></div></div>
+    </section>`;
+}
+
+function indicadoresPersonalTemplate(){
+  return `
+    <div class="exec-history" id="exec-history"></div>
+    <section class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Pagaré Total</div><div class="kpi-value" id="i-kpi-pagare">-</div></div>
+      <div class="kpi-card c-blue"><div class="kpi-label">Pagos Rec. / Esp. &middot; % Normalidad</div><div class="kpi-value" id="i-kpi-pagos">-</div><div class="kpi-sub-highlight" id="i-kpi-normalidad-sub"></div></div>
+      <div class="kpi-card c-blue"><div class="kpi-label">$ Recibida / Esperada</div><div class="kpi-value" id="i-kpi-monto">-</div></div>
+      <div class="kpi-card c-purple"><div class="kpi-label">Colocación Semanal</div><div class="kpi-value" id="i-kpi-colocado">-</div></div>
+      <div class="kpi-card c-red"><div class="kpi-label">Mora Total (% Mora)</div><div class="kpi-value" id="i-kpi-mora">-</div></div>
+      <div class="kpi-card"><div class="kpi-label">Saldo Total</div><div class="kpi-value" id="i-kpi-saldo">-</div></div>
+    </section>
+    <section class="chart-row3">
+      <div class="chart-container"><h3>Tu % de normalidad por corte</h3><div class="wrap tall"><canvas id="chart-i-trend"></canvas></div></div>
+    </section>
+    <section class="table-section">
+      <h3>Tu detalle por corte</h3>
+      <div class="table-meta" id="i-table-meta"></div>
+      <div style="max-height:420px;overflow:auto;">
+      <table class="data-table" id="table-indicadores">
+        <thead><tr>
+          <th data-key="corte">Corte</th><th data-key="region">Región</th><th data-key="agencia">Agencia</th>
+          <th data-key="clientes_vigentes"># Clientes vigentes</th><th data-key="pagos_esperados">Pagos Esp.</th>
+          <th data-key="pagos_recibidos">Pagos Rec.</th><th data-key="pct_normalidad">% Normal.</th>
+          <th data-key="monto_recibido">$ Recibida</th><th data-key="saldo_total">Saldo Total</th><th data-key="mora_total">Mora</th>
+          <th data-key="desembolso">Pagaré</th>
+        </tr></thead>
+        <tbody id="table-indicadores-body"></tbody>
+      </table>
+      </div>
+    </section>`;
+}
+
+function renderIndicadoresPersonal(rows){
+  const historyEl = document.getElementById('exec-history');
+  const seen = new Set();
+  const combos = [];
+  EJ_COM.forEach(r=>{
+    const key = r.region+'|'+r.agencia;
+    if(!seen.has(key)){ seen.add(key); combos.push({region:r.region, agencia:r.agencia}); }
+  });
+  historyEl.innerHTML = '<h3>Historial de sucursales</h3>' + combos.map(c=>`<span class="history-chip">📍 ${c.agencia} · ${regionDisplayName(c.region)}</span>`).join('');
+
+  const normalidad = weightedNormalidad(rows);
+  setText('i-kpi-pagare', fmtMoney(sum(rows,'desembolso')));
+  setText('i-kpi-pagos', fmtNum(sum(rows,'pagos_recibidos'))+' / '+fmtNum(sum(rows,'pagos_esperados')));
+  setText('i-kpi-normalidad-sub', fmtPct(normalidad));
+  setText('i-kpi-monto', fmtMoney(sum(rows,'monto_recibido'))+' / '+fmtMoney(sum(rows,'monto_esperado')));
+  setText('i-kpi-colocado', fmtMoney(sum(rows,'monto_colocacion_semanal')));
+  const saldoTotal = sum(rows,'saldo_total');
+  const moraTotal = sum(rows,'mora_total');
+  setText('i-kpi-saldo', fmtMoney(saldoTotal));
+  setText('i-kpi-mora', fmtMoney(moraTotal)+' ('+fmtPct(saldoTotal?moraTotal/saldoTotal:0)+')');
+
+  const allOwn = EJ_IND.filter(r=>r.ejecutivo===session.nombre).sort((a,b)=>a.corte-b.corte);
+  const labels = allOwn.map(r=>'S'+(CORTES.find(c=>c.CORTE===r.corte)||{SEMANA:''}).SEMANA);
+  const data = allOwn.map(r=> (r.pct_normalidad||0)*100);
+  drawLine('chart-i-trend', labels, data, '% Normalidad', '#1fa97c', v=>v.toFixed(2)+'%', v=>v.toFixed(0)+'%', true);
+
+  const tbody = document.getElementById('table-indicadores-body');
+  const sortedRows = allOwn.filter(r=> state.selectedCortes.includes(r.corte) || state.selectedCortes.length===ALL_CORTES.length);
+  const useRows = sortedRows.length ? sortedRows : allOwn;
+  tbody.innerHTML = useRows.map(r=>{
+    const c = CORTES.find(x=>x.CORTE===r.corte);
+    return `<tr><td>${c?('Semana '+c.SEMANA):r.corte}</td><td>${regionDisplayName(r.region)}</td><td>${r.agencia}</td>
+      <td>${fmtNum(r.clientes_vigentes)}</td><td>${fmtNum(r.pagos_esperados)}</td><td>${fmtNum(r.pagos_recibidos)}</td>
+      <td>${fmtPct(r.pct_normalidad)}</td><td>${fmtMoney(r.monto_recibido)}</td><td>${fmtMoney(r.saldo_total)}</td><td>${fmtMoney(r.mora_total)}</td>
+      <td>${fmtMoney(r.desembolso)}</td></tr>`;
+  }).join('');
+  document.getElementById('i-table-meta').textContent = useRows.length + ' cortes';
+}
+
+function renderTableIndicadores(rows){
+  const key = state.sortI;
+  const monthlyAgg = monthlyAggByEjecutivo();
+  let sorted = sortRows(rows, key, state.dirI);
+  markSorted('table-indicadores', key);
+  document.querySelectorAll('#table-indicadores thead th').forEach(th=>{
+    th.onclick = ()=>{
+      const k = th.dataset.key;
+      if(state.sortI===k) state.dirI*=-1; else { state.sortI=k; state.dirI=-1; }
+      renderTableIndicadores(rosterRows);
+    };
+  });
+  const total = sorted.length;
+  const start = state.pageI*state.pageSize;
+  const pageRows = sorted.slice(start, start+state.pageSize);
+  document.getElementById('table-indicadores-body').innerHTML = pageRows.map(r=>{
+    const pill = r.estatus==='ACTIVO' ? 'status-activo':'status-baja';
+    const m = monthlyAgg[r.ejecutivo] || {colocacion_mensual:0, desembolsos_mes:0};
+    return `<tr><td>${r.ejecutivo}</td><td>${regionDisplayName(r.region)}</td><td>${r.agencia}</td><td>${fmtNum(r.clientes_vigentes)}</td>
+      <td>${fmtNum(r.pagos_esperados)}</td><td>${fmtNum(r.pagos_recibidos)}</td><td>${fmtPct(r.pct_normalidad)}</td>
+      <td>${fmtMoney(r.monto_esperado)}</td><td>${fmtMoney(r.monto_recibido)}</td><td>${fmtMoney(r.saldo_total)}</td>
+      <td>${fmtMoney(r.mora_total)}</td><td>${fmtMoney(m.colocacion_mensual)}</td><td>${fmtNum(m.desembolsos_mes)}</td>
+      <td>${fmtMoney(r.desembolso)}</td><td>${fmtNum(r.clientes_nuevos)}</td><td>${r.coordinador||'-'}</td>
+      <td><span class="status-pill ${pill}">${r.estatus||'-'}</span></td></tr>`;
+  }).join('');
+  document.getElementById('i-table-meta').textContent = total + ' ejecutivos encontrados' + (state.selectedCortes.length>1 ? ' · acumulado de '+state.selectedCortes.length+' cortes' : '');
+  const pages = Math.max(1, Math.ceil(total/state.pageSize));
+  document.getElementById('i-page-info').textContent = 'Página '+(state.pageI+1)+' de '+pages+' · '+total+' registros';
+  const prevBtn = document.getElementById('i-prev-page'), nextBtn = document.getElementById('i-next-page');
+  prevBtn.disabled = state.pageI<=0; nextBtn.disabled = state.pageI>=pages-1;
+  prevBtn.onclick = ()=>{ if(state.pageI>0){state.pageI--; renderTableIndicadores(rows);} };
+  nextBtn.onclick = ()=>{ state.pageI++; renderTableIndicadores(rows); };
+  const bx=document.getElementById('export-i-xlsx'), bp=document.getElementById('export-i-pdf');
+  if(bx) bx.onclick=()=>exportIndicadoresExcel(rows);
+  if(bp) bp.onclick=()=>exportIndicadoresPDF(rows);
+}
+
+/* ================================================================
+   TAB: COMISIONES
+   ================================================================ */
+function renderComisiones(){
+  const panel = document.getElementById('tab-comisiones');
+  const isEjecutivo = session.role==='ejecutivo';
+  const isTierRole = ['coordinador','gerente','regional'].includes(session.role);
+  const showOwnTier = isTierRole && !state.ejecutivo && NIVEL_PROPIO.length>0;
+
+  if(showOwnTier){
+    panel.innerHTML = comisionesPropiaTemplate();
+    renderComisionesPropia();
+    return;
+  }
+
+  panel.innerHTML = isEjecutivo ? comisionesPersonalTemplate() : comisionesTemplate();
+
+  const rows = finalRows(EJ_COM, FLOW_FIELDS_COM, SNAPSHOT_FIELDS_COM);
+  renderComposicion(rows);
+
+  if(isEjecutivo){ renderComisionesPersonal(rows); return; }
+
+  const total = rows.length;
+  const productivos = rows.filter(r=>r.productivo===1).length;
+  setText('c-kpi-count', total);
+  setText('c-kpi-count-sub', productivos+' productivos', true);
+  setText('c-kpi-cobranza', fmtMoney(sum(rows,'comision_cobranza')));
+  setText('c-kpi-colocacion', fmtMoney(sum(rows,'comision_colocacion_total')));
+  const penal = sum(rows,'multas')+sum(rows,'penalizacion_traspaso')+sum(rows,'penalizacion_decremento');
+  setText('c-kpi-penal', fmtMoney(penal));
+  setText('c-kpi-comision', fmtMoney(sum(rows,'comision_final')));
+  setText('c-kpi-cobrar', fmtMoney(sum(rows,'total_a_cobrar')));
+  attachKpiTooltips(rows);
+
+  const trendBase = baseRowsForTrend(EJ_COM);
+  const cortesToShow = state.selectedCortes.length>1 ? CORTES.filter(c=>state.selectedCortes.includes(c.CORTE)) : CORTES;
+  const labels = cortesToShow.map(c=>'S'+c.SEMANA);
+  const data = cortesToShow.map(c=> sum(trendBase.filter(r=>r.corte===c.CORTE),'comision_final'));
+  drawLine('chart-c-trend', labels, data, 'Comisión final', '#3d7fd6', fmtMoney, fmtMoneyShort);
+
+  const byRegion = groupSum(rows, 'region', 'comision_final');
+  const byRegionDisplay = {};
+  Object.keys(byRegion).forEach(k=> byRegionDisplay[regionDisplayName(k)] = byRegion[k]);
+  drawDoughnut('chart-c-region', byRegionDisplay, fmtMoney);
+
+  // Top 10 sucursales por comisión final
+  const byAgencia = groupSum(rows, 'agencia', 'comision_final');
+  drawTopBar('chart-c-top-sucursal', byAgencia, 10, fmtMoney, fmtMoneyShort);
+
+  // Top 10 ejecutivos por comisión final con paleta contrastante
+  const top = rows.slice().sort((a,b)=>(b.comision_final||0)-(a.comision_final||0)).slice(0,10);
+  drawHBar('chart-c-top', top.map(r=>truncate(r.ejecutivo,22)), top.map(r=>r.comision_final||0), chartColors(), fmtMoney, fmtMoneyShort);
+
+  const comp = ['Cobranza','Colocación','Apoyo Familiar','Bonos'];
+  const compData = [sum(rows,'comision_cobranza'), sum(rows,'comision_colocacion_total'), sum(rows,'comision_apoyo_familiar'),
+    sum(rows,'bono_mensual')+sum(rows,'bono_excelencia')+sum(rows,'bono_crecimiento_neto')];
+  drawBarSimple('chart-c-comp', comp, compData, ['#1fa97c','#3d7fd6','#e8912a','#6b4fc9']);
+
+  drawDoughnutSimple('chart-c-productividad', ['Productivos','No productivos'], [productivos, total-productivos], ['#1fa97c','#e5e8e3']);
+
+  // Comisión final promedio por ejecutivo, por región
+  const regionCount = {}, regionSum = {};
+  rows.forEach(r=>{ regionCount[r.region]=(regionCount[r.region]||0)+1; regionSum[r.region]=(regionSum[r.region]||0)+(r.comision_final||0); });
+  const avgByRegion = {};
+  Object.keys(regionSum).forEach(k=> avgByRegion[k] = regionCount[k] ? regionSum[k]/regionCount[k] : 0);
+  drawTopBar('chart-c-promedio', avgByRegion, 10, fmtMoney, fmtMoneyShort);
+
+  renderTableComisiones(rows);
+}
+
+function renderComposicion(rows){
+  const el = document.getElementById('composicion-card');
+  if(!el) return;
+
+  const indRows = finalRows(EJ_IND, FLOW_FIELDS_IND, SNAPSHOT_FIELDS_IND);
+  const saldoTotal = sum(indRows,'saldo_total');
+  const moraTotal = sum(indRows,'mora_total');
+  const pctMora = saldoTotal ? moraTotal/saldoTotal : 0;
+  const pagareTotal = sum(indRows,'desembolso');
+
+  const box = (title, items) => `
+    <div class="comp-box">
+      <div class="comp-box-title">${title}</div>
+      <div class="comp-box-items">
+        ${items.map(it=>`<div class="comp-item"><span class="comp-val">${it[1]}</span><span class="comp-lbl">${it[0]}</span></div>`).join('')}
+      </div>
+    </div>`;
+
+  const html = `
+    <div class="comp-grid">
+      ${box('Cartera', [
+        ['Pagaré Total', fmtMoney(pagareTotal)],
+        ['Saldo Total', fmtMoney(saldoTotal)],
+        ['Mora Total', fmtMoney(moraTotal)],
+        ['% de Mora', fmtPct(pctMora)],
+      ])}
+      ${box('PAGOS', [
+        ['Pagos Esperados', fmtNum(sum(rows,'pagos_esperados'))],
+        ['Pagos Recibidos', fmtNum(sum(rows,'pagos_recibidos'))],
+        ['% de Normalidad', fmtPct(weightedNormalidad(rows))],
+      ])}
+      ${box('Cobranza', [
+        ['$ Esperada', fmtMoney(sum(rows,'monto_esperado'))],
+        ['$ Recibida', fmtMoney(sum(rows,'monto_recibido'))],
+        ['$ Recibida No Esperada', fmtMoney(sum(rows,'monto_recibido_no_esperado'))],
+        ['Recuperación Cartera Heredada', fmtMoney(sum(rows,'recuperacion_cartera_heredada'))],
+        ['Cobranza Adicional', fmtMoney(sum(rows,'cobranza_credito_adicional'))],
+        ['Cobranza Total', fmtMoney(sum(rows,'cobranza_total'))],
+      ])}
+      ${box('No. Clientes Colocados', [
+        ['Clientes Nuevos', fmtNum(sum(rows,'clientes_nuevos'))],
+        ['$ Clientes Nuevos', fmtMoney(sum(rows,'monto_nuevos'))],
+        ['Clientes en Tiempo', fmtNum(sum(rows,'clientes_en_tiempo'))],
+        ['$ en Tiempo', fmtMoney(sum(rows,'monto_en_tiempo'))],
+        ['Clientes Tardíos', fmtNum(sum(rows,'clientes_tardias'))],
+        ['$ Tardíos', fmtMoney(sum(rows,'monto_tardias'))],
+        ['Total Clientes Colocados', fmtNum(sum(rows,'total_clientes'))],
+      ])}
+      ${box('Comisión por Colocación', [
+        ['Comisión Nuevos', fmtMoney(sum(rows,'comision_colocacion_nuevos'))],
+        ['Comisión en Tiempo', fmtMoney(sum(rows,'comision_colocacion_tiempo'))],
+        ['Comisión Tardíos', fmtMoney(sum(rows,'comision_colocacion_tardias'))],
+        ['Total Comisión Colocación', fmtMoney(sum(rows,'comision_colocacion_total'))],
+      ])}
+      ${box('Comisión por Cobranza', [
+        ['Comisión por Cobranza', fmtMoney(sum(rows,'comision_cobranza'))],
+        ['Bono de Excelencia', fmtMoney(sum(rows,'bono_excelencia'))],
+        ['Comisión Cartera Heredada', fmtMoney(sum(rows,'comision_cartera_heredada'))],
+        ['Comisión Cobranza Adicional', fmtMoney(sum(rows,'comision_cobranza_adicional'))],
+      ])}
+      ${box('Bonos Mensuales y Campañas', [
+        ['Bono Mensual', fmtMoney(sum(rows,'bono_mensual'))],
+        ['Bono Crecimiento Neto', fmtMoney(sum(rows,'bono_crecimiento_neto'))],
+        ['Campañas', fmtMoney(sum(rows,'campanas'))],
+      ])}
+      ${box('Penalizaciones, Multas y Descuentos por Préstamos', [
+        ['Penalización x Traspaso', fmtMoney(sum(rows,'penalizacion_traspaso'))],
+        ['Penalización x Decremento', fmtMoney(sum(rows,'penalizacion_decremento'))],
+        ['Préstamo Capital Humano', fmtMoney(sum(rows,'prestamo_capital_humano'))],
+        ['Préstamo Caja de Ahorro', fmtMoney(sum(rows,'prestamo_caja_ahorro'))],
+        ['Multas', fmtMoney(sum(rows,'multas'))],
+      ])}
+      ${box('Retenciones de Caja de Ahorro, Otros Apoyos y Retroactivos', [
+        ['Retención Caja de Ahorro', fmtMoney(sum(rows,'retencion_caja_ahorro'))],
+        ['Retroactivos y Otros Apoyos', fmtMoney(sum(rows,'retroactivos_otros_apoyos'))],
+      ])}
+    </div>
+    <div class="comp-total-box">
+      <div class="comp-total-label">Total a Cobrar</div>
+      <div class="comp-total-value">${fmtMoney(sum(rows,'total_a_cobrar'))}</div>
+    </div>`;
+
+  el.innerHTML = html;
+}
+
+function comisionesTemplate(){
+  return `
+    <div id="composicion-card"></div>
+    <section class="kpi-row">
+      <div class="kpi-card"><div class="kpi-icon">👥</div><div class="kpi-label">Ejecutivos</div><div class="kpi-value" id="c-kpi-count">-</div><div class="kpi-sub" id="c-kpi-count-sub"></div></div>
+      <div class="kpi-card"><div class="kpi-icon">💵</div><div class="kpi-label">Com. Cobranza</div><div class="kpi-value" id="c-kpi-cobranza">-</div></div>
+      <div class="kpi-card c-blue"><div class="kpi-icon">📦</div><div class="kpi-label">Com. Colocación</div><div class="kpi-value" id="c-kpi-colocacion">-</div></div>
+      <div class="kpi-card c-red"><div class="kpi-icon">⚠</div><div class="kpi-label">Multas + Penal.</div><div class="kpi-value" id="c-kpi-penal">-</div></div>
+      <div class="kpi-card c-purple"><div class="kpi-icon">✨</div><div class="kpi-label">Comisión Final</div><div class="kpi-value" id="c-kpi-comision">-</div></div>
+      <div class="kpi-card c-orange"><div class="kpi-icon">🧾</div><div class="kpi-label">Total a Cobrar</div><div class="kpi-value" id="c-kpi-cobrar">-</div></div>
+    </section>
+    <section class="chart-row">
+      <div class="chart-container"><h3>Comisión final por corte</h3><div class="wrap"><canvas id="chart-c-trend"></canvas></div></div>
+      <div class="chart-container"><h3>Comisión final por región</h3><div class="wrap"><canvas id="chart-c-region"></canvas></div></div>
+    </section>
+    <section class="chart-row2">
+      <div class="chart-container"><h3>Top 10 sucursales por comisión final</h3><div class="wrap"><canvas id="chart-c-top-sucursal"></canvas></div></div>
+      <div class="chart-container"><h3>Top 10 ejecutivos por comisión final</h3><div class="wrap"><canvas id="chart-c-top"></canvas></div></div>
+    </section>
+    <section class="chart-row3">
+      <div class="chart-container"><h3>Composición de comisión</h3><div class="wrap"><canvas id="chart-c-comp"></canvas></div></div>
+    </section>
+    <section class="chart-row2">
+      <div class="chart-container"><h3>Productividad del equipo</h3><div class="wrap"><canvas id="chart-c-productividad"></canvas></div></div>
+      <div class="chart-container"><h3>Comisión final promedio por ejecutivo, por región</h3><div class="wrap"><canvas id="chart-c-promedio"></canvas></div></div>
+    </section>
+    <section class="table-section">
+      <h3>Detalle de comisiones por ejecutivo</h3>
+      <div class="table-meta" id="c-table-meta"></div>
+      <div style="max-height:520px;overflow:auto;">
+      <table class="data-table" id="table-comisiones">
+        <thead><tr>
+          <th data-key="ejecutivo">Ejecutivo</th><th data-key="region">Región</th><th data-key="agencia">Agencia</th><th data-key="estatus">Estatus</th>
+          <th data-key="comision_cobranza">Com. Cobranza</th><th data-key="comision_colocacion_total">Com. Colocación</th>
+          <th data-key="comision_apoyo_familiar">Apoyo Familiar</th><th data-key="bono_mensual">Bono Mensual</th>
+          <th data-key="bono_crecimiento_neto">Comisión Mayor</th><th data-key="multas">Multas</th>
+          <th data-key="penalizacion_traspaso">Penal. Traspaso</th><th data-key="descuentos_prestamos">Desc. Préstamos</th>
+          <th data-key="comision_final">Comisión Final</th><th data-key="total_a_cobrar">Total a Cobrar</th>
+        </tr></thead>
+        <tbody id="table-comisiones-body"></tbody>
+      </table>
+      </div>
+      <div class="pagination"><span id="c-page-info"></span><div><button id="c-prev-page">Anterior</button><button id="c-next-page">Siguiente</button></div></div>
+    </section>`;
+}
+
+function comisionesPersonalTemplate(){
+  return `
+    <div id="composicion-card"></div>
+    <section class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Com. Cobranza</div><div class="kpi-value" id="c-kpi-cobranza">-</div></div>
+      <div class="kpi-card c-blue"><div class="kpi-label">Com. Colocación</div><div class="kpi-value" id="c-kpi-colocacion">-</div></div>
+      <div class="kpi-card c-red"><div class="kpi-label">Multas + Penal.</div><div class="kpi-value" id="c-kpi-penal">-</div></div>
+      <div class="kpi-card c-purple"><div class="kpi-label">Comisión Final</div><div class="kpi-value" id="c-kpi-comision">-</div></div>
+      <div class="kpi-card c-orange"><div class="kpi-label">Total a Cobrar</div><div class="kpi-value" id="c-kpi-cobrar">-</div></div>
+    </section>
+    <section class="chart-row3">
+      <div class="chart-container"><h3>Tu comisión final por corte</h3><div class="wrap tall"><canvas id="chart-c-trend"></canvas></div></div>
+    </section>
+    <section class="table-section">
+      <h3>Tu detalle por corte</h3>
+      <div class="table-meta" id="c-table-meta"></div>
+      <div style="max-height:420px;overflow:auto;">
+      <table class="data-table" id="table-comisiones">
+        <thead><tr>
+          <th data-key="corte">Corte</th><th data-key="region">Región</th><th data-key="agencia">Agencia</th>
+          <th data-key="comision_cobranza">Com. Cobranza</th><th data-key="comision_colocacion_total">Com. Colocación</th>
+          <th data-key="multas">Multas</th><th data-key="comision_final">Comisión Final</th><th data-key="total_a_cobrar">Total a Cobrar</th>
+        </tr></thead>
+        <tbody id="table-comisiones-body"></tbody>
+      </table>
+      </div>
+    </section>`;
+}
+
+function renderComisionesPersonal(rows){
+  setText('c-kpi-cobranza', fmtMoney(sum(rows,'comision_cobranza')));
+  setText('c-kpi-colocacion', fmtMoney(sum(rows,'comision_colocacion_total')));
+  const penal = sum(rows,'multas')+sum(rows,'penalizacion_traspaso')+sum(rows,'penalizacion_decremento');
+  setText('c-kpi-penal', fmtMoney(penal));
+  setText('c-kpi-comision', fmtMoney(sum(rows,'comision_final')));
+  setText('c-kpi-cobrar', fmtMoney(sum(rows,'total_a_cobrar')));
+  attachKpiTooltips(rows);
+
+  const allOwn = EJ_COM.filter(r=>r.ejecutivo===session.nombre).sort((a,b)=>a.corte-b.corte);
+  const labels = allOwn.map(r=>'S'+(CORTES.find(c=>c.CORTE===r.corte)||{SEMANA:''}).SEMANA);
+  const data = allOwn.map(r=> r.comision_final||0);
+  drawLine('chart-c-trend', labels, data, 'Comisión final', '#3d7fd6', fmtMoney, fmtMoneyShort);
+
+  const useRows = allOwn.filter(r=> state.selectedCortes.includes(r.corte));
+  const finalList = useRows.length ? useRows : allOwn;
+  document.getElementById('table-comisiones-body').innerHTML = finalList.map(r=>{
+    const c = CORTES.find(x=>x.CORTE===r.corte);
+    return `<tr><td>${c?('Semana '+c.SEMANA):r.corte}</td><td>${regionDisplayName(r.region)}</td><td>${r.agencia}</td>
+      <td>${fmtMoney(r.comision_cobranza)}</td><td>${fmtMoney(r.comision_colocacion_total)}</td>
+      <td>${fmtMoney(r.multas)}</td><td>${fmtMoney(r.comision_final)}</td><td>${fmtMoney(r.total_a_cobrar)}</td></tr>`;
+  }).join('');
+  document.getElementById('c-table-meta').textContent = finalList.length + ' cortes';
+}
+
+const NIVEL_SHEET_LABEL = {coordinador:'Coordinador', gerente:'Gerente', regional:'Gerente Regional'};
+
+function comisionesPropiaTemplate(){
+  const hasEquipo = session.role==='coordinador' || session.role==='gerente';
+  return `
+    <div class="scope-hint">Mostrando tu propia comisión como ${NIVEL_SHEET_LABEL[session.role]}. Filtra por un ejecutivo específico arriba para ver su detalle en vez del tuyo.</div>
+    <section class="kpi-row">
+      ${hasEquipo?'<div class="kpi-card c-orange"><div class="kpi-icon">👤</div><div class="kpi-label">Ejecutivos a Cargo</div><div class="kpi-value" id="p-kpi-equipo">-</div><div class="kpi-sub" id="p-kpi-equipo-sub"></div></div>':''}
+      <div class="kpi-card c-blue"><div class="kpi-icon">✓</div><div class="kpi-label">% Normalidad</div><div class="kpi-value" id="p-kpi-normalidad">-</div></div>
+      <div class="kpi-card"><div class="kpi-icon">💵</div><div class="kpi-label">Comisión por Cobranza</div><div class="kpi-value" id="p-kpi-cobranza">-</div></div>
+      <div class="kpi-card c-red"><div class="kpi-icon">⚠</div><div class="kpi-label">Multas + Penalizaciones</div><div class="kpi-value" id="p-kpi-penal">-</div></div>
+      <div class="kpi-card c-purple"><div class="kpi-icon">✨</div><div class="kpi-label">Incentivo Final</div><div class="kpi-value" id="p-kpi-incentivo">-</div></div>
+      <div class="kpi-card c-orange"><div class="kpi-icon">🧾</div><div class="kpi-label">Total a Cobrar</div><div class="kpi-value" id="p-kpi-cobrar">-</div></div>
+    </section>
+    <div id="p-composicion-card"></div>
+    <section class="chart-row3">
+      <div class="chart-container"><h3>Tu total a cobrar por corte</h3><div class="wrap tall"><canvas id="chart-p-trend"></canvas></div></div>
+    </section>
+    <section class="table-section">
+      <h3>Tu detalle por corte</h3>
+      <div class="table-meta" id="p-table-meta"></div>
+      <div style="max-height:420px;overflow:auto;">
+      <table class="data-table" id="table-propia">
+        <thead><tr>
+          <th>Corte</th><th>Región</th>${hasEquipo?'<th>Agencia</th>':''}
+          ${hasEquipo?'<th># Ejecutivos</th><th>Ejec. Productivos</th>':''}
+          <th>% Normalidad</th><th>Com. Cobranza</th><th>Incentivo Final</th><th>Total a Cobrar</th>
+        </tr></thead>
+        <tbody id="table-propia-body"></tbody>
+      </table>
+      </div>
+    </section>`;
+}
+
+function renderComisionesPropia(){
+  const hasEquipo = session.role==='coordinador' || session.role==='gerente';
+  const rows = NIVEL_PROPIO.filter(r=> state.selectedCortes.includes(r.corte));
+  const useRows = rows.length ? rows : NIVEL_PROPIO;
+
+  if(hasEquipo){
+    setText('p-kpi-equipo', fmtNum(sum(useRows,'num_ejecutivos')));
+    setText('p-kpi-equipo-sub', fmtNum(sum(useRows,'ejecutivos_productivos'))+' productivos');
+  }
+  setText('p-kpi-normalidad', fmtPct(weightedNormalidad(useRows)));
+  setText('p-kpi-cobranza', fmtMoney(sum(useRows,'comision_cobranza')));
+  const penal = sum(useRows,'multas')+sum(useRows,'penalizacion_traspaso');
+  setText('p-kpi-penal', fmtMoney(penal));
+  setText('p-kpi-incentivo', fmtMoney(sum(useRows,'incentivo_final')));
+  setText('p-kpi-cobrar', fmtMoney(sum(useRows,'total_a_cobrar')));
+
+  const box = (title, items) => `
+    <div class="comp-box">
+      <div class="comp-box-title">${title}</div>
+      <div class="comp-box-items">
+        ${items.map(it=>`<div class="comp-item"><span class="comp-val">${it[1]}</span><span class="comp-lbl">${it[0]}</span></div>`).join('')}
+      </div>
+    </div>`;
+  const compHtml = `<div class="comp-grid">
+    ${hasEquipo?box('Equipo', [
+      ['Ejecutivos a Cargo', fmtNum(sum(useRows,'num_ejecutivos'))],
+      ['Ejecutivos Productivos', fmtNum(sum(useRows,'ejecutivos_productivos'))],
+    ]):''}
+    ${box('PAGOS', [
+      ['Pagos Esperados', fmtNum(sum(useRows,'pagos_esperados'))],
+      ['Pagos Recibidos', fmtNum(sum(useRows,'pagos_recibidos'))],
+      ['% de Normalidad', fmtPct(weightedNormalidad(useRows))],
+    ])}
+    ${box('Comisión', [
+      ['Comisión por Cobranza', fmtMoney(sum(useRows,'comision_cobranza'))],
+      ['Comisión +/- Productividad', fmtMoney(sum(useRows,'comision_productividad'))],
+    ])}
+    ${box('Apoyos y Bonos', [
+      ['Apoyo Familiar', fmtMoney(sum(useRows,'apoyo_familiar'))],
+      ['Comisión Modelo Tradicional', fmtMoney(sum(useRows,'comision_modelo_tradicional'))],
+      ['Apoyo Económico', fmtMoney(sum(useRows,'apoyo_economico'))],
+      ['Bono Mensual', fmtMoney(sum(useRows,'bono_mensual'))],
+      ['Comisión Mayor', fmtMoney(sum(useRows,'comision_mayor'))],
+    ])}
+    ${box('Penalizaciones y Préstamos', [
+      ['Multas', fmtMoney(sum(useRows,'multas'))],
+      ['Penalización x Traspaso', fmtMoney(sum(useRows,'penalizacion_traspaso'))],
+      ['Préstamo Capital Humano', fmtMoney(sum(useRows,'prestamo_capital_humano'))],
+      ['Préstamo Caja de Ahorro', fmtMoney(sum(useRows,'prestamo_caja_ahorro'))],
+      ['Descuentos x Préstamos', fmtMoney(sum(useRows,'descuentos_prestamos'))],
+    ])}
+    ${box('Retenciones y Retroactivos', [
+      ['Retención Caja de Ahorro', fmtMoney(sum(useRows,'retencion_caja_ahorro'))],
+      ['Retroactivos y Otros Apoyos', fmtMoney(sum(useRows,'retroactivos_otros_apoyos'))],
+    ])}
+  </div>
+  <div class="comp-total-box">
+    <div class="comp-total-label">Total a Cobrar</div>
+    <div class="comp-total-value">${fmtMoney(sum(useRows,'total_a_cobrar'))}</div>
+  </div>`;
+  document.getElementById('p-composicion-card').innerHTML = compHtml;
+
+  const allOwn = NIVEL_PROPIO.slice().sort((a,b)=>a.corte-b.corte);
+  const labels = allOwn.map(r=>{ const c=CORTES.find(x=>x.CORTE===r.corte); return c?('Semana '+c.SEMANA):r.corte; });
+  const data = allOwn.map(r=> r.total_a_cobrar||0);
+  drawLine('chart-p-trend', labels, data, 'Total a Cobrar', '#3d7fd6', fmtMoney, fmtMoneyShort, true);
+
+  document.getElementById('table-propia-body').innerHTML = useRows.map(r=>{
+    const c = CORTES.find(x=>x.CORTE===r.corte);
+    return `<tr><td>${c?('Semana '+c.SEMANA):r.corte}</td><td>${regionDisplayName(r.region)}</td>${hasEquipo?`<td>${r.agencia||'-'}</td>`:''}
+      ${hasEquipo?`<td>${fmtNum(r.num_ejecutivos)}</td><td>${fmtNum(r.ejecutivos_productivos)}</td>`:''}
+      <td>${fmtPct(r.pct_normalidad)}</td><td>${fmtMoney(r.comision_cobranza)}</td>
+      <td>${fmtMoney(r.incentivo_final)}</td><td>${fmtMoney(r.total_a_cobrar)}</td></tr>`;
+  }).join('');
+  document.getElementById('p-table-meta').textContent = useRows.length + ' corte(s)';
+}
+
+function renderTableComisiones(rows){
+  const key = state.sortC;
+  let sorted = sortRows(rows, key, state.dirC);
+  markSorted('table-comisiones', key);
+  document.querySelectorAll('#table-comisiones thead th').forEach(th=>{
+    th.onclick = ()=>{
+      const k = th.dataset.key;
+      if(state.sortC===k) state.dirC*=-1; else { state.sortC=k; state.dirC=-1; }
+      renderTableComisiones(rows);
+    };
+  });
+  const total = sorted.length;
+  const start = state.pageC*state.pageSize;
+  const pageRows = sorted.slice(start, start+state.pageSize);
+  document.getElementById('table-comisiones-body').innerHTML = pageRows.map(r=>{
+    const pill = r.estatus==='ACTIVO' ? 'status-activo':'status-baja';
+    const cls = (r.comision_final||0)<0 ? 'num-neg' : '';
+    return `<tr><td>${r.ejecutivo}</td><td>${regionDisplayName(r.region)}</td><td>${r.agencia}</td>
+      <td><span class="status-pill ${pill}">${r.estatus}</span></td>
+      <td>${fmtMoney(r.comision_cobranza)}</td><td>${fmtMoney(r.comision_colocacion_total)}</td>
+      <td>${fmtMoney(r.comision_apoyo_familiar)}</td><td>${fmtMoney(r.bono_mensual)}</td>
+      <td>${fmtMoney(r.bono_crecimiento_neto)}</td><td>${fmtMoney(r.multas)}</td>
+      <td>${fmtMoney(r.penalizacion_traspaso)}</td><td>${fmtMoney(r.descuentos_prestamos)}</td>
+      <td class="${cls}">${fmtMoney(r.comision_final)}</td><td>${fmtMoney(r.total_a_cobrar)}</td></tr>`;
+  }).join('');
+  document.getElementById('c-table-meta').textContent = total + ' ejecutivos encontrados' + (state.selectedCortes.length>1 ? ' (acumulado de '+state.selectedCortes.length+' cortes)' : '');
+  const pages = Math.max(1, Math.ceil(total/state.pageSize));
+  document.getElementById('c-page-info').textContent = 'Página '+(state.pageC+1)+' de '+pages+' · '+total+' registros';
+  const prevBtn = document.getElementById('c-prev-page'), nextBtn = document.getElementById('c-next-page');
+  prevBtn.disabled = state.pageC<=0; nextBtn.disabled = state.pageC>=pages-1;
+  prevBtn.onclick = ()=>{ if(state.pageC>0){state.pageC--; renderTableComisiones(rows);} };
+  nextBtn.onclick = ()=>{ state.pageC++; renderTableComisiones(rows); };
+}
+
+/* ---------------- HELPERS DE AGREGACIÓN Y GRÁFICAS ---------------- */
+function sum(rows, field){ return rows.reduce((s,r)=>s+(r[field]||0),0); }
+function groupSum(rows, groupField, valField){
+  const g = {};
+  rows.forEach(r=>{ g[r[groupField]] = (g[r[groupField]]||0) + (r[valField]||0); });
+  return g;
+}
+function truncate(s,n){ return s && s.length>n ? s.slice(0,n-1)+'…' : s; }
+function setText(id, val, isSub){ const el = document.getElementById(id); if(el) el.textContent = val; }
+
+function drawLine(canvasId, labels, data, label, color, tooltipFmt, axisFmt, showDataLabels, verticalXAxis){
+  const el = document.getElementById(canvasId); if(!el) return;
+  axisFmt = axisFmt || tooltipFmt;
+  if(charts[canvasId]) charts[canvasId].destroy();
+
+  const dataLabelPlugin = {
+    id: 'dataLabelPlugin-'+canvasId,
+    afterDatasetsDraw(chart){
+      if(!showDataLabels) return;
+      const {ctx} = chart;
+      const meta = chart.getDatasetMeta(0);
+      const n = data.length;
+      const step = n<=20 ? 1 : Math.ceil(n/20);
+      ctx.save();
+      ctx.font = '600 10px -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+      meta.data.forEach((point, i)=>{
+        if(i % step !== 0) return;
+        const val = data[i];
+        if(val===null || val===undefined) return;
+        const text = tooltipFmt(val);
+        const textWidth = ctx.measureText(text).width;
+        ctx.save();
+        ctx.translate(point.x, point.y-10);
+        ctx.rotate(-Math.PI/2);
+        ctx.fillStyle = 'rgba(255,255,255,.85)';
+        ctx.fillRect(-3, -textWidth-3, textWidth+6, 14);
+        ctx.fillStyle = '#16221f';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, -textWidth, 4);
+        ctx.restore();
+      });
+      ctx.restore();
+    }
+  };
+
+  charts[canvasId] = new Chart(el, {
+    type:'line',
+    data:{labels, datasets:[{label, data, borderColor:color, backgroundColor:color+'22', borderWidth:2.5, fill:true, tension:.3, pointRadius:2}]},
+    options:{responsive:true, maintainAspectRatio:false, animation:false,
+      layout:{padding:{top:45}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>tooltipFmt(c.parsed.y)}}},
+      scales:{
+        x:{ticks:{minRotation:verticalXAxis?90:0,maxRotation:verticalXAxis?90:0,autoSkip:true,maxTicksLimit:40}},
+        y:{ticks:{callback:v=>axisFmt(v)}}
+      }},
+    plugins: showDataLabels ? [dataLabelPlugin] : []
+  });
+}
+
+
+function drawBarCountMoney(canvasId, labels, counts, amounts, colors){
+  const el=document.getElementById(canvasId); if(!el) return;
+  if(charts[canvasId]) charts[canvasId].destroy();
+  const moneyLabelPlugin={
+    id:'moneyLabelPlugin-'+canvasId,
+    afterDatasetsDraw(chart){
+      const {ctx}=chart, meta=chart.getDatasetMeta(0);
+      ctx.save(); ctx.font='700 11px -apple-system, Segoe UI, Roboto, Arial, sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#65746f';
+      meta.data.forEach((bar,i)=>{ ctx.fillText(fmtNum(counts[i])+' · '+fmtMoneyShort(amounts[i]),bar.x,bar.y-8); });
+      ctx.restore();
+    }
+  };
+  charts[canvasId]=new Chart(el,{type:'bar',data:{labels,datasets:[{label:'# Desembolsos',data:counts,backgroundColor:colors}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,layout:{padding:{top:24}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Cantidad: '+fmtNum(c.parsed.y)+' | Monto: '+fmtMoney(amounts[c.dataIndex])}}}},
+    plugins:[moneyLabelPlugin]});
+}
+
+function attachKpiTooltips(rows){
+  const specs={
+    'c-kpi-cobranza': ['Comisión por Cobranza', [
+      ['Comisión por Cobranza',sum(rows,'comision_cobranza')],['Bono de Excelencia',sum(rows,'bono_excelencia')],
+      ['Comisión Cartera Heredada',sum(rows,'comision_cartera_heredada')],['Comisión Cobranza Adicional',sum(rows,'comision_cobranza_adicional')]
+    ]],
+    'c-kpi-colocacion': ['Comisión por Colocación', [
+      ['Comisión Nuevos',sum(rows,'comision_colocacion_nuevos')],['Comisión en Tiempo',sum(rows,'comision_colocacion_tiempo')],
+      ['Comisión Tardíos',sum(rows,'comision_colocacion_tardias')],['Total Comisión Colocación',sum(rows,'comision_colocacion_total')]
+    ]],
+    'c-kpi-penal': ['Penalizaciones, Multas y Descuentos por Préstamos', [
+      ['Penalización x Traspaso',sum(rows,'penalizacion_traspaso')],['Penalización x Decremento',sum(rows,'penalizacion_decremento')],
+      ['Multas',sum(rows,'multas')],['Préstamo Capital Humano',sum(rows,'prestamo_capital_humano')],
+      ['Préstamo Caja de Ahorro',sum(rows,'prestamo_caja_ahorro')],['Descuentos x Préstamos',sum(rows,'descuentos_prestamos')]
+    ]],
+    'c-kpi-comision': ['Retenciones de Caja de Ahorro, Otros Apoyos y Retroactivos', [
+      ['Retención Caja de Ahorro',sum(rows,'retencion_caja_ahorro')],['Retroactivos y Otros Apoyos',sum(rows,'retroactivos_otros_apoyos')]
+    ]]
+  };
+  Object.entries(specs).forEach(([id,[title,items]])=>{
+    const valueEl=document.getElementById(id); if(!valueEl) return;
+    const card=valueEl.closest('.kpi-card'); if(!card) return;
+    const text=title+'\n'+items.map(([lbl,val])=>lbl+': '+fmtMoney(val)).join('\n');
+    card.classList.add('has-breakdown'); card.title=text;
+    card.onclick=()=>alert(text);
+  });
+}
+
+function exportIndicadoresExcel(rows){
+  if(typeof XLSX==='undefined'){ alert('No se pudo cargar el módulo de Excel.'); return; }
+  const monthlyAgg=monthlyAggByEjecutivo();
+  const data=rows.map(r=>{const m=monthlyAgg[r.ejecutivo]||{};return {
+    Ejecutivo:r.ejecutivo, Región:regionDisplayName(r.region), Agencia:r.agencia, 'Clientes vigentes':r.clientes_vigentes,
+    'Pagos Esperados':r.pagos_esperados,'Pagos Recibidos':r.pagos_recibidos,'% Normalidad':r.pct_normalidad,
+    '$ Esperada':r.monto_esperado,'$ Recibida':r.monto_recibido,'Saldo Total':r.saldo_total,'Mora Total':r.mora_total,
+    'Colocación mensual':m.colocacion_mensual||0,'# Desembolsos mes':m.desembolsos_mes||0,'Pagaré':r.desembolso,
+    'Clientes Nuevos':r.clientes_nuevos,Coordinador:r.coordinador||'-',Estatus:r.estatus||'-'
+  }});
+  const ws=XLSX.utils.json_to_sheet(data); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Indicadores');
+  XLSX.writeFile(wb,'Indicadores_McM.xlsx');
+}
+
+function exportIndicadoresPDF(rows){
+  if(!window.jspdf || !window.jspdf.jsPDF){ alert('No se pudo cargar el módulo PDF.'); return; }
+  const {jsPDF}=window.jspdf; const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+  const head=[['Ejecutivo','Región','Agencia','Clientes','Pagos Esp.','Pagos Rec.','% Normal.','$ Recibida','Saldo','Mora','Coordinador','Estatus']];
+  const body=rows.map(r=>[r.ejecutivo,regionDisplayName(r.region),r.agencia,fmtNum(r.clientes_vigentes),fmtNum(r.pagos_esperados),fmtNum(r.pagos_recibidos),fmtPct(r.pct_normalidad),fmtMoney(r.monto_recibido),fmtMoney(r.saldo_total),fmtMoney(r.mora_total),r.coordinador||'-',r.estatus||'-']);
+  doc.setFontSize(14); doc.text('Detalle de indicadores por ejecutivo',40,34); doc.autoTable({head,body,startY:48,styles:{fontSize:6.5,cellPadding:2},headStyles:{fontSize:7}}); doc.save('Indicadores_McM.pdf');
+}
+
+function drawDoughnut(canvasId, groupObj, tooltipFmt){
+  const el = document.getElementById(canvasId); if(!el) return;
+  const labels = Object.keys(groupObj).sort((a,b)=>groupObj[b]-groupObj[a]);
+  const data = labels.map(l=>groupObj[l]);
+  if(charts[canvasId]) charts[canvasId].destroy();
+  charts[canvasId] = new Chart(el, {
+    type:'doughnut',
+    data:{labels, datasets:[{data, backgroundColor:chartColors()}]},
+    options:{responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{legend:{position:'right', labels:{boxWidth:10, font:{size:11}}}, tooltip:{callbacks:{label:c=>c.label+': '+tooltipFmt(c.parsed)}}}}
+  });
+}
+
+function drawDoughnutPct(canvasId, groupObj, tooltipFmt){
+  const el = document.getElementById(canvasId); if(!el) return;
+  const labels = Object.keys(groupObj).sort((a,b)=>groupObj[b]-groupObj[a]);
+  const data = labels.map(l=>groupObj[l]);
+  const total = data.reduce((s,v)=>s+v,0);
+  const pctOf = v => total ? (v/total*100).toFixed(1)+'%' : '0%';
+  if(charts[canvasId]) charts[canvasId].destroy();
+  charts[canvasId] = new Chart(el, {
+    type:'doughnut',
+    data:{labels: labels.map((l,i)=>l+' ('+pctOf(data[i])+')'), datasets:[{data, backgroundColor:chartColors()}]},
+    options:{responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{legend:{position:'right', labels:{boxWidth:10, font:{size:10.5}}},
+        tooltip:{callbacks:{label:c=>labels[c.dataIndex]+': '+tooltipFmt(c.parsed)+' ('+pctOf(c.parsed)+')'}}}}
+  });
+}
+
+/* Función de barras horizontales (Sucursales/Regiones) con paleta de colores contrastantes */
+function drawTopBar(canvasId, groupObj, topN, tooltipFmt, axisFmt){
+  const el = document.getElementById(canvasId); if(!el) return;
+  axisFmt = axisFmt || tooltipFmt;
+  const labels = Object.keys(groupObj).sort((a,b)=>groupObj[b]-groupObj[a]).slice(0,topN);
+  const data = labels.map(l=>groupObj[l]);
+  if(charts[canvasId]) charts[canvasId].destroy();
+  charts[canvasId] = new Chart(el, {
+    type:'bar',
+    data:{labels, datasets:[{label:'Total', data, backgroundColor:chartColors()}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>tooltipFmt(c.parsed.x)}}},
+      scales:{x:{ticks:{callback:v=>axisFmt(v)}}}}
+  });
+}
+
+/* Función de barras horizontales (Ejecutivos) con paleta de colores contrastantes */
+function drawHBar(canvasId, labels, data, color, tooltipFmt, axisFmt){
+  const el = document.getElementById(canvasId); if(!el) return;
+  axisFmt = axisFmt || tooltipFmt;
+  if(charts[canvasId]) charts[canvasId].destroy();
+  const bgColors = Array.isArray(color) ? color : chartColors();
+  charts[canvasId] = new Chart(el, {
+    type:'bar',
+    data:{labels, datasets:[{label:'Valor', data, backgroundColor:bgColors}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>tooltipFmt(c.parsed.x)}}},
+      scales:{x:{ticks:{callback:v=>axisFmt(v)}}}}
+  });
+}
+
+function drawDoughnutSimple(canvasId, labels, data, colors){
+  const el = document.getElementById(canvasId); if(!el) return;
+  if(charts[canvasId]) charts[canvasId].destroy();
+  charts[canvasId] = new Chart(el, {
+    type:'doughnut',
+    data:{labels, datasets:[{data, backgroundColor:colors}]},
+    options:{responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{legend:{position:'right', labels:{boxWidth:10, font:{size:11}}}}}
+  });
+}
+
+function drawBarSimple(canvasId, labels, data, colors){
+  const el = document.getElementById(canvasId); if(!el) return;
+  if(charts[canvasId]) charts[canvasId].destroy();
+  const total = data.reduce((s,v)=>s+(v||0),0);
+  const valueLabelPlugin = {
+    id: 'valueLabelPlugin-'+canvasId,
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      const meta = chart.getDatasetMeta(0);
+      ctx.save();
+      ctx.font = '700 11px -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+      ctx.fillStyle = '#16221f';
+      ctx.textAlign = 'center';
+      meta.data.forEach((bar, i)=>{
+        const val = data[i];
+        const pct = total ? (val/total*100).toFixed(2)+'%' : '';
+        ctx.fillText(fmtNum(val)+(pct?' ('+pct+')':''), bar.x, bar.y-6);
+      });
+      ctx.restore();
+    }
+  };
+  charts[canvasId] = new Chart(el, {
+    type:'bar',
+    data:{labels, datasets:[{label:'Valor', data, backgroundColor:colors}]},
+    options:{responsive:true, maintainAspectRatio:false, animation:false,
+      layout:{padding:{top:20}},
+      plugins:{legend:{display:false}}},
+    plugins:[valueLabelPlugin]
+  });
+}
+
+</script>
+</body>
+</html>
