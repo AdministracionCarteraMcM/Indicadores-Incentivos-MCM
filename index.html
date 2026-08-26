@@ -141,20 +141,241 @@ table.data-table{width:100%;border-collapse:collapse;font-size:12px;white-space:
   .chart-row,.chart-row2{grid-template-columns:1fr;}
 }
 </style>
+
+<style id="mcm-redesign">
+:root{--forest:#071f19;--forest2:#0d382c;--emerald:#1aa174;--mint:#b9f1dc;--ivory:#fafbf7;--line:#dfe7e2}
+body{background:#f0f4f1}#login-screen{background:linear-gradient(120deg,#061b16 0%,#0b3328 58%,#0f503d 100%);padding:26px;position:relative;overflow:hidden}#login-screen::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 18%,rgba(54,211,154,.16),transparent 30%),radial-gradient(circle at 82% 76%,rgba(255,255,255,.08),transparent 28%)}.login-shell{position:relative;width:min(960px,96vw);display:grid;grid-template-columns:1.08fr .92fr;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:28px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.33);backdrop-filter:blur(10px);animation:fadeScale .8s cubic-bezier(.2,.8,.2,1) both}.login-brand-panel{padding:58px 50px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-height:520px}.brand-mark{width:78px;height:78px;border-radius:50%;border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;gap:4px;margin-bottom:24px;animation:pulseMark 3.2s ease-in-out infinite}.brand-plus{color:#7ee5bd}.brand-kicker{font-size:10px;letter-spacing:2.4px;font-weight:800;color:#8ee4c2}.login-brand-panel h2{font-size:31px;line-height:1.08;margin:10px 0 14px}.login-brand-panel p{font-size:13px;line-height:1.7;color:#cfe7de}.brand-points{display:grid;grid-template-columns:1fr;gap:8px;margin-top:24px;font-size:11px;color:#eef8f4}.login-card{width:auto;max-width:none;border-radius:20px;margin:18px;padding:42px 38px;box-shadow:0 18px 48px rgba(0,0,0,.18);text-align:left;background:rgba(255,255,255,.96);display:flex;flex-direction:column;justify-content:center}.login-card-head{display:flex;align-items:center;gap:12px}.login-card .logo{width:44px;height:44px;margin:0;border-radius:13px;background:linear-gradient(135deg,#1aa174,#0d5a43);font-size:15px}.login-eyebrow{font-size:9px;letter-spacing:1.4px;font-weight:800;color:#157a5b}.login-card h1{font-size:24px;margin:1px 0}.login-copy{margin:18px 0 22px!important;font-size:12px!important;line-height:1.55}.login-label{font-size:9.5px;font-weight:800;letter-spacing:.4px;color:#52645d;margin-bottom:5px;text-transform:uppercase}.input-wrap{position:relative;margin-bottom:13px}.input-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:7px;color:#1aa174}.login-card .input-wrap input{margin:0;padding-left:32px;border-radius:11px;background:#fbfcfb}.login-card button{border-radius:11px;background:linear-gradient(90deg,#0d5a43,#1aa174);display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 8px 20px rgba(26,161,116,.25)}.dashboard-header{background:linear-gradient(110deg,#071f19,#0d382c 70%,#11513f);border:1px solid rgba(255,255,255,.08);border-radius:18px}.tabs-bar{background:#e6eee9;padding:4px;border-radius:11px;width:max-content}.tab-btn{border:0;border-radius:8px;background:transparent}.tab-btn.active{background:#fff;color:#0d5a43;box-shadow:0 3px 10px rgba(7,31,25,.08)}.kpi-card{border:1px solid var(--line);border-left:0!important;border-radius:14px;box-shadow:0 4px 14px rgba(7,31,25,.04)}.kpi-card:hover{box-shadow:0 10px 28px rgba(7,31,25,.10)}.chart-container,.table-section,.filters-bar,.exec-history,.comp-box{border:1px solid var(--line);box-shadow:0 3px 14px rgba(7,31,25,.035);border-radius:14px}.scope-note,.scope-hint,.history-chip{background:#e4f6ef;color:#0d5a43}.comp-total-box{background:linear-gradient(110deg,#071f19,#11513f)}
+@keyframes fadeScale{from{opacity:0;transform:scale(.975) translateY(12px)}to{opacity:1;transform:none}}@keyframes pulseMark{50%{transform:scale(1.04);box-shadow:0 0 0 10px rgba(126,229,189,.05)}}@media(max-width:760px){.login-shell{grid-template-columns:1fr}.login-brand-panel{display:none}.login-card{margin:10px;padding:34px 26px}}@media(prefers-reduced-motion:reduce){.login-shell,.brand-mark{animation:none!important}}
+</style>
+
+
+<style id="mcm-saturated-theme">
+/* ==========================================================
+   McM PREMIUM SATURADO — exploración visual
+   Solo presentación. No altera API, filtros ni cálculos.
+   ========================================================== */
+:root{
+  --bg-header:#062f27;
+  --header2:#0b6b52;
+  --accent:#00c985;
+  --accent-dark:#006d50;
+  --accent-light:#d6fff0;
+  --blue:#1677ff;
+  --orange:#ff8a00;
+  --purple:#7c3aed;
+  --red:#ef3340;
+  --cyan:#00b8d9;
+  --pink:#e83e8c;
+  --lime:#70c900;
+  --gold:#f5b700;
+  --bg-page:#edf7f3;
+  --bg-card:#ffffff;
+  --text-primary:#10231d;
+  --text-secondary:#5e746b;
+  --border:#d8e8e1;
+  --line:#d8e8e1;
+}
+body{
+  background:
+    radial-gradient(circle at 8% 0%, rgba(0,201,133,.10), transparent 26%),
+    radial-gradient(circle at 95% 18%, rgba(22,119,255,.08), transparent 22%),
+    #edf7f3;
+}
+
+/* LOGIN: más vivo, pero con verde McM como base */
+#login-screen{
+  background:
+    radial-gradient(circle at 14% 18%, rgba(0,255,176,.38), transparent 24%),
+    radial-gradient(circle at 86% 18%, rgba(22,119,255,.34), transparent 26%),
+    radial-gradient(circle at 76% 86%, rgba(232,62,140,.23), transparent 24%),
+    linear-gradient(135deg,#032e25 0%,#00684d 42%,#0b5b96 72%,#54278f 100%);
+}
+#login-screen::before{
+  background:
+    linear-gradient(120deg,rgba(255,255,255,.06),transparent 34%,rgba(255,255,255,.03) 62%,transparent),
+    radial-gradient(circle at 50% -10%,rgba(255,255,255,.15),transparent 35%);
+}
+.login-shell{
+  border:1px solid rgba(255,255,255,.30);
+  background:linear-gradient(130deg,rgba(255,255,255,.14),rgba(255,255,255,.06));
+  box-shadow:0 34px 110px rgba(0,30,22,.48),0 0 80px rgba(0,201,133,.12);
+}
+.login-brand-panel{
+  background:
+    linear-gradient(160deg,rgba(0,201,133,.15),transparent 36%),
+    linear-gradient(22deg,rgba(22,119,255,.16),transparent 52%);
+}
+.brand-mark{
+  background:linear-gradient(135deg,#00d98f,#00a8e8 52%,#7c3aed);
+  border:2px solid rgba(255,255,255,.50);
+  box-shadow:0 12px 36px rgba(0,217,143,.35),0 0 0 8px rgba(255,255,255,.05);
+}
+.brand-plus{color:#ffdf4f;text-shadow:0 0 18px rgba(255,223,79,.55)}
+.brand-kicker{color:#9dffd9}
+.brand-points span:nth-child(1){color:#bbffe5}
+.brand-points span:nth-child(2){color:#b9ddff}
+.brand-points span:nth-child(3){color:#f5c8ff}
+.login-card{
+  background:linear-gradient(180deg,rgba(255,255,255,.99),rgba(247,255,251,.97));
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 22px 60px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.login-card .logo{
+  background:linear-gradient(135deg,#00c985,#0878ff 58%,#7c3aed);
+  box-shadow:0 8px 25px rgba(0,201,133,.32);
+}
+.login-eyebrow{color:#008b61}
+.login-card .input-wrap input:focus{
+  outline:3px solid rgba(0,201,133,.18);
+  border-color:#00b97b;
+  box-shadow:0 0 0 4px rgba(22,119,255,.05);
+}
+.login-card button{
+  background:linear-gradient(90deg,#00a96f 0%,#00c985 35%,#0878ff 72%,#6f38d9 100%);
+  box-shadow:0 10px 26px rgba(0,169,111,.28),0 5px 18px rgba(8,120,255,.16);
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+.login-card button:hover{filter:saturate(1.25) brightness(1.04);transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,169,111,.32),0 8px 22px rgba(8,120,255,.20)}
+
+/* HEADER / NAVEGACIÓN */
+.dashboard-header{
+  background:linear-gradient(112deg,#03392d 0%,#007456 38%,#0878d8 72%,#5d2bb0 100%);
+  box-shadow:0 10px 30px rgba(0,80,60,.20),0 4px 18px rgba(8,120,216,.14);
+}
+.role-pill{background:linear-gradient(90deg,rgba(0,255,171,.28),rgba(74,160,255,.30));color:#e8fff8;border:1px solid rgba(255,255,255,.18)}
+.hdr-right button{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.32)}
+.tabs-bar{background:linear-gradient(90deg,#d9fff0,#dcecff,#efe5ff);border:1px solid #cfe3dc}
+.tab-btn{color:#52665e}
+.tab-btn.active{background:linear-gradient(135deg,#ffffff,#f3fffb);color:#006d50;box-shadow:0 4px 12px rgba(0,109,80,.12),inset 0 -3px 0 #00c985}
+
+/* FILTROS */
+.filters-bar{
+  background:linear-gradient(115deg,#ffffff 0%,#f4fffa 48%,#f3f8ff 100%);
+  border:1px solid #cfe5dc;
+  box-shadow:0 7px 24px rgba(0,80,60,.07);
+}
+.filter-group label:nth-of-type(odd){color:#007d5c}
+.filter-group select:focus,.filter-group input:focus,.ms-toggle:focus{outline:2px solid rgba(0,201,133,.22);border-color:#00b87a}
+.reset-btn{background:linear-gradient(135deg,#fff4f4,#fff);border-color:#ffc9cd;color:#b4232d}
+.reset-btn:hover{background:#ffe8ea}
+.scope-note,.scope-hint{background:linear-gradient(90deg,#d8fff0,#ddebff);color:#00684d;border-left-color:#00c985}
+
+/* KPI: saturación intencional por categoría */
+.kpi-card{
+  border:1px solid rgba(17,76,58,.10);
+  background:linear-gradient(145deg,#ffffff,#f6fffb);
+  box-shadow:0 6px 18px rgba(0,65,48,.055);
+}
+.kpi-card::after{content:"";position:absolute;inset:auto -18px -22px auto;width:72px;height:72px;border-radius:50%;background:rgba(0,201,133,.09)}
+.kpi-card:not(.c-blue):not(.c-orange):not(.c-purple):not(.c-red){border-top:4px solid #00b879!important;background:linear-gradient(145deg,#ffffff,#ecfff7)}
+.kpi-card.c-blue{border-top:4px solid #1677ff!important;background:linear-gradient(145deg,#ffffff,#edf5ff)}
+.kpi-card.c-blue::after{background:rgba(22,119,255,.10)}
+.kpi-card.c-orange{border-top:4px solid #ff8a00!important;background:linear-gradient(145deg,#ffffff,#fff5e8)}
+.kpi-card.c-orange::after{background:rgba(255,138,0,.11)}
+.kpi-card.c-purple{border-top:4px solid #7c3aed!important;background:linear-gradient(145deg,#ffffff,#f5efff)}
+.kpi-card.c-purple::after{background:rgba(124,58,237,.10)}
+.kpi-card.c-red{border-top:4px solid #ef3340!important;background:linear-gradient(145deg,#ffffff,#fff0f1)}
+.kpi-card.c-red::after{background:rgba(239,51,64,.10)}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,70,52,.11)}
+.kpi-icon{opacity:.32;filter:saturate(1.45)}
+.kpi-sub-highlight{color:#007e5b}
+
+/* GRÁFICAS Y COMPOSICIÓN */
+.chart-container:nth-of-type(4n+1){border-top:4px solid #00b879}
+.chart-container:nth-of-type(4n+2){border-top:4px solid #1677ff}
+.chart-container:nth-of-type(4n+3){border-top:4px solid #ff8a00}
+.chart-container:nth-of-type(4n){border-top:4px solid #7c3aed}
+.chart-container{background:linear-gradient(160deg,#fff 0%,#fbfffd 65%,#f4f8ff 100%)}
+.chart-container h3{color:#17352b}
+.subgroup-title .dot{background:linear-gradient(135deg,#00c985,#1677ff)}
+
+/* TABLAS */
+.table-section{border-top:4px solid #00b879;background:#fff}
+.data-table thead th{background:linear-gradient(180deg,#e8fff5,#f5fffb);color:#316052;border-bottom-color:#a9dccb}
+.data-table thead th:nth-child(4n+2){background:linear-gradient(180deg,#e9f3ff,#f7faff);color:#245c9b}
+.data-table thead th:nth-child(4n+3){background:linear-gradient(180deg,#fff2df,#fffaf3);color:#9a5a00}
+.data-table thead th:nth-child(4n){background:linear-gradient(180deg,#f4edff,#fbf8ff);color:#6541a3}
+.data-table tbody tr:nth-child(even){background:#fbfffd}
+.data-table tbody tr:hover{background:linear-gradient(90deg,#e8fff5,#eef6ff)}
+.status-activo{background:#d9ffed;color:#00744f}
+.status-baja{background:#ffe4e6;color:#b4232d}
+.export-btn{background:linear-gradient(135deg,#effff8,#edf5ff);border-color:#c7e4d9;color:#006f50}
+.export-btn:hover{background:linear-gradient(135deg,#d9ffed,#dcecff);border-color:#00b879}
+
+/* COMISIONES */
+.comp-box:nth-child(6n+1){border-top-color:#00b879;background:linear-gradient(160deg,#fff,#effff8)}
+.comp-box:nth-child(6n+2){border-top-color:#1677ff;background:linear-gradient(160deg,#fff,#eef6ff)}
+.comp-box:nth-child(6n+3){border-top-color:#ff8a00;background:linear-gradient(160deg,#fff,#fff5e8)}
+.comp-box:nth-child(6n+4){border-top-color:#7c3aed;background:linear-gradient(160deg,#fff,#f5efff)}
+.comp-box:nth-child(6n+5){border-top-color:#e83e8c;background:linear-gradient(160deg,#fff,#fff0f7)}
+.comp-box:nth-child(6n){border-top-color:#00b8d9;background:linear-gradient(160deg,#fff,#eafcff)}
+.comp-total-box{background:linear-gradient(112deg,#007456,#00a970 35%,#0878d8 72%,#6d35c8);box-shadow:0 12px 32px rgba(0,90,67,.22)}
+
+/* HISTORIAL / CHIPS */
+.exec-history{border-top:4px solid #00b8d9}
+.history-chip:nth-of-type(4n+1){background:#d9ffed;color:#00744f}
+.history-chip:nth-of-type(4n+2){background:#e2efff;color:#155fba}
+.history-chip:nth-of-type(4n+3){background:#fff0d9;color:#a15800}
+.history-chip:nth-of-type(4n){background:#f0e6ff;color:#6740a8}
+
+/* Paginación */
+.pagination button{background:linear-gradient(135deg,#fff,#f3fffb);border-color:#cfe3dc;color:#006d50}
+.pagination button:not(:disabled):hover{background:#dffff1;border-color:#00b879}
+
+/* Pequeña animación al entrar al dashboard */
+#dashboard-screen[style*="block"] .dashboard-header{animation:satSlide .45s ease both}
+#dashboard-screen[style*="block"] .kpi-card{animation:satRise .42s ease both}
+@keyframes satSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes satRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#dashboard-screen .dashboard-header,#dashboard-screen .kpi-card{animation:none!important}.login-card button{transition:none}}
+</style>
+
+
+<style id="pbi-grouped-commission-layout">
+#composicion-card{margin-bottom:18px}
+.pbi-summary-hero{position:relative;background:linear-gradient(105deg,#07965f 0%,#08a37d 28%,#188bd2 64%,#6c3bd1 100%);color:#fff;border-radius:18px;padding:18px 24px;text-align:center;margin-bottom:14px;box-shadow:0 10px 28px rgba(18,73,83,.16);overflow:hidden}
+.pbi-hero-kicker{font-size:10px;font-weight:800;letter-spacing:.8px;opacity:.82}.pbi-hero-title{font-size:11px;font-weight:800;letter-spacing:.5px;margin-top:2px}.pbi-hero-value{font-size:32px;font-weight:900;letter-spacing:-1px;line-height:1.1;margin:3px 0}.pbi-hero-sub{font-size:10px;opacity:.9}.pbi-scheme-pill{position:absolute;right:16px;top:14px;font-size:9px;font-weight:900;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.42);backdrop-filter:blur(5px)}
+.pbi-sections-grid{display:grid;grid-template-columns:1fr 1.05fr 1.22fr;grid-template-areas:'pagos cobranza colocacion' 'otros descuentos comision';gap:14px;align-items:stretch;margin-bottom:14px}.pbi-section{background:#fff;border:1px solid #dbe4e0;border-radius:16px;padding:14px;box-shadow:0 5px 20px rgba(22,50,43,.05)}.pbi-section.pagos{grid-area:pagos;border-top:3px solid #2f80ed;background:linear-gradient(180deg,#fff,#f5f9ff)}.pbi-section.cobranza{grid-area:cobranza;border-top:3px solid #f97316;background:linear-gradient(180deg,#fff,#fff8f2)}.pbi-section.colocacion{grid-area:colocacion;border-top:3px solid #8b5cf6;background:linear-gradient(180deg,#fff,#faf7ff)}.pbi-section.otros{grid-area:otros;border-top:3px solid #f59e0b;background:linear-gradient(180deg,#fff,#fffbf1)}.pbi-section.descuentos{grid-area:descuentos;border-top:3px solid #ef4444;background:linear-gradient(180deg,#fff,#fff7f7)}.pbi-section.comision{grid-area:comision;border-top:3px solid #10b981;background:linear-gradient(180deg,#fff,#f4fffa)}
+.pbi-section-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:900;color:#10241e;text-transform:uppercase;letter-spacing:.25px;padding-bottom:9px;border-bottom:1px solid #dfe7e3;margin-bottom:10px}.pbi-step{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;color:#fff;background:#13886a;font-size:11px;flex:0 0 auto}.pagos .pbi-step{background:#2f80ed}.cobranza .pbi-step{background:#f97316}.colocacion .pbi-step{background:#8b5cf6}.otros .pbi-step{background:#f59e0b}.descuentos .pbi-step{background:#ef4444}.comision .pbi-step{background:#10b981}
+.pbi-subtitle{font-size:8.5px;font-weight:900;letter-spacing:.45px;color:#566b64;text-transform:uppercase;margin:9px 0 5px}.pbi-2col,.pbi-3col,.pbi-4col{display:grid;gap:6px}.pbi-2col{grid-template-columns:repeat(2,1fr)}.pbi-3col{grid-template-columns:repeat(3,1fr)}.pbi-4col{grid-template-columns:repeat(4,1fr)}.pbi-metric{border:1px solid #e3eae7;border-radius:9px;background:rgba(248,250,249,.88);padding:7px 8px;min-height:55px;display:flex;flex-direction:column;justify-content:center}.pbi-metric.metric-active{border:1.5px solid #10b981;background:#ecfdf5;box-shadow:0 0 0 2px rgba(16,185,129,.07)}.pbi-metric-label{font-size:8px;line-height:1.15;color:#71847d;margin-bottom:3px}.pbi-metric-value{font-size:13px;font-weight:900;color:#11251f;line-height:1.15;word-break:break-word}
+.pbi-normalidad{margin-top:9px;background:#effbf5;border:1px solid #c8ead9;border-radius:10px;padding:10px}.pbi-normalidad>div:first-child{display:flex;align-items:center;justify-content:space-between;font-size:9px;color:#557168;font-weight:700}.pbi-normalidad strong{font-size:18px;color:#11a45f}.pbi-progress{height:7px;background:#d7eee3;border-radius:99px;overflow:hidden;margin:7px 0 4px}.pbi-progress span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#10b981,#22c55e)}.pbi-progress-foot{display:flex;justify-content:space-between;font-size:7px;color:#8ca099}
+.pbi-model-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.pbi-model{border:1px solid #e1e7e4;border-radius:10px;background:#f8faf9;padding:8px;text-align:center;min-height:70px;display:flex;flex-direction:column;justify-content:center}.pbi-model.is-active{border:1.5px solid #10b981;background:#ecfdf5;box-shadow:0 0 0 2px rgba(16,185,129,.08)}.pbi-model-title{font-size:8px;color:#5e746c;font-weight:800;text-transform:uppercase;line-height:1.2}.pbi-model-value{font-size:16px;font-weight:900;color:#10241e;margin:3px 0}.pbi-model-badge{align-self:center;font-size:6.5px;font-weight:900;color:#087a55;background:#d7f8e9;border-radius:999px;padding:2px 6px;text-transform:uppercase}.pbi-col-footer{display:grid;grid-template-columns:.9fr 1.1fr;gap:6px;margin-top:7px}
+.pbi-section-total{margin-top:8px;border-radius:10px;padding:8px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid}.pbi-section-total span{font-size:8px;font-weight:900;letter-spacing:.3px;text-transform:uppercase}.pbi-section-total strong{font-size:18px;line-height:1.1;margin-top:2px}.pbi-section-total small{font-size:7px;margin-top:2px;opacity:.76}.pbi-section-total.orange{background:#fff3e8;border-color:#fdba74;color:#c65c08}.pbi-section-total.purple{background:#f4efff;border-color:#c4b5fd;color:#6d28d9;margin-top:0}.pbi-section-total.yellow{background:#fff8df;border-color:#fcd34d;color:#b76a00}.pbi-section-total.red{background:#fff0f0;border-color:#fca5a5;color:#b91c1c}.pbi-section-total.green{background:#eafbf2;border-color:#86efac;color:#07824e}
+.pbi-commission-main{margin:8px 0;border-radius:11px;padding:10px;text-align:center;background:#fff8e6;border:1.5px solid #f59e0b;color:#a55500}.pbi-commission-main span{display:block;font-size:8px;font-weight:900;text-transform:uppercase}.pbi-commission-main strong{display:block;font-size:21px;font-weight:900;margin:2px 0}.pbi-commission-main small{font-size:7px;color:#8e681e}.pbi-close-grid{margin-top:6px}
+@media(max-width:1150px){.pbi-sections-grid{grid-template-columns:1fr 1fr;grid-template-areas:'pagos cobranza' 'colocacion colocacion' 'otros descuentos' 'comision comision'}.pbi-4col{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.pbi-sections-grid{grid-template-columns:1fr;grid-template-areas:'pagos' 'cobranza' 'colocacion' 'otros' 'descuentos' 'comision'}.pbi-3col,.pbi-4col{grid-template-columns:1fr 1fr}.pbi-hero-value{font-size:26px}.pbi-scheme-pill{position:static;display:inline-block;margin-top:7px}}
+</style>
 </head>
 <body>
 
 <!-- ===================== LOGIN ===================== -->
 <div id="login-screen">
-  <div class="login-card">
-    <div class="logo">McM</div>
-    <h1>Indicadores McM</h1>
-    <p>Acumulado de comisiones e indicadores 2026</p>
-    <input type="text" id="user-input" placeholder="Usuario" autocomplete="off">
-    <input type="password" id="pw-input" placeholder="Contraseña" autocomplete="off">
-    <button id="pw-btn">Ingresar</button>
-    <div id="login-error"></div>
-    <div class="login-hint">Cada usuario tiene su propio usuario y contraseña (ejecutivo, coordinador, gerente, regional o dirección). El acceso muestra únicamente la información correspondiente a tu rol.</div>
+  <div class="login-shell">
+    <div class="login-brand-panel">
+      <div class="brand-mark"><span>M</span><span class="brand-plus">c</span><span>M</span></div>
+      <div class="brand-kicker">MÁS CON MENOS</div>
+      <h2>Indicadores y comisiones en un solo lugar.</h2>
+      <p>Consulta tu desempeño semanal, avance de cobranza, colocación y comisiones según tu nivel de acceso.</p>
+      <div class="brand-points">
+        <span>● Información por rol</span>
+        <span>● Cortes semanales</span>
+        <span>● Seguimiento ejecutivo</span>
+      </div>
+    </div>
+    <div class="login-card">
+      <div class="login-card-head">
+        <div class="logo">McM</div>
+        <div><div class="login-eyebrow">PORTAL INTERNO</div><h1>Bienvenido</h1></div>
+      </div>
+      <p class="login-copy">Ingresa con tus credenciales para consultar la información correspondiente a tu rol.</p>
+      <label class="login-label" for="user-input">Usuario</label>
+      <div class="input-wrap"><span class="input-icon">●</span><input type="text" id="user-input" placeholder="Escribe tu usuario" autocomplete="off"></div>
+      <label class="login-label" for="pw-input">Contraseña</label>
+      <div class="input-wrap"><span class="input-icon">◆</span><input type="password" id="pw-input" placeholder="Escribe tu contraseña" autocomplete="off"></div>
+      <button id="pw-btn"><span>Ingresar</span><span class="btn-arrow">→</span></button>
+      <div id="login-error"></div>
+      <div class="login-hint">Acceso seguro · La información se limita automáticamente a tu perfil.</div>
+    </div>
   </div>
 </div>
 
@@ -281,6 +502,7 @@ async function tryLogin(){
     EJ_COM = data.ejecutivo_comisiones || [];
     EJ_IND = data.ejecutivo_indicadores || [];
     NIVEL_PROPIO = data.nivel_propio || [];
+    DIRECTORIO_COM = data.directorio_comisiones || [];
     ALL_CORTES = CORTES.map(c=>c.CORTE);
     LAST_CORTE = ALL_CORTES.length ? ALL_CORTES[ALL_CORTES.length-1] : null;
 
@@ -302,14 +524,14 @@ function setLoginLoading(isLoading){
 
 document.getElementById('logout-btn').addEventListener('click', ()=>{
   session = null;
-  CORTES = []; EJ_COM = []; EJ_IND = []; ALL_CORTES = []; LAST_CORTE = null; NIVEL_PROPIO = [];
+  CORTES = []; EJ_COM = []; EJ_IND = []; ALL_CORTES = []; LAST_CORTE = null; NIVEL_PROPIO = []; DIRECTORIO_COM = [];
   document.getElementById('dashboard-screen').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('pw-input').value='';
   document.getElementById('user-input').value='';
 });
 
-const ROLE_LABELS = {ejecutivo:'Ejecutivo', coordinador:'Coordinador', gerente:'Gerente', regional:'Gerente Regional', directivo:'Dirección'};
+const ROLE_LABELS = {ejecutivo:'Ejecutivo', coordinador:'Coordinador', gerente:'Gerente', regional:'Gerente Regional', directivo:'Dirección', direccion:'Dirección'};
 
 /* ---------------- INIT ---------------- */
 let _listenersReady = false;
@@ -513,23 +735,86 @@ function corteScopedRows(rows){
 function updateFilterOptions(isInit){
   let rows = corteScopedRows(scopedRows(EJ_COM));
 
-  const regions = [...new Set(rows.map(r=>r.region))].sort();
+  // Ejecutivos del alcance.
+  let peopleRows = rows.map(r=>({
+    region:r.region||'',
+    agencia:r.agencia||'',
+    nombre:r.ejecutivo||'',
+    estatus:r.estatus||'',
+    rol_persona:'ejecutivo'
+  }));
+
+  // Niveles jerárquicos inferiores enviados por Apps Script
+  // de acuerdo con el usuario autenticado.
+  const staffScoped = corteScopedRows(DIRECTORIO_COM).map(r=>({
+    region:r.region||'',
+    agencia:r.agencia||'',
+    nombre:r.empleado||r.ejecutivo||'',
+    estatus:r.estatus||'',
+    rol_persona:r.rol_persona||''
+  }));
+  peopleRows = peopleRows.concat(staffScoped);
+
+  const regions = [...new Set(peopleRows.map(r=>r.region).filter(Boolean))].sort();
   const selRegion = document.getElementById('f-region');
   if(!regions.includes(state.region)) state.region='';
   selRegion.innerHTML = '<option value="">Todas</option>' + regions.map(r=>`<option value="${r}">${regionDisplayName(r)}</option>`).join('');
   selRegion.value = state.region;
 
-  let rowsAg = state.region ? rows.filter(r=>r.region===state.region) : rows;
-  const agencias = [...new Set(rowsAg.map(r=>r.agencia))].sort();
+  let rowsAg = state.region ? peopleRows.filter(r=>r.region===state.region) : peopleRows;
+  const agencias = [...new Set(rowsAg.map(r=>r.agencia).filter(Boolean))].sort();
   const selAgencia = document.getElementById('f-agencia');
   if(!agencias.includes(state.agencia)) state.agencia='';
   selAgencia.innerHTML = '<option value="">Todas</option>' + agencias.map(a=>`<option value="${a}">${a}</option>`).join('');
   selAgencia.value = state.agencia;
 
-  let rowsEj = state.agencia ? rowsAg.filter(r=>r.agencia===state.agencia) : rowsAg;
-  const ejecutivos = [...new Set(rowsEj.map(r=>r.ejecutivo))].sort();
+  let rowsPersona = state.agencia
+    ? rowsAg.filter(r=>r.agencia===state.agencia)
+    : rowsAg;
+
+  // Regionales no tienen agencia; Dirección los conserva visibles al usar región.
+  if((session.role==='directivo' || session.role==='direccion') && state.agencia){
+    const regionales = peopleRows.filter(r=>
+      r.rol_persona==='regional' &&
+      (!state.region || r.region===state.region)
+    );
+    rowsPersona = rowsPersona.concat(regionales);
+  }
+
+  const byName = new Map();
+
+  rowsPersona.forEach(r=>{
+    const nm = String(r.nombre||'').trim();
+    if(!nm) return;
+
+    // Si el nombre apareciera en más de una fuente, conserva el rol
+    // de mayor nivel antes que Ejecutivo.
+    const prioridad = {
+      regional:4,
+      gerente:3,
+      coordinador:2,
+      ejecutivo:1
+    };
+
+    const actual = byName.get(nm);
+    if(!actual || (prioridad[r.rol_persona]||0) > (prioridad[actual]||0)){
+      byName.set(nm, r.rol_persona||'ejecutivo');
+    }
+  });
+
+  const personas = [...byName.entries()]
+    .sort((a,b)=>a[0].localeCompare(b[0],'es'));
+
   const dl = document.getElementById('ejecutivo-list');
-  dl.innerHTML = ejecutivos.map(nm=>`<option value="${nm}">`).join('');
+
+  dl.innerHTML = personas.map(([nm,rol])=>{
+    const labelRol = ROLE_LABELS[rol] || rol;
+    const etiqueta = rol==='ejecutivo'
+      ? `${nm} · Ejecutivo`
+      : `${nm} · ${labelRol}`;
+
+    return `<option value="${nm}" label="${etiqueta}"></option>`;
+  }).join('');
 }
 
 /* ---------------- UTILIDADES DE FORMATO ---------------- */
@@ -549,7 +834,7 @@ function fmtMoneyShort(v){
 }
 function fmtNum(v){ return v===null||v===undefined ? '-' : Math.round(v).toLocaleString('es-MX'); }
 function fmtPct(v){ return v===null||v===undefined||isNaN(v) ? '-' : (v*100).toFixed(2)+'%'; }
-function chartColors(){ return ['#1fa97c','#3d7fd6','#e8912a','#6b4fc9','#d64545','#0f6e56','#85B7EB','#f2b705','#8e44ad','#16a085']; }
+function chartColors(){ return ['#00c985','#1677ff','#ff8a00','#7c3aed','#ef3340','#00b8d9','#e83e8c','#70c900','#f5b700','#006d50']; }
 
 const REGION_DISPLAY_NAMES = { 'EDO. MEXICO 2': 'METROPOLITANO' };
 function regionDisplayName(region){ return REGION_DISPLAY_NAMES[region] || region; }
@@ -577,7 +862,7 @@ const FLOW_FIELDS_COM = ['pagos_esperados','pagos_recibidos','monto_esperado','m
   'comision_cartera_heredada','recuperacion_cartera_heredada','clientes_nuevos','clientes_en_tiempo','clientes_tardias','total_clientes','monto_nuevos',
   'monto_en_tiempo','monto_tardias','total_colocado','comision_colocacion_total','comision_colocacion_nuevos',
   'comision_colocacion_tiempo','comision_colocacion_tardias','comision_apoyo_familiar',
-  'comision_modelo_tradicional','apoyo_economico','comision_modelo_ej_nuevo','bono_mensual','campanas','bono_crecimiento_neto',
+  'comision_modelo_tradicional','apoyo_economico','comision_modelo_ej_nuevo','convenio','incapacidad','bono_mensual','campanas','bono_crecimiento_neto','comision_mayor',
   'multas','penalizacion_traspaso','penalizacion_decremento','prestamo_capital_humano','prestamo_caja_ahorro',
   'descuentos_prestamos','comision_final','retencion_caja_ahorro','retroactivos_otros_apoyos','total_a_cobrar'];
 const SNAPSHOT_FIELDS_COM = ['num_creditos','cartera_meta','pagare','pct_productividad'];
@@ -598,7 +883,7 @@ function aggregateByEjecutivo(rows, flowFields, snapFields){
     const a = byExec[r.ejecutivo];
     flowFields.forEach(f=> a[f] += (r[f]||0));
     snapFields.forEach(f=>{ if(r[f]!==null && r[f]!==undefined) a[f]=r[f]; });
-    a.estatus = r.estatus; a.corte = r.corte; a.fecha_baja = r.fecha_baja || a.fecha_baja;
+    a.estatus = r.estatus; a.corte = r.corte; a.fecha_baja = r.fecha_baja || a.fecha_baja; a.tipo_esquema = r.tipo_esquema || a.tipo_esquema;
   });
   return Object.values(byExec).map(a=>{
     a.pct_normalidad = a.pagos_esperados ? a.pagos_recibidos/a.pagos_esperados : null;
@@ -695,7 +980,7 @@ function renderIndicadores(){
   const cortesToShow = CORTES; // siempre muestra la historia completa hasta la última semana disponible
   const labels = cortesToShow.map(c=>'S'+c.SEMANA);
   const data = cortesToShow.map(c=> weightedNormalidad(trendBase.filter(r=>r.corte===c.CORTE))*100);
-  drawLine('chart-i-trend', labels, data, '% Normalidad', '#1fa97c', v=>v.toFixed(2)+'%', v=>v.toFixed(0)+'%', true, true);
+  drawLine('chart-i-trend', labels, data, '% Normalidad', '#00c985', v=>v.toFixed(2)+'%', v=>v.toFixed(0)+'%', true, true);
 
   // Top 10 ejecutivos por monto recibido con paleta de colores contrastante
   const topEj = rosterRows.slice().sort((a,b)=>(b.monto_recibido||0)-(a.monto_recibido||0)).slice(0,10);
@@ -717,7 +1002,7 @@ function renderIndicadores(){
   const periodo = state.selectedCortes.length>1 ? '(acumulado de '+state.selectedCortes.length+' cortes)' : '(semanal)';
   setText('chart-i-clientes-title', 'Desembolsos por tipo '+periodo);
   const nuevos = sum(rows,'clientes_nuevos'), renovaciones = sum(rows,'renovaciones');
-  drawBarCountMoney('chart-i-clientes', ['Nuevos','Renovaciones'], [nuevos,renovaciones], [montoNuevos,montoRenovaciones], ['#3d7fd6','#1fa97c']);
+  drawBarCountMoney('chart-i-clientes', ['Nuevos','Renovaciones'], [nuevos,renovaciones], [montoNuevos,montoRenovaciones], ['#1677ff','#00c985']);
 
   renderTableIndicadores(rosterRows);
 }
@@ -847,7 +1132,7 @@ function renderIndicadoresPersonal(rows){
   const allOwn = EJ_IND.filter(r=>r.ejecutivo===session.nombre).sort((a,b)=>a.corte-b.corte);
   const labels = allOwn.map(r=>'S'+(CORTES.find(c=>c.CORTE===r.corte)||{SEMANA:''}).SEMANA);
   const data = allOwn.map(r=> (r.pct_normalidad||0)*100);
-  drawLine('chart-i-trend', labels, data, '% Normalidad', '#1fa97c', v=>v.toFixed(2)+'%', v=>v.toFixed(0)+'%', true);
+  drawLine('chart-i-trend', labels, data, '% Normalidad', '#00c985', v=>v.toFixed(2)+'%', v=>v.toFixed(0)+'%', true);
 
   const tbody = document.getElementById('table-indicadores-body');
   const sortedRows = allOwn.filter(r=> state.selectedCortes.includes(r.corte) || state.selectedCortes.length===ALL_CORTES.length);
@@ -908,13 +1193,55 @@ function renderComisiones(){
   const isTierRole = ['coordinador','gerente','regional'].includes(session.role);
   const showOwnTier = isTierRole && !state.ejecutivo && NIVEL_PROPIO.length>0;
 
+  // Si se selecciona una persona de nivel Coordinador / Gerente / Regional,
+  // se muestra su comisión individual desde su propia hoja.
+  if(state.ejecutivo && DIRECTORIO_COM.length){
+    const nombreSel = state.ejecutivo.trim().toUpperCase();
+
+    const staffRows = DIRECTORIO_COM.filter(r=>
+      String(r.empleado||r.ejecutivo||'').trim().toUpperCase()===nombreSel &&
+      (!state.region || r.region===state.region) &&
+      (!state.agencia || !r.agencia || r.agencia===state.agencia) &&
+      (!state.estatus || r.estatus===state.estatus)
+    );
+
+    if(staffRows.length){
+      const rolSel = String(staffRows[0].rol_persona||'').toLowerCase();
+      const nombreMostrar =
+        staffRows[0].empleado ||
+        staffRows[0].ejecutivo ||
+        state.ejecutivo;
+
+      // Al filtrar desde Dirección (o cualquier nivel superior),
+      // Gerente / Regional / Coordinador se muestran con el mismo
+      // lenguaje visual agrupado que el Ejecutivo.
+      panel.innerHTML = comisionesNivelVisualTemplate();
+      renderComposicionNivel(staffRows, rolSel, nombreMostrar);
+      renderNivelVisualDetalle(staffRows);
+
+      return;
+    }
+  }
+
   if(showOwnTier){
-    panel.innerHTML = comisionesPropiaTemplate();
-    renderComisionesPropia();
+    panel.innerHTML =
+      comisionesPropiaTemplate(
+        session.role,
+        session.nombre
+      );
+
+    renderComisionesPropia(
+      NIVEL_PROPIO,
+      session.role
+    );
+
     return;
   }
 
-  panel.innerHTML = isEjecutivo ? comisionesPersonalTemplate() : comisionesTemplate();
+  panel.innerHTML =
+    isEjecutivo
+      ? comisionesPersonalTemplate()
+      : comisionesTemplate();
 
   const rows = finalRows(EJ_COM, FLOW_FIELDS_COM, SNAPSHOT_FIELDS_COM);
   renderComposicion(rows);
@@ -925,10 +1252,10 @@ function renderComisiones(){
   const productivos = rows.filter(r=>r.productivo===1).length;
   setText('c-kpi-count', total);
   setText('c-kpi-count-sub', productivos+' productivos', true);
-  setText('c-kpi-cobranza', fmtMoney(sum(rows,'comision_cobranza')));
-  setText('c-kpi-colocacion', fmtMoney(sum(rows,'comision_colocacion_total')));
-  const penal = sum(rows,'multas')+sum(rows,'penalizacion_traspaso')+sum(rows,'penalizacion_decremento');
-  setText('c-kpi-penal', fmtMoney(penal));
+  // KPIs calculados con la misma lógica funcional del PBIX.
+  setText('c-kpi-cobranza', fmtMoney(sumCalc(rows, comisionCobranzaTotalRow)));
+  setText('c-kpi-colocacion', fmtMoney(sumCalc(rows, incentivoColocacionPagarRow)));
+  setText('c-kpi-penal', fmtMoney(sumCalc(rows, totalDescuentosRow)));
   setText('c-kpi-comision', fmtMoney(sum(rows,'comision_final')));
   setText('c-kpi-cobrar', fmtMoney(sum(rows,'total_a_cobrar')));
   attachKpiTooltips(rows);
@@ -937,7 +1264,7 @@ function renderComisiones(){
   const cortesToShow = state.selectedCortes.length>1 ? CORTES.filter(c=>state.selectedCortes.includes(c.CORTE)) : CORTES;
   const labels = cortesToShow.map(c=>'S'+c.SEMANA);
   const data = cortesToShow.map(c=> sum(trendBase.filter(r=>r.corte===c.CORTE),'comision_final'));
-  drawLine('chart-c-trend', labels, data, 'Comisión final', '#3d7fd6', fmtMoney, fmtMoneyShort);
+  drawLine('chart-c-trend', labels, data, 'Comisión final', '#1677ff', fmtMoney, fmtMoneyShort);
 
   const byRegion = groupSum(rows, 'region', 'comision_final');
   const byRegionDisplay = {};
@@ -955,9 +1282,9 @@ function renderComisiones(){
   const comp = ['Cobranza','Colocación','Apoyo Familiar','Bonos'];
   const compData = [sum(rows,'comision_cobranza'), sum(rows,'comision_colocacion_total'), sum(rows,'comision_apoyo_familiar'),
     sum(rows,'bono_mensual')+sum(rows,'bono_excelencia')+sum(rows,'bono_crecimiento_neto')];
-  drawBarSimple('chart-c-comp', comp, compData, ['#1fa97c','#3d7fd6','#e8912a','#6b4fc9']);
+  drawBarSimple('chart-c-comp', comp, compData, ['#00c985','#1677ff','#ff8a00','#7c3aed']);
 
-  drawDoughnutSimple('chart-c-productividad', ['Productivos','No productivos'], [productivos, total-productivos], ['#1fa97c','#e5e8e3']);
+  drawDoughnutSimple('chart-c-productividad', ['Productivos','No productivos'], [productivos, total-productivos], ['#00c985','#e5e8e3']);
 
   // Comisión final promedio por ejecutivo, por región
   const regionCount = {}, regionSum = {};
@@ -973,98 +1300,201 @@ function renderComposicion(rows){
   const el = document.getElementById('composicion-card');
   if(!el) return;
 
-  const indRows = finalRows(EJ_IND, FLOW_FIELDS_IND, SNAPSHOT_FIELDS_IND);
-  const saldoTotal = sum(indRows,'saldo_total');
-  const moraTotal = sum(indRows,'mora_total');
-  const pctMora = saldoTotal ? moraTotal/saldoTotal : 0;
-  const pagareTotal = sum(indRows,'desembolso');
+  // Los cálculos se hacen sobre las filas ya filtradas por sesión, corte,
+  // región, agencia y ejecutivo. Las gráficas y tablas inferiores no cambian.
+  const pagosEsperados = sum(rows,'pagos_esperados');
+  const pagosRecibidos = sum(rows,'pagos_recibidos');
+  const normalidad = weightedNormalidad(rows);
 
-  const box = (title, items) => `
-    <div class="comp-box">
-      <div class="comp-box-title">${title}</div>
-      <div class="comp-box-items">
-        ${items.map(it=>`<div class="comp-item"><span class="comp-val">${it[1]}</span><span class="comp-lbl">${it[0]}</span></div>`).join('')}
-      </div>
+  const totalComCobranza = sumCalc(rows, comisionCobranzaTotalRow);
+  const totalColTrad = sumCalc(rows, r=>num(r.comision_colocacion_total));
+  const totalColNuevo = sumCalc(rows, colocacionNuevoRow);
+  const totalColPagar = sumCalc(rows, incentivoColocacionPagarRow);
+
+  // Para los modelos generales usamos los importes fuente ya cargados por Python.
+  const totalTrad = sum(rows,'comision_modelo_tradicional');
+  const totalNuevo = sumCalc(rows, modeloNuevoAplicableRow);
+  const totalMayor = sumCalc(rows, comisionMayorSourceRow);
+  const totalDesc = sumCalc(rows, totalDescuentosRow);
+  const comisionFinal = sum(rows,'comision_final');
+  const retencionCaja = sum(rows,'retencion_caja_ahorro');
+  const retroactivos = sum(rows,'retroactivos_otros_apoyos');
+  const totalCobrar = sum(rows,'total_a_cobrar');
+
+  const otrosTotal =
+      sum(rows,'apoyo_economico')
+    + sum(rows,'convenio')
+    + sum(rows,'incapacidad')
+    + sum(rows,'bono_mensual')
+    + sum(rows,'campanas');
+
+  const countTrad = rows.filter(r=>String(r.tipo_esquema||'').trim().toUpperCase()==='TRADICIONAL').length;
+  const countNuevo = rows.filter(r=>String(r.tipo_esquema||'').trim().toUpperCase()==='NUEVO').length;
+
+  // El esquema solo puede ser TRADICIONAL o NUEVO.
+  // En vistas agregadas con ambos tipos no se inventa un tercer esquema:
+  // cada ejecutivo conserva su propia lógica y se muestran ambos grupos por separado.
+  let esquemaTexto = '';
+  let esquemaClase = '';
+
+  if(rows.length===1){
+    const t = String(rows[0].tipo_esquema||'').trim().toUpperCase();
+    if(t==='NUEVO'){
+      esquemaTexto='NUEVO';
+      esquemaClase='nuevo';
+    } else {
+      esquemaTexto='TRADICIONAL';
+      esquemaClase='tradicional';
+    }
+  } else if(countNuevo>0 && countTrad===0){
+    esquemaTexto='NUEVO';
+    esquemaClase='nuevo';
+  } else if(countTrad>0 && countNuevo===0){
+    esquemaTexto='TRADICIONAL';
+    esquemaClase='tradicional';
+  }
+
+  const metric = (label, value, cls='') => `
+    <div class="pbi-metric ${cls}">
+      <div class="pbi-metric-label">${label}</div>
+      <div class="pbi-metric-value">${value}</div>
+    </div>`;
+
+  const modelCard = (title, value, active, badge) => `
+    <div class="pbi-model ${active ? 'is-active' : ''}">
+      <div class="pbi-model-title">${title}</div>
+      <div class="pbi-model-value">${value}</div>
+      ${badge ? `<div class="pbi-model-badge">${badge}</div>` : ''}
     </div>`;
 
   const html = `
-    <div class="comp-grid">
-      ${box('Cartera', [
-        ['Pagaré Total', fmtMoney(pagareTotal)],
-        ['Saldo Total', fmtMoney(saldoTotal)],
-        ['Mora Total', fmtMoney(moraTotal)],
-        ['% de Mora', fmtPct(pctMora)],
-      ])}
-      ${box('PAGOS', [
-        ['Pagos Esperados', fmtNum(sum(rows,'pagos_esperados'))],
-        ['Pagos Recibidos', fmtNum(sum(rows,'pagos_recibidos'))],
-        ['% de Normalidad', fmtPct(weightedNormalidad(rows))],
-      ])}
-      ${box('Cobranza', [
-        ['$ Esperada', fmtMoney(sum(rows,'monto_esperado'))],
-        ['$ Recibida', fmtMoney(sum(rows,'monto_recibido'))],
-        ['$ Recibida No Esperada', fmtMoney(sum(rows,'monto_recibido_no_esperado'))],
-        ['Recuperación Cartera Heredada', fmtMoney(sum(rows,'recuperacion_cartera_heredada'))],
-        ['Cobranza Adicional', fmtMoney(sum(rows,'cobranza_credito_adicional'))],
-        ['Cobranza Total', fmtMoney(sum(rows,'cobranza_total'))],
-      ])}
-      ${box('No. Clientes Colocados', [
-        ['Clientes Nuevos', fmtNum(sum(rows,'clientes_nuevos'))],
-        ['$ Clientes Nuevos', fmtMoney(sum(rows,'monto_nuevos'))],
-        ['Clientes en Tiempo', fmtNum(sum(rows,'clientes_en_tiempo'))],
-        ['$ en Tiempo', fmtMoney(sum(rows,'monto_en_tiempo'))],
-        ['Clientes Tardíos', fmtNum(sum(rows,'clientes_tardias'))],
-        ['$ Tardíos', fmtMoney(sum(rows,'monto_tardias'))],
-        ['Total Clientes Colocados', fmtNum(sum(rows,'total_clientes'))],
-      ])}
-      ${box('Comisión por Colocación', [
-        ['Comisión Nuevos', fmtMoney(sum(rows,'comision_colocacion_nuevos'))],
-        ['Comisión en Tiempo', fmtMoney(sum(rows,'comision_colocacion_tiempo'))],
-        ['Comisión Tardíos', fmtMoney(sum(rows,'comision_colocacion_tardias'))],
-        ['Total Comisión Colocación', fmtMoney(sum(rows,'comision_colocacion_total'))],
-      ])}
-      ${box('Comisión por Cobranza', [
-        ['Comisión por Cobranza', fmtMoney(sum(rows,'comision_cobranza'))],
-        ['Bono de Excelencia', fmtMoney(sum(rows,'bono_excelencia'))],
-        ['Comisión Cartera Heredada', fmtMoney(sum(rows,'comision_cartera_heredada'))],
-        ['Comisión Cobranza Adicional', fmtMoney(sum(rows,'comision_cobranza_adicional'))],
-      ])}
-      ${box('Bonos Mensuales y Campañas', [
-        ['Bono Mensual', fmtMoney(sum(rows,'bono_mensual'))],
-        ['Bono Crecimiento Neto', fmtMoney(sum(rows,'bono_crecimiento_neto'))],
-        ['Campañas', fmtMoney(sum(rows,'campanas'))],
-      ])}
-      ${box('Penalizaciones, Multas y Descuentos por Préstamos', [
-        ['Penalización x Traspaso', fmtMoney(sum(rows,'penalizacion_traspaso'))],
-        ['Penalización x Decremento', fmtMoney(sum(rows,'penalizacion_decremento'))],
-        ['Préstamo Capital Humano', fmtMoney(sum(rows,'prestamo_capital_humano'))],
-        ['Préstamo Caja de Ahorro', fmtMoney(sum(rows,'prestamo_caja_ahorro'))],
-        ['Multas', fmtMoney(sum(rows,'multas'))],
-      ])}
-      ${box('Retenciones de Caja de Ahorro, Otros Apoyos y Retroactivos', [
-        ['Retención Caja de Ahorro', fmtMoney(sum(rows,'retencion_caja_ahorro'))],
-        ['Retroactivos y Otros Apoyos', fmtMoney(sum(rows,'retroactivos_otros_apoyos'))],
-      ])}
+    <div class="pbi-summary-hero">
+      <div class="pbi-hero-kicker">COMISIONES</div>
+      <div class="pbi-hero-title">TOTAL A COBRAR</div>
+      <div class="pbi-hero-value">${fmtMoney(totalCobrar)}</div>
+      <div class="pbi-hero-sub">Comisión Final ${fmtMoney(comisionFinal)} − Retención Caja ${fmtMoney(retencionCaja)}${retroactivos ? ' + Retroactivos / Apoyos ' + fmtMoney(retroactivos) : ''}</div>
+      ${esquemaTexto ? `<div class="pbi-scheme-pill ${esquemaClase}">${esquemaTexto}</div>` : ``}
     </div>
-    <div class="comp-total-box">
-      <div class="comp-total-label">Total a Cobrar</div>
-      <div class="comp-total-value">${fmtMoney(sum(rows,'total_a_cobrar'))}</div>
+
+    <div class="pbi-sections-grid">
+      <section class="pbi-section pagos">
+        <div class="pbi-section-head"><span class="pbi-step">1</span><span>PAGOS ESPERADOS</span></div>
+        <div class="pbi-2col">
+          ${metric('Pagos Esperados', fmtNum(pagosEsperados))}
+          ${metric('Pagos Recibidos', fmtNum(pagosRecibidos))}
+        </div>
+        <div class="pbi-subtitle" style="margin-top:10px;">EJECUTIVOS</div>
+        <div class="pbi-2col">
+          ${metric('Ejecutivos', fmtNum(rows.length))}
+          ${metric('Productivos', fmtNum(rows.filter(r=>Number(r.productivo)===1).length))}
+        </div>
+        <div class="pbi-normalidad">
+          <div><span>Normalidad</span><strong>${fmtPct(normalidad)}</strong></div>
+          <div class="pbi-progress"><span style="width:${Math.max(0,Math.min(100,normalidad*100))}%"></span></div>
+          <div class="pbi-progress-foot"><span>0%</span><span>Meta 100%</span></div>
+        </div>
+      </section>
+
+      <section class="pbi-section cobranza">
+        <div class="pbi-section-head"><span class="pbi-step">2</span><span>INCENTIVO POR COBRANZA</span></div>
+        <div class="pbi-subtitle">INDIVIDUAL (ORIGEN)</div>
+        <div class="pbi-4col">
+          ${metric('Cobranza Total', fmtMoney(sum(rows,'cobranza_total')))}
+          ${metric('$ Cobranza Esperada', fmtMoney(sum(rows,'monto_esperado')))}
+          ${metric('$ Comisión', fmtMoney(sum(rows,'comision_cobranza')))}
+          ${metric('Bono de Excelencia', fmtMoney(sum(rows,'bono_excelencia')))}
+        </div>
+        <div class="pbi-subtitle">MÁS POR TI</div>
+        <div class="pbi-2col">
+          ${metric('Cobranza Crédito Más Por Ti', fmtMoney(sum(rows,'cobranza_credito_adicional')))}
+          ${metric('Comisión Crédito Más Por Ti', fmtMoney(sum(rows,'comision_cobranza_adicional')))}
+        </div>
+        <div class="pbi-subtitle">HEREDADA</div>
+        <div class="pbi-2col">
+          ${metric('Recuperación Cartera Heredada', fmtMoney(sum(rows,'recuperacion_cartera_heredada')))}
+          ${metric('Comisión Cartera Heredada', fmtMoney(sum(rows,'comision_cartera_heredada')))}
+        </div>
+        <div class="pbi-section-total orange"><span>COMISIÓN COBRANZA</span><strong>${fmtMoney(totalComCobranza)}</strong></div>
+      </section>
+
+      <section class="pbi-section colocacion">
+        <div class="pbi-section-head"><span class="pbi-step">3</span><span>INCENTIVO POR COLOCACIÓN</span></div>
+        <div class="pbi-subtitle">CLIENTES NUEVOS</div>
+        <div class="pbi-3col">
+          ${metric('$ Crédito(s)', fmtMoney(sum(rows,'monto_nuevos')))}
+          ${metric('$ Comisión Ejecutivo Nuevo', fmtMoney(totalColNuevo), esquemaClase==='nuevo' ? 'metric-active' : '')}
+          ${metric('$ Comisión Ejecutivo Tradicional', fmtMoney(totalColTrad), esquemaClase==='tradicional' ? 'metric-active' : '')}
+        </div>
+        <div class="pbi-subtitle">RENOVACIÓN EN TIEMPO</div>
+        <div class="pbi-3col">
+          ${metric('$ Crédito(s)', fmtMoney(sum(rows,'monto_en_tiempo')))}
+          ${metric('$ Comisión Ejecutivo Nuevo', fmtMoney(0))}
+          ${metric('$ Comisión Ejecutivo Tradicional', fmtMoney(sum(rows,'monto_en_tiempo') ? sum(rows,'comision_colocacion_total') : 0))}
+        </div>
+        <div class="pbi-subtitle">RENOVACIÓN A DESTIEMPO</div>
+        <div class="pbi-3col">
+          ${metric('$ Crédito(s)', fmtMoney(sum(rows,'monto_tardias')))}
+          ${metric('$ Comisión Ejecutivo Nuevo', fmtMoney(0))}
+          ${metric('$ Comisión Ejecutivo Tradicional', fmtMoney(0))}
+        </div>
+        <div class="pbi-subtitle">COMPARATIVO DE COLOCACIÓN</div>
+        <div class="pbi-model-grid">
+          ${modelCard('Modelo Ejecutivo Nuevo', fmtMoney(totalColNuevo), esquemaClase==='nuevo', esquemaClase==='nuevo' ? 'ESQUEMA ACTUAL · NUEVO' : (esquemaClase==='tradicional' ? 'NO APLICA' : `${countNuevo} EJECUTIVOS NUEVO`))}
+          ${modelCard('Modelo Tradicional', fmtMoney(totalColTrad), esquemaClase==='tradicional', esquemaClase==='tradicional' ? 'ESQUEMA ACTUAL · TRADICIONAL' : (esquemaClase==='nuevo' ? 'COMPARATIVO' : `${countTrad} EJECUTIVOS TRADICIONAL`))}
+        </div>
+        <div class="pbi-col-footer">
+          ${metric('Apoyo Familiar', fmtMoney(sum(rows,'comision_apoyo_familiar')))}
+          <div class="pbi-section-total purple"><span>INCENTIVO COLOCACIÓN A PAGAR</span><strong>${fmtMoney(totalColPagar)}</strong><small>${esquemaTexto ? `Esquema: ${esquemaTexto}` : `Según esquema de cada ejecutivo`}</small></div>
+        </div>
+      </section>
+
+      <section class="pbi-section otros">
+        <div class="pbi-section-head"><span class="pbi-step">4</span><span>OTROS</span></div>
+        <div class="pbi-2col">
+          ${metric('Apoyo Económico', fmtMoney(sum(rows,'apoyo_economico')))}
+          ${metric('Convenio', fmtMoney(sum(rows,'convenio')))}
+          ${metric('Incapacidad', fmtMoney(sum(rows,'incapacidad')))}
+          ${metric('Bonos / Campañas', fmtMoney(sum(rows,'bono_mensual')+sum(rows,'campanas')))}
+        </div>
+        <div class="pbi-section-total yellow"><span>TOTAL OTROS</span><strong>${fmtMoney(otrosTotal)}</strong></div>
+      </section>
+
+      <section class="pbi-section descuentos">
+        <div class="pbi-section-head"><span class="pbi-step">5</span><span>DESCUENTOS</span></div>
+        <div class="pbi-2col">
+          ${metric('Multas pagos sin tarjeta', fmtMoney(sum(rows,'multas')))}
+          ${metric('Penalización por Traspaso', fmtMoney(sum(rows,'penalizacion_traspaso')))}
+          ${metric('Penalización por Decremento', fmtMoney(sum(rows,'penalizacion_decremento')))}
+          ${metric('Préstamos', fmtMoney(sum(rows,'prestamo_capital_humano')+sum(rows,'prestamo_caja_ahorro')))}
+        </div>
+        <div class="pbi-section-total red"><span>TOTAL DESCUENTOS</span><strong>${fmtMoney(totalDesc)}</strong></div>
+      </section>
+
+      <section class="pbi-section comision">
+        <div class="pbi-section-head"><span class="pbi-step">6</span><span>COMISIÓN</span></div>
+        <div class="pbi-model-grid">
+          ${modelCard('COMISIÓN EJECUTIVO TRADICIONAL', fmtMoney(totalTrad), esquemaClase==='tradicional', esquemaClase==='tradicional' ? 'ESQUEMA ACTUAL · TRADICIONAL' : (esquemaClase==='nuevo' ? 'COMPARATIVO' : `${countTrad} EJECUTIVOS TRADICIONAL`))}
+          ${modelCard('COMISIÓN EJECUTIVO NUEVO', fmtMoney(totalNuevo), esquemaClase==='nuevo', esquemaClase==='nuevo' ? 'ESQUEMA ACTUAL · NUEVO' : (esquemaClase==='tradicional' ? 'NO APLICA' : `${countNuevo} EJECUTIVOS NUEVO`))}
+        </div>
+        <div class="pbi-commission-main">
+          <span>COMISIÓN FINAL</span>
+          <strong>${fmtMoney(comisionFinal)}</strong>
+          <small>$ Comisión Mayor ${fmtMoney(totalMayor)} · Descuentos ${fmtMoney(totalDesc)}</small>
+        </div>
+        <div class="pbi-2col pbi-close-grid">
+          ${metric('Retención Caja de Ahorro', fmtMoney(retencionCaja))}
+          ${metric('Retroactivos / Apoyos', fmtMoney(retroactivos))}
+        </div>
+        <div class="pbi-section-total green"><span>TOTAL A COBRAR</span><strong>${fmtMoney(totalCobrar)}</strong></div>
+      </section>
     </div>`;
 
   el.innerHTML = html;
 }
-
 function comisionesTemplate(){
   return `
     <div id="composicion-card"></div>
-    <section class="kpi-row">
-      <div class="kpi-card"><div class="kpi-icon">👥</div><div class="kpi-label">Ejecutivos</div><div class="kpi-value" id="c-kpi-count">-</div><div class="kpi-sub" id="c-kpi-count-sub"></div></div>
-      <div class="kpi-card"><div class="kpi-icon">💵</div><div class="kpi-label">Com. Cobranza</div><div class="kpi-value" id="c-kpi-cobranza">-</div></div>
-      <div class="kpi-card c-blue"><div class="kpi-icon">📦</div><div class="kpi-label">Com. Colocación</div><div class="kpi-value" id="c-kpi-colocacion">-</div></div>
-      <div class="kpi-card c-red"><div class="kpi-icon">⚠</div><div class="kpi-label">Multas + Penal.</div><div class="kpi-value" id="c-kpi-penal">-</div></div>
-      <div class="kpi-card c-purple"><div class="kpi-icon">✨</div><div class="kpi-label">Comisión Final</div><div class="kpi-value" id="c-kpi-comision">-</div></div>
-      <div class="kpi-card c-orange"><div class="kpi-icon">🧾</div><div class="kpi-label">Total a Cobrar</div><div class="kpi-value" id="c-kpi-cobrar">-</div></div>
-    </section>
+    
     <section class="chart-row">
       <div class="chart-container"><h3>Comisión final por corte</h3><div class="wrap"><canvas id="chart-c-trend"></canvas></div></div>
       <div class="chart-container"><h3>Comisión final por región</h3><div class="wrap"><canvas id="chart-c-region"></canvas></div></div>
@@ -1089,7 +1519,7 @@ function comisionesTemplate(){
           <th data-key="ejecutivo">Ejecutivo</th><th data-key="region">Región</th><th data-key="agencia">Agencia</th><th data-key="estatus">Estatus</th>
           <th data-key="comision_cobranza">Com. Cobranza</th><th data-key="comision_colocacion_total">Com. Colocación</th>
           <th data-key="comision_apoyo_familiar">Apoyo Familiar</th><th data-key="bono_mensual">Bono Mensual</th>
-          <th data-key="bono_crecimiento_neto">Comisión Mayor</th><th data-key="multas">Multas</th>
+          <th data-key="bono_crecimiento_neto">$ Comisión Mayor</th><th data-key="multas">Multas</th>
           <th data-key="penalizacion_traspaso">Penal. Traspaso</th><th data-key="descuentos_prestamos">Desc. Préstamos</th>
           <th data-key="comision_final">Comisión Final</th><th data-key="total_a_cobrar">Total a Cobrar</th>
         </tr></thead>
@@ -1103,13 +1533,7 @@ function comisionesTemplate(){
 function comisionesPersonalTemplate(){
   return `
     <div id="composicion-card"></div>
-    <section class="kpi-row">
-      <div class="kpi-card"><div class="kpi-label">Com. Cobranza</div><div class="kpi-value" id="c-kpi-cobranza">-</div></div>
-      <div class="kpi-card c-blue"><div class="kpi-label">Com. Colocación</div><div class="kpi-value" id="c-kpi-colocacion">-</div></div>
-      <div class="kpi-card c-red"><div class="kpi-label">Multas + Penal.</div><div class="kpi-value" id="c-kpi-penal">-</div></div>
-      <div class="kpi-card c-purple"><div class="kpi-label">Comisión Final</div><div class="kpi-value" id="c-kpi-comision">-</div></div>
-      <div class="kpi-card c-orange"><div class="kpi-label">Total a Cobrar</div><div class="kpi-value" id="c-kpi-cobrar">-</div></div>
-    </section>
+    
     <section class="chart-row3">
       <div class="chart-container"><h3>Tu comisión final por corte</h3><div class="wrap tall"><canvas id="chart-c-trend"></canvas></div></div>
     </section>
@@ -1130,10 +1554,10 @@ function comisionesPersonalTemplate(){
 }
 
 function renderComisionesPersonal(rows){
-  setText('c-kpi-cobranza', fmtMoney(sum(rows,'comision_cobranza')));
-  setText('c-kpi-colocacion', fmtMoney(sum(rows,'comision_colocacion_total')));
-  const penal = sum(rows,'multas')+sum(rows,'penalizacion_traspaso')+sum(rows,'penalizacion_decremento');
-  setText('c-kpi-penal', fmtMoney(penal));
+  // KPIs calculados con la misma lógica funcional del PBIX.
+  setText('c-kpi-cobranza', fmtMoney(sumCalc(rows, comisionCobranzaTotalRow)));
+  setText('c-kpi-colocacion', fmtMoney(sumCalc(rows, incentivoColocacionPagarRow)));
+  setText('c-kpi-penal', fmtMoney(sumCalc(rows, totalDescuentosRow)));
   setText('c-kpi-comision', fmtMoney(sum(rows,'comision_final')));
   setText('c-kpi-cobrar', fmtMoney(sum(rows,'total_a_cobrar')));
   attachKpiTooltips(rows);
@@ -1141,7 +1565,7 @@ function renderComisionesPersonal(rows){
   const allOwn = EJ_COM.filter(r=>r.ejecutivo===session.nombre).sort((a,b)=>a.corte-b.corte);
   const labels = allOwn.map(r=>'S'+(CORTES.find(c=>c.CORTE===r.corte)||{SEMANA:''}).SEMANA);
   const data = allOwn.map(r=> r.comision_final||0);
-  drawLine('chart-c-trend', labels, data, 'Comisión final', '#3d7fd6', fmtMoney, fmtMoneyShort);
+  drawLine('chart-c-trend', labels, data, 'Comisión final', '#1677ff', fmtMoney, fmtMoneyShort);
 
   const useRows = allOwn.filter(r=> state.selectedCortes.includes(r.corte));
   const finalList = useRows.length ? useRows : allOwn;
@@ -1156,10 +1580,226 @@ function renderComisionesPersonal(rows){
 
 const NIVEL_SHEET_LABEL = {coordinador:'Coordinador', gerente:'Gerente', regional:'Gerente Regional'};
 
-function comisionesPropiaTemplate(){
-  const hasEquipo = session.role==='coordinador' || session.role==='gerente';
+
+function comisionesNivelVisualTemplate(){
   return `
-    <div class="scope-hint">Mostrando tu propia comisión como ${NIVEL_SHEET_LABEL[session.role]}. Filtra por un ejecutivo específico arriba para ver su detalle en vez del tuyo.</div>
+    <div id="composicion-card"></div>
+    <section class="chart-row3">
+      <div class="chart-container"><h3>Total a cobrar por corte</h3><div class="wrap tall"><canvas id="chart-p-trend"></canvas></div></div>
+    </section>
+    <section class="table-section">
+      <h3>Detalle por corte</h3>
+      <div class="table-meta" id="p-table-meta"></div>
+      <div style="max-height:420px;overflow:auto;">
+      <table class="data-table" id="table-propia">
+        <thead><tr>
+          <th>Corte</th><th>Región</th><th>Agencia</th>
+          <th>% Normalidad</th><th>Com. Cobranza</th><th>Incentivo Final</th><th>Total a Cobrar</th>
+        </tr></thead>
+        <tbody id="table-propia-body"></tbody>
+      </table>
+      </div>
+    </section>`;
+}
+
+function renderComposicionNivel(rows, role, nombre){
+  const el = document.getElementById('composicion-card');
+  if(!el) return;
+
+  const useRows = rows.filter(r=>state.selectedCortes.includes(Number(r.corte)));
+  const dataRows = useRows.length ? useRows : rows;
+
+  const pagosEsperados = sum(dataRows,'pagos_esperados');
+  const pagosRecibidos = sum(dataRows,'pagos_recibidos');
+  const normalidad = weightedNormalidad(dataRows);
+
+  const comisionCobranza = sum(dataRows,'comision_cobranza');
+  const comisionProductividad = sum(dataRows,'comision_productividad');
+  const apoyoFamiliar = sum(dataRows,'apoyo_familiar');
+  const comisionTrad = sum(dataRows,'comision_modelo_tradicional');
+  const apoyoEconomico = sum(dataRows,'apoyo_economico');
+  const bonoMensual = sum(dataRows,'bono_mensual');
+  const comisionMayor = sum(dataRows,'comision_mayor');
+  const multas = sum(dataRows,'multas');
+  const prestamoCapital = sum(dataRows,'prestamo_capital_humano');
+  const prestamoCaja = sum(dataRows,'prestamo_caja_ahorro');
+  const descuentosPrestamos = sum(dataRows,'descuentos_prestamos');
+  const incentivoFinal = sum(dataRows,'incentivo_final');
+  const retencion = sum(dataRows,'retencion_caja_ahorro');
+  const retroactivos = sum(dataRows,'retroactivos_otros_apoyos');
+  const totalCobrar = sum(dataRows,'total_a_cobrar');
+
+  // Equipo derivado de EJECUTIVO para que Dirección vea el mismo contexto visual.
+  const ref = dataRows[0] || {};
+  let teamRows = corteScopedRows(EJ_COM);
+
+  if(role==='regional'){
+    teamRows = teamRows.filter(r=>r.region===ref.region);
+  } else if(role==='gerente' || role==='coordinador'){
+    teamRows = teamRows.filter(r=>
+      r.region===ref.region &&
+      (!ref.agencia || r.agencia===ref.agencia)
+    );
+  } else {
+    teamRows = [];
+  }
+
+  const teamNames = [...new Set(teamRows.map(r=>r.ejecutivo).filter(Boolean))];
+  const productivos = [...new Set(teamRows.filter(r=>Number(r.productivo)===1).map(r=>r.ejecutivo).filter(Boolean))];
+
+  const roleLabel = ROLE_LABELS[role] || role || '';
+
+  const metric = (label, value, cls='') => `
+    <div class="pbi-metric ${cls}">
+      <div class="pbi-metric-label">${label}</div>
+      <div class="pbi-metric-value">${value}</div>
+    </div>`;
+
+  const html = `
+    <div class="pbi-summary-hero">
+      <div class="pbi-hero-kicker">${roleLabel.toUpperCase()} · COMISIONES</div>
+      <div class="pbi-hero-title">${nombre||''}</div>
+      <div class="pbi-hero-value">${fmtMoney(totalCobrar)}</div>
+      <div class="pbi-hero-sub">Incentivo Final ${fmtMoney(incentivoFinal)} − Retención Caja ${fmtMoney(retencion)}${retroactivos ? ' + Retroactivos / Apoyos ' + fmtMoney(retroactivos) : ''}</div>
+      <div class="pbi-scheme-pill tradicional">${roleLabel.toUpperCase()}</div>
+    </div>
+
+    <div class="pbi-sections-grid">
+
+      <section class="pbi-section pagos">
+        <div class="pbi-section-head"><span class="pbi-step">1</span><span>PAGOS ESPERADOS</span></div>
+        <div class="pbi-2col">
+          ${metric('Pagos Esperados', fmtNum(pagosEsperados))}
+          ${metric('Pagos Recibidos', fmtNum(pagosRecibidos))}
+        </div>
+        <div class="pbi-subtitle" style="margin-top:10px;">EJECUTIVOS</div>
+        <div class="pbi-2col">
+          ${metric('Ejecutivos', fmtNum(teamNames.length))}
+          ${metric('Productivos', fmtNum(productivos.length))}
+        </div>
+        <div class="pbi-normalidad">
+          <div><span>Normalidad</span><strong>${fmtPct(normalidad)}</strong></div>
+          <div class="pbi-progress"><span style="width:${Math.max(0,Math.min(100,normalidad*100))}%"></span></div>
+          <div class="pbi-progress-foot"><span>0%</span><span>Meta 100%</span></div>
+        </div>
+      </section>
+
+      <section class="pbi-section cobranza">
+        <div class="pbi-section-head"><span class="pbi-step">2</span><span>INCENTIVO POR COBRANZA</span></div>
+        <div class="pbi-subtitle">COBRANZA</div>
+        <div class="pbi-2col">
+          ${metric('Comisión por Cobranza', fmtMoney(comisionCobranza))}
+          ${metric('Comisión +/- Productividad', fmtMoney(comisionProductividad))}
+        </div>
+        <div class="pbi-section-total orange"><span>COMISIÓN COBRANZA</span><strong>${fmtMoney(comisionCobranza + comisionProductividad)}</strong></div>
+      </section>
+
+      <section class="pbi-section colocacion">
+        <div class="pbi-section-head"><span class="pbi-step">3</span><span>INCENTIVO / MODELO</span></div>
+        <div class="pbi-subtitle">MODELO DE COMISIÓN</div>
+        <div class="pbi-2col">
+          ${metric('Apoyo Familiar', fmtMoney(apoyoFamiliar))}
+          ${metric('Comisión Modelo Tradicional', fmtMoney(comisionTrad), 'metric-active')}
+          ${metric('Comisión Mayor', fmtMoney(comisionMayor))}
+          ${metric('Incentivo Final', fmtMoney(incentivoFinal))}
+        </div>
+        <div class="pbi-section-total purple"><span>INCENTIVO A PAGAR</span><strong>${fmtMoney(incentivoFinal)}</strong></div>
+      </section>
+
+      <section class="pbi-section otros">
+        <div class="pbi-section-head"><span class="pbi-step">4</span><span>OTROS</span></div>
+        <div class="pbi-2col">
+          ${metric('Apoyo Económico', fmtMoney(apoyoEconomico))}
+          ${metric('Bono Mensual', fmtMoney(bonoMensual))}
+        </div>
+        <div class="pbi-section-total yellow"><span>TOTAL OTROS</span><strong>${fmtMoney(apoyoEconomico + bonoMensual)}</strong></div>
+      </section>
+
+      <section class="pbi-section descuentos">
+        <div class="pbi-section-head"><span class="pbi-step">5</span><span>DESCUENTOS</span></div>
+        <div class="pbi-2col">
+          ${metric('Multas', fmtMoney(multas))}
+          ${metric('Préstamo Capital Humano', fmtMoney(prestamoCapital))}
+          ${metric('Préstamo Caja de Ahorro', fmtMoney(prestamoCaja))}
+          ${metric('Descuentos por Préstamos', fmtMoney(descuentosPrestamos))}
+        </div>
+        <div class="pbi-section-total red"><span>TOTAL DESCUENTOS</span><strong>${fmtMoney(multas + descuentosPrestamos)}</strong></div>
+      </section>
+
+      <section class="pbi-section comision">
+        <div class="pbi-section-head"><span class="pbi-step">6</span><span>COMISIÓN</span></div>
+        <div class="pbi-2col">
+          ${metric('Comisión Modelo Tradicional', fmtMoney(comisionTrad), 'metric-active')}
+          ${metric('$ Comisión Mayor', fmtMoney(comisionMayor))}
+        </div>
+        <div class="pbi-commission-main">
+          <span>INCENTIVO FINAL</span>
+          <strong>${fmtMoney(incentivoFinal)}</strong>
+          <small>${roleLabel} · cálculo propio de su nivel</small>
+        </div>
+        <div class="pbi-2col pbi-close-grid">
+          ${metric('Retención Caja de Ahorro', fmtMoney(retencion))}
+          ${metric('Retroactivos / Apoyos', fmtMoney(retroactivos))}
+        </div>
+        <div class="pbi-section-total green"><span>TOTAL A COBRAR</span><strong>${fmtMoney(totalCobrar)}</strong></div>
+      </section>
+
+    </div>`;
+
+  el.innerHTML = html;
+}
+
+function renderNivelVisualDetalle(rows){
+  const useRows = rows.filter(r=>state.selectedCortes.includes(Number(r.corte)));
+  const dataRows = useRows.length ? useRows : rows;
+
+  const allOwn = rows.slice().sort((a,b)=>Number(a.corte)-Number(b.corte));
+  const labels = allOwn.map(r=>{
+    const c=CORTES.find(x=>Number(x.CORTE)===Number(r.corte));
+    return c?('Semana '+c.SEMANA):r.corte;
+  });
+  const data = allOwn.map(r=>Number(r.total_a_cobrar)||0);
+
+  drawLine(
+    'chart-p-trend',
+    labels,
+    data,
+    'Total a Cobrar',
+    '#1677ff',
+    fmtMoney,
+    fmtMoneyShort,
+    true
+  );
+
+  const body = document.getElementById('table-propia-body');
+  if(body){
+    body.innerHTML = dataRows.map(r=>{
+      const c = CORTES.find(x=>Number(x.CORTE)===Number(r.corte));
+      return `<tr>
+        <td>${c?('Semana '+c.SEMANA):r.corte}</td>
+        <td>${regionDisplayName(r.region)}</td>
+        <td>${r.agencia||'-'}</td>
+        <td>${fmtPct(r.pct_normalidad)}</td>
+        <td>${fmtMoney(r.comision_cobranza)}</td>
+        <td>${fmtMoney(r.incentivo_final)}</td>
+        <td>${fmtMoney(r.total_a_cobrar)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  const meta = document.getElementById('p-table-meta');
+  if(meta) meta.textContent = dataRows.length + ' corte(s)';
+}
+
+function comisionesPropiaTemplate(roleOverride=session.role, nombreOverride=session.nombre){
+  const role = roleOverride || session.role;
+  const hasEquipo = role==='coordinador' || role==='gerente';
+  const roleLabel = NIVEL_SHEET_LABEL[role] || ROLE_LABELS[role] || role;
+
+  return `
+    <div class="scope-hint">
+      Mostrando comisión individual de <strong>${nombreOverride||''}</strong> · ${roleLabel}.
+    </div>
     <section class="kpi-row">
       ${hasEquipo?'<div class="kpi-card c-orange"><div class="kpi-icon">👤</div><div class="kpi-label">Ejecutivos a Cargo</div><div class="kpi-value" id="p-kpi-equipo">-</div><div class="kpi-sub" id="p-kpi-equipo-sub"></div></div>':''}
       <div class="kpi-card c-blue"><div class="kpi-icon">✓</div><div class="kpi-label">% Normalidad</div><div class="kpi-value" id="p-kpi-normalidad">-</div></div>
@@ -1170,10 +1810,10 @@ function comisionesPropiaTemplate(){
     </section>
     <div id="p-composicion-card"></div>
     <section class="chart-row3">
-      <div class="chart-container"><h3>Tu total a cobrar por corte</h3><div class="wrap tall"><canvas id="chart-p-trend"></canvas></div></div>
+      <div class="chart-container"><h3>Total a cobrar por corte</h3><div class="wrap tall"><canvas id="chart-p-trend"></canvas></div></div>
     </section>
     <section class="table-section">
-      <h3>Tu detalle por corte</h3>
+      <h3>Detalle por corte</h3>
       <div class="table-meta" id="p-table-meta"></div>
       <div style="max-height:420px;overflow:auto;">
       <table class="data-table" id="table-propia">
@@ -1188,18 +1828,30 @@ function comisionesPropiaTemplate(){
     </section>`;
 }
 
-function renderComisionesPropia(){
-  const hasEquipo = session.role==='coordinador' || session.role==='gerente';
-  const rows = NIVEL_PROPIO.filter(r=> state.selectedCortes.includes(r.corte));
-  const useRows = rows.length ? rows : NIVEL_PROPIO;
+function renderComisionesPropia(rowsOverride=NIVEL_PROPIO, roleOverride=session.role){
+  const role = roleOverride || session.role;
+  const hasEquipo = role==='coordinador' || role==='gerente';
+  const sourceRows = Array.isArray(rowsOverride) ? rowsOverride : [];
+
+  const rows = sourceRows.filter(r=>
+    state.selectedCortes.includes(Number(r.corte))
+  );
+
+  const useRows = rows.length ? rows : sourceRows;
 
   if(hasEquipo){
     setText('p-kpi-equipo', fmtNum(sum(useRows,'num_ejecutivos')));
     setText('p-kpi-equipo-sub', fmtNum(sum(useRows,'ejecutivos_productivos'))+' productivos');
   }
+
   setText('p-kpi-normalidad', fmtPct(weightedNormalidad(useRows)));
   setText('p-kpi-cobranza', fmtMoney(sum(useRows,'comision_cobranza')));
-  const penal = sum(useRows,'multas')+sum(useRows,'penalizacion_traspaso');
+
+  const penal =
+    sum(useRows,'multas') +
+    sum(useRows,'penalizacion_traspaso') +
+    sum(useRows,'penalizacion_decremento');
+
   setText('p-kpi-penal', fmtMoney(penal));
   setText('p-kpi-incentivo', fmtMoney(sum(useRows,'incentivo_final')));
   setText('p-kpi-cobrar', fmtMoney(sum(useRows,'total_a_cobrar')));
@@ -1211,6 +1863,7 @@ function renderComisionesPropia(){
         ${items.map(it=>`<div class="comp-item"><span class="comp-val">${it[1]}</span><span class="comp-lbl">${it[0]}</span></div>`).join('')}
       </div>
     </div>`;
+
   const compHtml = `<div class="comp-grid">
     ${hasEquipo?box('Equipo', [
       ['Ejecutivos a Cargo', fmtNum(sum(useRows,'num_ejecutivos'))],
@@ -1235,6 +1888,7 @@ function renderComisionesPropia(){
     ${box('Penalizaciones y Préstamos', [
       ['Multas', fmtMoney(sum(useRows,'multas'))],
       ['Penalización x Traspaso', fmtMoney(sum(useRows,'penalizacion_traspaso'))],
+      ['Penalización x Decremento', fmtMoney(sum(useRows,'penalizacion_decremento'))],
       ['Préstamo Capital Humano', fmtMoney(sum(useRows,'prestamo_capital_humano'))],
       ['Préstamo Caja de Ahorro', fmtMoney(sum(useRows,'prestamo_caja_ahorro'))],
       ['Descuentos x Préstamos', fmtMoney(sum(useRows,'descuentos_prestamos'))],
@@ -1248,21 +1902,52 @@ function renderComisionesPropia(){
     <div class="comp-total-label">Total a Cobrar</div>
     <div class="comp-total-value">${fmtMoney(sum(useRows,'total_a_cobrar'))}</div>
   </div>`;
+
   document.getElementById('p-composicion-card').innerHTML = compHtml;
 
-  const allOwn = NIVEL_PROPIO.slice().sort((a,b)=>a.corte-b.corte);
-  const labels = allOwn.map(r=>{ const c=CORTES.find(x=>x.CORTE===r.corte); return c?('Semana '+c.SEMANA):r.corte; });
-  const data = allOwn.map(r=> r.total_a_cobrar||0);
-  drawLine('chart-p-trend', labels, data, 'Total a Cobrar', '#3d7fd6', fmtMoney, fmtMoneyShort, true);
+  const allOwn = sourceRows.slice()
+    .sort((a,b)=>Number(a.corte)-Number(b.corte));
 
-  document.getElementById('table-propia-body').innerHTML = useRows.map(r=>{
-    const c = CORTES.find(x=>x.CORTE===r.corte);
-    return `<tr><td>${c?('Semana '+c.SEMANA):r.corte}</td><td>${regionDisplayName(r.region)}</td>${hasEquipo?`<td>${r.agencia||'-'}</td>`:''}
-      ${hasEquipo?`<td>${fmtNum(r.num_ejecutivos)}</td><td>${fmtNum(r.ejecutivos_productivos)}</td>`:''}
-      <td>${fmtPct(r.pct_normalidad)}</td><td>${fmtMoney(r.comision_cobranza)}</td>
-      <td>${fmtMoney(r.incentivo_final)}</td><td>${fmtMoney(r.total_a_cobrar)}</td></tr>`;
-  }).join('');
-  document.getElementById('p-table-meta').textContent = useRows.length + ' corte(s)';
+  const labels = allOwn.map(r=>{
+    const c=CORTES.find(x=>Number(x.CORTE)===Number(r.corte));
+    return c?('Semana '+c.SEMANA):r.corte;
+  });
+
+  const data = allOwn.map(r=>
+    Number(r.total_a_cobrar)||0
+  );
+
+  drawLine(
+    'chart-p-trend',
+    labels,
+    data,
+    'Total a Cobrar',
+    '#1677ff',
+    fmtMoney,
+    fmtMoneyShort,
+    true
+  );
+
+  document.getElementById('table-propia-body').innerHTML =
+    useRows.map(r=>{
+      const c = CORTES.find(x=>
+        Number(x.CORTE)===Number(r.corte)
+      );
+
+      return `<tr>
+        <td>${c?('Semana '+c.SEMANA):r.corte}</td>
+        <td>${regionDisplayName(r.region)}</td>
+        ${hasEquipo?`<td>${r.agencia||'-'}</td>`:''}
+        ${hasEquipo?`<td>${fmtNum(r.num_ejecutivos)}</td><td>${fmtNum(r.ejecutivos_productivos)}</td>`:''}
+        <td>${fmtPct(r.pct_normalidad)}</td>
+        <td>${fmtMoney(r.comision_cobranza)}</td>
+        <td>${fmtMoney(r.incentivo_final)}</td>
+        <td>${fmtMoney(r.total_a_cobrar)}</td>
+      </tr>`;
+    }).join('');
+
+  document.getElementById('p-table-meta').textContent =
+    useRows.length + ' corte(s)';
 }
 
 function renderTableComisiones(rows){
@@ -1300,6 +1985,39 @@ function renderTableComisiones(rows){
 }
 
 /* ---------------- HELPERS DE AGREGACIÓN Y GRÁFICAS ---------------- */
+function num(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+function sumCalc(rows, fn){ return rows.reduce((s,r)=>s+num(fn(r)),0); }
+function tipoEsquemaRow(r){ return String(r.tipo_esquema||'').trim().toUpperCase(); }
+function comisionCobranzaTotalRow(r){
+  return num(r.comision_cobranza)+num(r.bono_excelencia)+num(r.comision_cobranza_adicional)+num(r.comision_cartera_heredada);
+}
+function totalDescuentosRow(r){
+  return num(r.multas)+num(r.penalizacion_traspaso)+num(r.penalizacion_decremento)+num(r.prestamo_capital_humano)+num(r.prestamo_caja_ahorro);
+}
+function modeloNuevoAplicableRow(r){
+  return tipoEsquemaRow(r)==='NUEVO' ? num(r.comision_modelo_ej_nuevo) : 0;
+}
+function comisionBaseRow(r){
+  const trad=num(r.comision_modelo_tradicional), nuevo=modeloNuevoAplicableRow(r), tipo=tipoEsquemaRow(r);
+  return tipo==='NUEVO' ? Math.max(trad,nuevo) : trad;
+}
+function comisionPagarRow(r){ return Math.max(comisionBaseRow(r)-totalDescuentosRow(r),0); }
+function colocacionNuevoRow(r){ return tipoEsquemaRow(r)==='NUEVO' ? num(r.monto_nuevos)*0.07 : 0; }
+function colocacionBaseRow(r){
+  const trad=num(r.comision_colocacion_total), nuevo=colocacionNuevoRow(r);
+  return tipoEsquemaRow(r)==='NUEVO' ? Math.max(trad,nuevo) : trad;
+}
+function incentivoColocacionPagarRow(r){ return colocacionBaseRow(r)+num(r.comision_apoyo_familiar); }
+function modeloPagarTexto(r){
+  const tipo=tipoEsquemaRow(r), trad=num(r.comision_modelo_tradicional), nuevo=modeloNuevoAplicableRow(r);
+  if(tipo==='NUEVO') return nuevo>trad ? 'Esquema Nuevo' : 'Tradicional';
+  return 'Tradicional';
+}
+function comisionMayorSourceRow(r){ return num(r.comision_mayor!==undefined ? r.comision_mayor : r.bono_crecimiento_neto); }
+
 function sum(rows, field){ return rows.reduce((s,r)=>s+(r[field]||0),0); }
 function groupSum(rows, groupField, valField){
   const g = {};
