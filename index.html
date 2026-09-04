@@ -140,6 +140,22 @@ table.data-table{width:100%;border-collapse:collapse;font-size:12px;white-space:
 @media (max-width:900px){
   .chart-row,.chart-row2{grid-template-columns:1fr;}
 }
+
+/* ===== V7 · MODAL DE PROCESO ===== */
+.admin-process-overlay{position:fixed;inset:0;background:rgba(8,32,30,.48);display:none;align-items:center;justify-content:center;z-index:99999;padding:20px}
+.admin-process-overlay.show{display:flex}
+.admin-process-box{width:min(470px,94vw);background:#fff;border-radius:20px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.28);text-align:center}
+.admin-spinner{width:54px;height:54px;border:6px solid #dbece7;border-top-color:#078c6c;border-radius:50%;margin:0 auto 18px;animation:admspin .8s linear infinite}
+.admin-process-overlay.done .admin-spinner{animation:none;border:0;width:58px;height:58px}
+.admin-process-overlay.done .admin-spinner:before{content:"✓";display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#e2f5ee;color:#067a5d;font-size:34px;font-weight:900}
+.admin-process-overlay.error .admin-spinner{animation:none;border:0;width:58px;height:58px}
+.admin-process-overlay.error .admin-spinner:before{content:"×";display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#fdeaea;color:#b42318;font-size:38px;font-weight:900}
+@keyframes admspin{to{transform:rotate(360deg)}}
+.admin-process-title{font-size:22px;font-weight:900;color:#102a27;margin-bottom:8px}
+.admin-process-text{font-size:14px;line-height:1.5;color:#526663;white-space:pre-line}
+.admin-process-close{display:none;margin:20px auto 0;border:0;border-radius:10px;padding:10px 22px;font-weight:800;cursor:pointer;background:#0a8f70;color:white}
+.admin-process-overlay.done .admin-process-close,.admin-process-overlay.error .admin-process-close{display:block}
+
 </style>
 
 <style id="mcm-redesign">
@@ -345,6 +361,37 @@ body{
 @media(max-width:1150px){.pbi-sections-grid{grid-template-columns:1fr 1fr;grid-template-areas:'pagos cobranza' 'colocacion colocacion' 'otros descuentos' 'comision comision'}.pbi-4col{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.pbi-sections-grid{grid-template-columns:1fr;grid-template-areas:'pagos' 'cobranza' 'colocacion' 'otros' 'descuentos' 'comision'}.pbi-3col,.pbi-4col{grid-template-columns:1fr 1fr}.pbi-hero-value{font-size:26px}.pbi-scheme-pill{position:static;display:inline-block;margin-top:7px}}
 </style>
+<style id="mcm-admin-v2">
+/* ---------- ADMINISTRACIÓN PARALELA ---------- */
+.admin-wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-bottom:16px;}
+.admin-card{background:var(--bg-card);border-radius:var(--radius);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid var(--border);}
+.admin-card h3{margin:0 0 6px;font-size:15px;}
+.admin-card p{margin:0 0 14px;color:var(--text-secondary);font-size:12.5px;line-height:1.45;}
+.admin-drop{border:2px dashed #b9c9c3;border-radius:12px;padding:22px;text-align:center;background:#f8fbf9;}
+.admin-drop input{display:block;margin:10px auto 0;max-width:100%;}
+.admin-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px;}
+.admin-metric{background:#f6f8f6;border:1px solid var(--border);border-radius:9px;padding:10px 12px;}
+.admin-metric span{display:block;color:var(--text-secondary);font-size:10px;text-transform:uppercase;font-weight:700;letter-spacing:.35px;}
+.admin-metric strong{display:block;margin-top:3px;font-size:14px;}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.admin-btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:12px;}
+.admin-btn:disabled{opacity:.32;cursor:not-allowed;filter:grayscale(.65);box-shadow:none!important;transform:none!important;pointer-events:none;}
+.admin-btn.add{background:var(--accent);color:#fff;}
+.admin-btn.replace{background:#d8871e;color:#fff;}
+.admin-btn.delete{background:#c83e3e;color:#fff;}
+.admin-btn.secondary{background:#e8ebe6;color:#33423d;}
+.admin-status{margin-top:12px;padding:11px 13px;border-radius:9px;background:#eef2ef;font-size:12px;white-space:pre-wrap;min-height:40px;}
+.admin-status.ok{background:#e6f6ef;color:#0d674d;}
+.admin-status.err{background:#fdeaea;color:#9d2828;}
+.admin-danger{border-color:#f1c9c9;}
+.admin-select{width:100%;padding:10px 11px;border:1px solid var(--border);border-radius:8px;background:#fff;margin:6px 0 8px;}
+.admin-warning{font-size:11px;color:#8a5c10;background:#fff7e6;border:1px solid #f0d59a;border-radius:8px;padding:9px 11px;margin-top:10px;}
+@media(max-width:900px){.admin-wrap{grid-template-columns:1fr;}}
+.admin-wide{grid-column:1/-1}.user-table{width:100%;border-collapse:collapse;font-size:12px}.user-table th,.user-table td{padding:8px;border-bottom:1px solid var(--border);text-align:left}.user-table th{font-size:10px;text-transform:uppercase;color:var(--text-secondary)}.user-scroll{max-height:330px;overflow:auto;border:1px solid var(--border);border-radius:9px}.user-pill{font-size:10px;padding:3px 7px;border-radius:10px;background:#eef2ef}.temp-pass{font-family:monospace;font-weight:700;letter-spacing:.5px}.admin-input{padding:7px 8px;border:1px solid var(--border);border-radius:7px;min-width:110px}.user-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.user-empty{padding:18px;text-align:center;color:var(--text-secondary)}
+
+
+
+</style>
 </head>
 <body>
 
@@ -399,6 +446,7 @@ body{
     <div class="tabs-bar" id="tabs-bar">
       <button class="tab-btn active" data-tab="indicadores">Indicadores</button>
       <button class="tab-btn" data-tab="comisiones">Comisiones</button>
+      <button class="tab-btn" data-tab="administracion" id="admin-tab-btn" style="display:none;">Administración</button>
     </div>
 
     <section class="filters-bar" id="filters-bar">
@@ -436,7 +484,79 @@ body{
     <!-- =============== TAB: COMISIONES =============== -->
     <div class="tab-panel" id="tab-comisiones"></div>
 
-    <footer class="dashboard-footer">
+<!-- =============== TAB: ADMINISTRACIÓN =============== -->
+    <div class="tab-panel" id="tab-administracion">
+      <div class="admin-wrap">
+        <section class="admin-card">
+          <h3>Carga semanal · Semana completa</h3>
+          <p>Selecciona el archivo de la semana requerida. La página carga Indicadores y todas las comisiones de esa semana: Ejecutivo, Coordinador, Gerente y Gerente Regional.</p>
+          <div class="admin-drop">
+            <strong>Archivo semanal XLSB / XLSX</strong>
+            <input type="file" id="admin-file" accept=".xlsb,.xlsx,.xls">
+          </div>
+          <div class="admin-summary" id="admin-summary">
+            <div class="admin-metric"><span>Semana</span><strong id="adm-week">-</strong></div>
+            <div class="admin-metric"><span>Registros fuente</span><strong id="adm-source-rows">-</strong></div>
+            <div class="admin-metric"><span>Ejecutivos</span><strong id="adm-execs">-</strong></div>
+            <div class="admin-metric"><span>Estado actual</span><strong id="adm-existing">-</strong></div>
+            <div class="admin-metric"><span>Nuevos</span><strong id="adm-new">-</strong></div>
+            <div class="admin-metric"><span>Renovaciones</span><strong id="adm-ren">-</strong></div>
+            <div class="admin-metric"><span>Monto Nuevos</span><strong id="adm-new-amt">-</strong></div>
+            <div class="admin-metric"><span>Monto Renovaciones</span><strong id="adm-ren-amt">-</strong></div>
+            <div class="admin-metric"><span>Comisiones Ejecutivo</span><strong id="adm-com-execs">-</strong></div>
+            <div class="admin-metric"><span>Total a Cobrar</span><strong id="adm-com-total">-</strong></div>
+            <div class="admin-metric"><span>Coordinadores</span><strong id="adm-com-coord">-</strong></div>
+            <div class="admin-metric"><span>Gerentes / Regionales</span><strong id="adm-com-mgr">-</strong></div>
+          </div>
+
+          <div class="admin-operation-scope" style="margin:14px 0 10px;padding:14px;border:1px solid rgba(0,0,0,.12);border-radius:14px;background:#fff;">
+            <div style="font-weight:800;margin-bottom:8px;">¿Qué deseas cargar?</div>
+            <label style="margin-right:18px;cursor:pointer;"><input type="radio" name="adm-load-scope" value="indicadores" onchange="refreshAdminActionButtons()"> Solo Indicadores</label>
+            <label style="cursor:pointer;"><input type="radio" name="adm-load-scope" value="completo" checked onchange="refreshAdminActionButtons()"> Semana completa</label>
+          </div>
+          <div class="admin-actions">
+            <button class="admin-btn add" id="adm-add" disabled>Agregar semana</button>
+            <button class="admin-btn replace" id="adm-replace" disabled>Reemplazar semana</button>
+            <button class="admin-btn secondary" id="adm-clear">Limpiar</button>
+          </div>
+          <div class="admin-warning">Elige SOLO INDICADORES o SEMANA COMPLETA. En ambos casos se crea respaldo automático y se valida que las demás semanas permanezcan sin cambios.</div>
+          <div class="admin-status" id="adm-status">Selecciona un archivo semanal para comenzar.</div>
+        </section>
+
+        <section class="admin-card admin-danger">
+          <h3>Eliminar semana · Semana completa</h3>
+          <p>Elige si deseas eliminar SOLO INDICADORES o la SEMANA COMPLETA. La opción completa elimina Indicadores y todas las comisiones de esa semana.</p>
+          <label for="adm-delete-week" style="font-size:11px;font-weight:700;color:var(--text-secondary);">SEMANA</label>
+          <select class="admin-select" id="adm-delete-week"></select>
+
+          <div class="admin-operation-scope" style="margin:12px 0;padding:12px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff;">
+            <div style="font-weight:800;margin-bottom:8px;">¿Qué deseas eliminar?</div>
+            <label style="margin-right:18px;cursor:pointer;"><input type="radio" name="adm-delete-scope" value="indicadores"> Solo Indicadores</label>
+            <label style="cursor:pointer;"><input type="radio" name="adm-delete-scope" value="completo" checked> Semana completa</label>
+          </div>
+          <div class="admin-actions">
+            <button class="admin-btn delete" id="adm-delete">Eliminar semana</button>
+          </div>
+          <div class="admin-warning">Se pedirá confirmación explícita antes de eliminar y se guardará el detalle en LOG_ACTUALIZACIONES.</div>
+        </section>
+        <section class="admin-card admin-wide">
+          <h3>Usuarios pendientes de autorización</h3>
+          <p>Personas detectadas en los scopes que todavía no tienen acceso. Marca las que quieras autorizar; el sistema creará usuario y contraseña temporal automáticamente.</p>
+          <div class="user-toolbar"><button class="admin-btn secondary" id="usr-refresh">Actualizar lista</button><button class="admin-btn add" id="usr-approve">Autorizar seleccionados</button></div>
+          <div class="user-scroll"><table class="user-table"><thead><tr><th></th><th>Nombre</th><th>Rol</th><th>Scope detectado</th></tr></thead><tbody id="usr-pending-body"><tr><td colspan="4" class="user-empty">Cargando...</td></tr></tbody></table></div>
+          <div class="admin-status" id="usr-status">Las contraseñas existentes no se muestran; una contraseña temporal nueva sí se mostrará al autorizar o restablecer.</div>
+        </section>
+
+        <section class="admin-card admin-wide">
+          <h3>Usuarios activos</h3>
+          <p>Consulta usuarios, cambia rol o estado y restablece contraseñas. Por seguridad no se muestran las contraseñas actuales.</p>
+          <div class="user-scroll"><table class="user-table"><thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="usr-active-body"><tr><td colspan="5" class="user-empty">Cargando...</td></tr></tbody></table></div>
+        </section>
+
+      </div>
+    </div>
+
+        <footer class="dashboard-footer">
       Datos acumulados 2026 &middot; Fuente: EJECUTIVO / INDICADORES / COORDINADOR / GERENTE / GERENTE REGIONAL
     </footer>
   </div>
@@ -448,9 +568,10 @@ body{
    ============================================================ */
 
 /* URL de la aplicación web publicada en Apps Script - Sheet LOCAL */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyYlT6VodNbwzl7Mjmo2Qz-yVzM0D0uuxs576SnBoGlhKJFsnP5SeNlXXPE1GXs0vrQ/exec';
+// IMPORTANTE: pega aquí la URL /exec del Web App PARALELO después de publicarlo.
+const API_URL = 'https://script.google.com/macros/s/AKfycbxjNOoVtbEBQN5gEt89BEDIo5miSerwAcSvEt19U61gUOGvEpKAX0XgDbd5J1pe4seCtQ/exec';
 
-const HTML_VERSION = '2026-08-26-MCM-LOCAL-V7';
+const HTML_VERSION = '2026-09-03-MCM-PARALELO-ADMIN-V7.1-FETCH-CLOSE';
 
 let CORTES = [];
 let EJ_COM = [];
@@ -497,7 +618,7 @@ async function tryLogin(){
       setLoginLoading(false);
       return;
     }
-    session = { username: data.username, role: data.role, nombre: data.nombre };
+    session = { username: data.username, role: data.role, nombre: data.nombre, token: data.session_token || '' };
     CORTES = data.cortes || [];
     EJ_COM = data.ejecutivo_comisiones || [];
     EJ_IND = data.ejecutivo_indicadores || [];
@@ -531,7 +652,7 @@ document.getElementById('logout-btn').addEventListener('click', ()=>{
   document.getElementById('user-input').value='';
 });
 
-const ROLE_LABELS = {ejecutivo:'Ejecutivo', coordinador:'Coordinador', gerente:'Gerente', regional:'Gerente Regional', directivo:'Dirección', direccion:'Dirección'};
+const ROLE_LABELS = {ejecutivo:'Ejecutivo', coordinador:'Coordinador', gerente:'Gerente', regional:'Gerente Regional', directivo:'Dirección', direccion:'Dirección', admin:'Administrador'};
 
 /* ---------------- INIT ---------------- */
 let _listenersReady = false;
@@ -539,6 +660,8 @@ let _listenersReady = false;
 function initDashboard(){
   document.getElementById('hdr-username').textContent = session.nombre;
   document.getElementById('hdr-role').textContent = ROLE_LABELS[session.role];
+  const adminAllowed = session.role==='admin';
+  document.getElementById('admin-tab-btn').style.display = adminAllowed ? '' : 'none';
 
   document.getElementById('ejecutivo-filter-group').style.display = '';
   document.getElementById('f-region').parentElement.style.display = '';
@@ -719,7 +842,8 @@ function attachTabEvents(){
       btn.classList.add('active');
       state.activeTab = btn.dataset.tab;
       document.getElementById('tab-'+state.activeTab).classList.add('active');
-      refreshAll();
+      document.getElementById('filters-bar').style.display = state.activeTab==='administracion' ? 'none' : '';
+      if(state.activeTab==='administracion'){ initAdminPanel(); } else { refreshAll(); }
     });
   });
 }
@@ -2247,6 +2371,517 @@ function drawBarSimple(canvasId, labels, data, colors){
   });
 }
 
+
+
+/* ============================================================
+   ADMINISTRACIÓN PARALELA - CARGA SEMANAL DE INDICADORES
+   ============================================================ */
+let adminPrepared = null;
+let adminListenersReady = false;
+
+function initAdminPanel(){
+  if((session?.role||'')!=='admin') return;
+  refreshAdminWeekSelect();
+  loadAdminUsers();
+  if(adminListenersReady) return;
+  adminListenersReady = true;
+  document.getElementById('admin-file').addEventListener('change', handleAdminFile);
+  document.getElementById('adm-clear').addEventListener('click', clearAdminPrepared);
+  document.getElementById('adm-add').addEventListener('click', ()=>publishAdminWeek('add'));
+  document.getElementById('adm-replace').addEventListener('click', ()=>publishAdminWeek('replace'));
+  document.getElementById('adm-delete').addEventListener('click', deleteAdminWeek);
+  document.getElementById('usr-refresh').addEventListener('click', loadAdminUsers);
+  document.getElementById('usr-approve').addEventListener('click', approveSelectedUsers);
+}
+
+function refreshAdminWeekSelect(){
+  const sel=document.getElementById('adm-delete-week');
+  if(!sel) return;
+  const weeks=[...CORTES].sort((a,b)=>Number(b.SEMANA)-Number(a.SEMANA));
+  sel.innerHTML=weeks.map(c=>`<option value="${Number(c.SEMANA)}">Semana ${Number(c.SEMANA)} · ${c.PERIODO||''}</option>`).join('');
+}
+
+function cleanHeaderAdm(v){
+  return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase().replace(/\s+/g,' ');
+}
+function normAdm(v){ return cleanHeaderAdm(v); }
+function numAdm(v){
+  if(v==null || v==='') return 0;
+  if(typeof v==='number') return Number.isFinite(v)?v:0;
+  const n=Number(String(v).replace(/[$,%\s]/g,'').replace(/,/g,''));
+  return Number.isFinite(n)?n:0;
+}
+function findHeaderIndexAdm(headers, names, required=true){
+  const h=headers.map(cleanHeaderAdm);
+  for(const name of names){ const i=h.indexOf(cleanHeaderAdm(name)); if(i>=0) return i; }
+  if(required) throw new Error('No encontré columna: '+names.join(' / '));
+  return -1;
+}
+function classifyTipoAdm(v){ const t=normAdm(v); if(t.includes('NUEV')) return 'NUEVO'; if(t.includes('RENOV')) return 'RENOVADO'; return t; }
+function setAdminStatus(msg,type=''){
+  const el=document.getElementById('adm-status'); if(!el) return;
+  el.textContent=msg; el.className='admin-status'+(type?' '+type:'');
+}
+function findIndicadoresSheetAdm(wb){
+  const n=wb.SheetNames.find(x=>cleanHeaderAdm(x)==='INDICADORES');
+  if(!n) throw new Error('El archivo no contiene una hoja llamada INDICADORES.');
+  return n;
+}
+function matrixFromSheetAdm(ws){ return XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true}); }
+function detectHeaderRowAdm(matrix){
+  for(let r=0;r<Math.min(12,matrix.length);r++){
+    const hs=(matrix[r]||[]).map(cleanHeaderAdm);
+    if(hs.includes('NOMBRE EJECUTIVO') && hs.includes('SEMANA')) return r;
+  }
+  throw new Error('No pude detectar la fila de encabezados de INDICADORES.');
+}
+
+
+const ADM_COMMISSION_SHEETS = {
+  ejecutivo:['EJECUTIVO'],
+  coordinador:['COORDINADOR'],
+  gerente:['GERENTE'],
+  regional:['GERENTE REGIONAL','GERENTE_REGIONAL']
+};
+function findSheetByAliasesAdm(wb,aliases){
+  return wb.SheetNames.find(n=>aliases.some(a=>cleanHeaderAdm(n)===cleanHeaderAdm(a)))||null;
+}
+function detectGenericHeaderRowAdm(matrix){
+  for(let r=0;r<Math.min(15,matrix.length);r++){
+    const hs=(matrix[r]||[]).map(cleanHeaderAdm);
+    if(hs.includes('SEMANA') && (hs.includes('EJECUTIVO')||hs.includes('EMPLEADO'))) return r;
+  }
+  return -1;
+}
+function rowObjectsFromWeeklySheetAdm(wb,aliases,week,kind){
+  const name=findSheetByAliasesAdm(wb,aliases);
+  if(!name) return {sheet:null,rows:[]};
+  const matrix=matrixFromSheetAdm(wb.Sheets[name]);
+  const hr=detectGenericHeaderRowAdm(matrix);
+  if(hr<0) throw new Error('No pude detectar encabezados de '+name+'.');
+  const headers=matrix[hr]||[];
+  const hclean=headers.map(cleanHeaderAdm);
+  const wix=hclean.indexOf('SEMANA');
+  const rows=matrix.slice(hr+1).filter(r=>r.some(v=>v!==null&&v!=='') && Math.round(numAdm(r[wix]))===week);
+  return {sheet:name,rows:rows.map(r=>mapCommissionRowAdm(headers,r,kind,week))};
+}
+function sourceValAdm(headers,row,names,def=''){
+  const hc=headers.map(cleanHeaderAdm);
+  for(const n of names){const i=hc.indexOf(cleanHeaderAdm(n)); if(i>=0)return row[i]??def;}
+  return def;
+}
+function mapCommissionRowAdm(headers,row,kind,week){
+  const g=(...names)=>sourceValAdm(headers,row,names,'');
+  const n=(...names)=>numAdm(g(...names));
+  const common={
+    mes:n('MES'),semana:week,corte:n('CORTE'),periodo:g('PERIODO'),region:normAdm(g('REGION')),
+    estatus:normAdm(g('ESTATUS')),puesto:normAdm(g('PUESTO ACTUAL')),
+    pagos_esperados:n('PAGOS ESPERADOS'),pagos_recibidos:n('PAGOS RECIBIDOS'),pct_normalidad:n('% NORMALIDAD'),
+    comision_cobranza:n('$ COMISIÓN COBRANZA','COMISION X COBRANZA','COMISIÓN X COBRANZA'),
+    apoyo_familiar:n('APOYO FAMILIAR','COMISION APOYO FAMILIAR'),
+    comision_modelo_tradicional:n('COMISIÓN MODELO TRADICIONAL'),
+    apoyo_economico:n('APOYO ECONÓMICO'),bono_mensual:n('BONO MENSUAL'),
+    comision_mayor:n('COMISIÓN MAYOR'),multas:n('MULTAS'),
+    prestamo_capital_humano:n('PRÉSTAMO CAPITAL HUMANO','PRESTAMO CAPITAL HUMANO'),
+    prestamo_caja_ahorro:n('PRÉSTAMO CAJA DE AHORRO','PRESTAMO CAJA DE AHORRO'),
+    descuentos_prestamos:n('DESCUENTOS X PRÉSTAMOS','DESCUENTOS X PRESTAMOS'),
+    retencion_caja_ahorro:n('RETENCIÓN CAJA DE AHORRO','RETENCION CAJA DE AHORRO'),
+    retroactivos_otros_apoyos:n('RETROACTIVOS Y OTROS APOYOS'),
+    total_a_cobrar:n('TOTAL A COBRAR')
+  };
+  if(kind==='ejecutivo'){
+    const enTiempo=n('$ EN TIEMPO'), tardias=n('$ TARDIAS');
+    return Object.assign(common,{
+      agencia:normAdm(g('AGENCIA')),ejecutivo:normAdm(g('EJECUTIVO')),
+      monto_esperado:n('$ ESPERADA'),monto_recibido:n('$ RECIBIDA'),
+      monto_recibido_no_esperado:n('$ RECIBIDA NO ESPERADA'),cobranza_total:n('$ COBRANZA TOTAL'),
+      bono_excelencia:n('BONO DE EXCELENCIA'),
+      cobranza_credito_adicional:n('$ COBRANZA CRÉDITO ADICIONAL'),
+      comision_cobranza_adicional:n('COMISIÓN X COBRANZA ADICIONAL'),
+      comision_cartera_heredada:n('COMISIÓN CARTERA HEREDADA'),
+      recuperacion_cartera_heredada:n('$ RECUPERACIÓN CART HERD'),
+      clientes_nuevos:n('NVOS'),clientes_en_tiempo:n('EN TIEMPO'),clientes_tardias:n('TARDIAS'),
+      total_clientes:n('TOTAL CLIENTES'),monto_nuevos:n('$ NUEVOS'),monto_en_tiempo:enTiempo,monto_tardias:tardias,
+      monto_renovaciones:enTiempo+tardias,total_colocado:n('TOTAL COLOCADO'),
+      comision_colocacion_total:n('COMISION X COLOCACIÓN TOTAL','COMISIÓN X COLOCACIÓN TOTAL'),
+      comision_apoyo_familiar:n('COMISION APOYO FAMILIAR'),
+      tipo_esquema:normAdm(g('TIPO')),comision_modelo_ej_nuevo:n('COMISIÓN MODELO EJ NUEVO'),
+      convenio:n('CONVENIO'),incapacidad:n('INCAPACIDAD'),campanas:n('CAMPAÑAS'),
+      penalizacion_traspaso:n('PENALIZACIÓN X TRASPASO'),penalizacion_decremento:n('PENALIZACIÓN X DECREMENTO'),
+      comision_final:n('COMISIÓN FINAL'),coordinador:normAdm(g('COORDINADOR'))||'-'
+    });
+  }
+  common.empleado=normAdm(g('EMPLEADO'));
+  common.agencia=normAdm(g('AGENCIA'));
+  common.num_ejecutivos=n('# DE EJECUTIVOS');
+  common.ejecutivos_productivos=n('EJECUTIVOS PRODUCTIVOS');
+  common.pct_productividad_equipo=n('%');
+  common.pct_comision_productividad=n('% COMISIÓN X PRODUCTIVIDAD');
+  common.comision_productividad=n('$ COMISIÓN  +/-    PRODUCTIVIDAD','$ COMISIÓN +/- PRODUCTIVIDAD');
+  common.incentivo_final=n('INCENTIVO FINAL');
+  if(kind==='gerente') common.coordinador_ref=normAdm(g('COORDINADOR'));
+  return common;
+}
+
+async function handleAdminFile(e){
+  const file=e.target.files?.[0];
+  if(!file){ clearAdminPrepared(); return; }
+  setAdminStatus('Leyendo '+file.name+'...');
+  try{
+    const buf=await file.arrayBuffer();
+    const wb=XLSX.read(buf,{type:'array',cellDates:true});
+    const shName=findIndicadoresSheetAdm(wb);
+    const matrix=matrixFromSheetAdm(wb.Sheets[shName]);
+    const headerRow=detectHeaderRowAdm(matrix);
+    const headers=matrix[headerRow]||[];
+    const data=matrix.slice(headerRow+1).filter(r=>r.some(v=>v!==null && v!==''));
+    const prepared=aggregateWeeklyIndicatorsAdm(headers,data,file.name);
+    const ce=rowObjectsFromWeeklySheetAdm(wb,ADM_COMMISSION_SHEETS.ejecutivo,prepared.week,'ejecutivo');
+    const cc=rowObjectsFromWeeklySheetAdm(wb,ADM_COMMISSION_SHEETS.coordinador,prepared.week,'coordinador');
+    const cg=rowObjectsFromWeeklySheetAdm(wb,ADM_COMMISSION_SHEETS.gerente,prepared.week,'gerente');
+    const cr=rowObjectsFromWeeklySheetAdm(wb,ADM_COMMISSION_SHEETS.regional,prepared.week,'regional');
+    if(!ce.rows.length) throw new Error('No encontré comisiones de EJECUTIVO para Semana '+prepared.week+'.');
+    prepared.ejecutivoRows=ce.rows;
+    prepared.coordinadorRows=cc.rows;
+    prepared.gerenteRows=cg.rows;
+    prepared.regionalRows=cr.rows;
+    prepared.commissionSummary={
+      ejecutivos:ce.rows.length,
+      totalCobrar:ce.rows.reduce((s,r)=>s+numAdm(r.total_a_cobrar),0),
+      coordinadores:cc.rows.length,
+      gerentes:cg.rows.length,
+      regionales:cr.rows.length
+    };
+    adminPrepared=prepared;
+    paintAdminPrepared(prepared);
+    setAdminStatus('Archivo validado. Revisa el resumen antes de publicar.','ok');
+  }catch(err){
+    adminPrepared=null; paintAdminPrepared(null);
+    setAdminStatus('ERROR: '+err.message,'err');
+  }
+}
+
+function aggregateWeeklyIndicatorsAdm(headers,data,fileName){
+  const ix={
+    exec:findHeaderIndexAdm(headers,['NOMBRE EJECUTIVO']), region:findHeaderIndexAdm(headers,['REGION']), agencia:findHeaderIndexAdm(headers,['AGENCIA']),
+    coord:findHeaderIndexAdm(headers,['COORDINADOR'],false), semana:findHeaderIndexAdm(headers,['SEMANA']), tipo:findHeaderIndexAdm(headers,['TIPO DESEMBOLSO']),
+    des:findHeaderIndexAdm(headers,['$ DESEMBOLSO']), clientes:findHeaderIndexAdm(headers,['# CLIENTES VIGENTES']),
+    pe:findHeaderIndexAdm(headers,['$ PAGO ESPERADO']), pr:findHeaderIndexAdm(headers,['$ PAGO RECIBIDO']),
+    ce:findHeaderIndexAdm(headers,['$ COBRANZA ESPERADA']), cr:findHeaderIndexAdm(headers,['$ COBRANZA RECIBIDA']),
+    cre:findHeaderIndexAdm(headers,['$ COBRANZA RECIBIDA ESPERADA'],false), crne:findHeaderIndexAdm(headers,['$ COBRANZA RECIBIDA NO ESPERADA']),
+    mc:findHeaderIndexAdm(headers,['$ MORA CAPITAL']), mt:findHeaderIndexAdm(headers,['$ MORA TOTAL']), dm:findHeaderIndexAdm(headers,['DIAS DE MORA','DÍAS DE MORA']),
+    sc:findHeaderIndexAdm(headers,['$ SALDO CAPITAL']), st:findHeaderIndexAdm(headers,['$ SALDO TOTAL'])
+  };
+  const valid=data.filter(r=>normAdm(r[ix.exec])!=='');
+  const weeks=[...new Set(valid.map(r=>Math.round(numAdm(r[ix.semana]))).filter(w=>w>=1&&w<=53))];
+  if(weeks.length!==1) throw new Error('El archivo debe contener exactamente una semana. Detectadas: '+(weeks.join(', ')||'ninguna'));
+  const week=weeks[0];
+  const rowsWeek=valid.filter(r=>Math.round(numAdm(r[ix.semana]))===week);
+  const m=new Map();
+  for(const r of rowsWeek){
+    const ejecutivo=normAdm(r[ix.exec]); if(!ejecutivo) continue;
+    if(!m.has(ejecutivo)) m.set(ejecutivo,{corte:0,ejecutivo,region:normAdm(r[ix.region]),agencia:normAdm(r[ix.agencia]),estatus:'-',coordinador:ix.coord>=0?(normAdm(r[ix.coord])||'-'):'-',sin_roster:false,num_creditos:0,pagos_esperados:0,pagos_recibidos:0,monto_esperado:0,monto_recibido:0,monto_recibido_esperado:0,monto_recibido_no_esperado:0,mora_capital:0,mora_total:0,dias_mora_prom:0,clientes_vigentes:0,saldo_capital:0,saldo_total:0,desembolso:0,colocacion_semanal:0,monto_colocacion_semanal:0,clientes_nuevos:0,renovaciones:0,pct_normalidad:0,pct_mora:0,monto_nuevos:0,monto_renovaciones:0,renov_tiempo:0,renov_tardia:0,productivo:0,pagare:0,comision_cartera_heredada:0,apoyo_familiar:0,_dmSum:0,_dmCount:0});
+    const a=m.get(ejecutivo), clientes=numAdm(r[ix.clientes]), des=numAdm(r[ix.des]);
+    a.num_creditos+=clientes; a.clientes_vigentes+=clientes; a.pagos_esperados+=numAdm(r[ix.pe]); a.pagos_recibidos+=numAdm(r[ix.pr]);
+    a.monto_esperado+=numAdm(r[ix.ce]); a.monto_recibido+=numAdm(r[ix.cr]); if(ix.cre>=0)a.monto_recibido_esperado+=numAdm(r[ix.cre]);
+    a.monto_recibido_no_esperado+=numAdm(r[ix.crne]); a.mora_capital+=numAdm(r[ix.mc]); a.mora_total+=numAdm(r[ix.mt]);
+    const dmv=numAdm(r[ix.dm]); if(r[ix.dm]!==null && r[ix.dm]!=='' && Number.isFinite(dmv)){a._dmSum+=dmv;a._dmCount++;}
+    a.saldo_capital+=numAdm(r[ix.sc]); a.saldo_total+=numAdm(r[ix.st]); a.desembolso+=des;
+    if(des!==0){ const tipo=classifyTipoAdm(r[ix.tipo]); if(tipo==='NUEVO'){a.clientes_nuevos++;a.monto_nuevos+=des;} else if(tipo==='RENOVADO'){a.renovaciones++;a.monto_renovaciones+=des;} }
+  }
+  const rows=[...m.values()].map(a=>{
+    a.dias_mora_prom=a._dmCount?a._dmSum/a._dmCount:0; delete a._dmSum; delete a._dmCount;
+    a.colocacion_semanal=a.clientes_nuevos+a.renovaciones; a.monto_colocacion_semanal=a.monto_nuevos+a.monto_renovaciones;
+    a.productivo=a.colocacion_semanal>0?1:0; a.pagare=a.desembolso;
+    a.pct_normalidad=a.pagos_esperados?a.pagos_recibidos/a.pagos_esperados:0; a.pct_mora=a.saldo_total?a.mora_total/a.saldo_total:0;
+    return a;
+  }).sort((a,b)=>a.ejecutivo.localeCompare(b.ejecutivo,'es'));
+  const summary=rows.reduce((z,r)=>{z.nuevos+=r.clientes_nuevos;z.monto_nuevos+=r.monto_nuevos;z.renovaciones+=r.renovaciones;z.monto_renovaciones+=r.monto_renovaciones;return z;},{nuevos:0,monto_nuevos:0,renovaciones:0,monto_renovaciones:0});
+  return {fileName,week,sourceRows:rowsWeek.length,rows,summary};
+}
+
+function paintAdminPrepared(p){
+  const vals=p?{week:p.week,src:p.sourceRows,ex:p.rows.length,n:p.summary.nuevos,na:p.summary.monto_nuevos,r:p.summary.renovaciones,ra:p.summary.monto_renovaciones}:{week:'-',src:'-',ex:'-',n:'-',na:'-',r:'-',ra:'-'};
+  document.getElementById('adm-week').textContent=vals.week; document.getElementById('adm-source-rows').textContent=vals.src; document.getElementById('adm-execs').textContent=vals.ex;
+  document.getElementById('adm-new').textContent=vals.n; document.getElementById('adm-ren').textContent=vals.r; document.getElementById('adm-new-amt').textContent=p?fmtMoney(vals.na):'-'; document.getElementById('adm-ren-amt').textContent=p?fmtMoney(vals.ra):'-';
+  const cs=p?.commissionSummary;
+  const ce=document.getElementById('adm-com-execs'), ct=document.getElementById('adm-com-total'), cc=document.getElementById('adm-com-coord'), cm=document.getElementById('adm-com-mgr');
+  if(ce)ce.textContent=cs?cs.ejecutivos:'-'; if(ct)ct.textContent=cs?fmtMoney(cs.totalCobrar):'-';
+  if(cc)cc.textContent=cs?cs.coordinadores:'-'; if(cm)cm.textContent=cs?(cs.gerentes+' / '+cs.regionales):'-';
+  let exists=false, existingRows=0;
+  if(p){ const c=CORTES.find(x=>Number(x.SEMANA)===Number(p.week)); exists=!!c; if(c) existingRows=EJ_IND.filter(r=>Number(r.corte)===Number(c.CORTE)).length; }
+  document.getElementById('adm-existing').textContent=p?(exists?`Existe · ${existingRows} indicadores · ${EJ_COM.filter(r=>Number(r.semana)===Number(p.week)).length} comisiones`:'Nueva'):'-';
+  refreshAdminActionButtons(); setTimeout(refreshAdminActionButtons,0);
+}
+
+function clearAdminPrepared(){
+  adminPrepared=null; const f=document.getElementById('admin-file'); if(f)f.value=''; paintAdminPrepared(null); setAdminStatus('Selecciona un archivo semanal para comenzar.');
+}
+
+async function adminApi(action,extra={}){
+  if(!session?.token) throw new Error('La sesión administrativa no tiene token. Vuelve a iniciar sesión.');
+  const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,session_token:session.token,...extra})});
+  if(!resp.ok) throw new Error('HTTP '+resp.status);
+  const data=await resp.json(); if(!data.ok) throw new Error(data.error||'Operación rechazada'); return data;
+}
+
+
+function setAdminBusy(busy){
+  ['adm-add','adm-replace','adm-delete','adm-clear','admin-file'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.disabled=!!busy;
+  });
+  document.querySelectorAll('input[name="adm-load-scope"],input[name="adm-delete-scope"]').forEach(el=>el.disabled=!!busy);
+  if(!busy) refreshAdminActionButtons();
+}
+function showAdminProcess(title,text){
+  const o=document.getElementById('admin-process-overlay');
+  if(!o)return;
+  o.classList.remove('done','error'); o.classList.add('show');
+  document.getElementById('admin-process-title').textContent=title||'Procesando…';
+  document.getElementById('admin-process-text').textContent=text||'Trabajando con la información semanal.';
+  setAdminBusy(true);
+}
+function finishAdminProcess(ok,title,text){
+  const o=document.getElementById('admin-process-overlay');
+  if(!o)return;
+  o.classList.remove('done','error'); o.classList.add(ok?'done':'error');
+  document.getElementById('admin-process-title').textContent=title;
+  document.getElementById('admin-process-text').textContent=text||'';
+  setAdminBusy(false);
+}
+function closeAdminProcess(){
+  const o=document.getElementById('admin-process-overlay');
+  if(o)o.classList.remove('show','done','error');
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeAdminProcess();
+});
+function adminPeriodoForWeek(week){
+  const c=CORTES.find(x=>Number(x.SEMANA)===Number(week));
+  return c ? String(c.PERIODO||c.periodo||'') : '';
+}
+function adminSelectedLoadScope(){
+  return document.querySelector('input[name="adm-load-scope"]:checked')?.value || 'completo';
+}
+function adminSelectedDeleteScope(){
+  return document.querySelector('input[name="adm-delete-scope"]:checked')?.value || 'completo';
+}
+
+function adminWeekExistsState(){
+  if(!adminPrepared) return {existingRows:0,commissionRows:0,anyWeekData:false};
+  const week=Number(adminPrepared.week);
+  const c=CORTES.find(x=>Number(x.SEMANA)===week);
+  const existingRows=c?EJ_IND.filter(r=>Number(r.corte)===Number(c.CORTE)).length:0;
+  const commissionRows=EJ_COM.filter(r=>Number(r.semana)===week).length;
+  return {existingRows,commissionRows,anyWeekData:(existingRows>0||commissionRows>0)};
+}
+
+function refreshAdminActionButtons(){
+  const add=document.getElementById('adm-add');
+  const rep=document.getElementById('adm-replace');
+  if(!add||!rep) return;
+
+  if(!adminPrepared){
+    add.disabled=true;
+    rep.disabled=true;
+    return;
+  }
+
+  const checked=document.querySelector('input[name="adm-load-scope"]:checked');
+  const scope=checked ? checked.value : 'completo';
+  const week=Number(adminPrepared.week);
+  const c=CORTES.find(x=>Number(x.SEMANA)===week);
+  const indicatorRows=c ? EJ_IND.filter(r=>Number(r.corte)===Number(c.CORTE)).length : 0;
+  const commissionRows=EJ_COM.filter(r=>Number(r.semana)===week).length;
+
+  const existsForMode = scope==='indicadores'
+    ? indicatorRows>0
+    : (indicatorRows>0 || commissionRows>0);
+
+  add.disabled=existsForMode;
+  rep.disabled=!existsForMode;
+
+  // Refresca texto de estado para dejar claro qué modo está evaluando.
+  const estado=document.getElementById('adm-existing');
+  if(estado){
+    estado.textContent=`${(indicatorRows>0||commissionRows>0)?'Existe':'Nueva'} · ${indicatorRows} indicadores · ${commissionRows} comisiones`;
+  }
+}
+
+async function publishAdminWeek(mode){
+  if(!adminPrepared) return;
+  const state=adminWeekExistsState();
+  const scope=adminSelectedLoadScope();
+  const existsForMode=scope==='indicadores'?state.existingRows>0:state.anyWeekData;
+  if(mode==='add' && existsForMode){
+    const detalle=scope==='indicadores'
+      ? `${state.existingRows} indicadores`
+      : `${state.existingRows} indicadores y ${state.commissionRows} comisiones`;
+    setAdminStatus(`BLOQUEADO · Semana ${adminPrepared.week} ya tiene ${detalle}. Usa Reemplazar semana.`,'err');
+    return;
+  }
+  if(mode==='replace' && !existsForMode){
+    setAdminStatus(`BLOQUEADO · Semana ${adminPrepared.week} no tiene datos para ${scope==='indicadores'?'Solo Indicadores':'Semana completa'}. Usa Agregar semana.`,'err');
+    return;
+  }
+  const verb=mode==='add'?'AGREGAR':'REEMPLAZAR';
+  const detalle = scope==='indicadores'
+    ? `SOLO INDICADORES\nIndicadores: ${adminPrepared.rows.length}`
+    : `SEMANA COMPLETA\nIndicadores: ${adminPrepared.rows.length}\nComisiones Ejecutivo: ${adminPrepared.ejecutivoRows?.length||0}\nCoordinadores: ${adminPrepared.coordinadorRows?.length||0}\nGerentes: ${adminPrepared.gerenteRows?.length||0}\nRegionales: ${adminPrepared.regionalRows?.length||0}`;
+
+  if(!confirm(`${verb} Semana ${adminPrepared.week}?\n\nArchivo: ${adminPrepared.fileName}\n${detalle}\nColocación: ${fmtMoney(adminPrepared.summary.monto_nuevos+adminPrepared.summary.monto_renovaciones)}\n\nSe creará respaldo antes de modificar.`)) return;
+
+  const periodoVisible=adminPeriodoForWeek(adminPrepared.week) || adminPrepared.period || '';
+  showAdminProcess(
+    `${verb==='AGREGAR'?'Cargando':'Reemplazando'} Semana ${adminPrepared.week}`,
+    `${scope==='indicadores'?'Solo Indicadores':'Semana completa'}\n${periodoVisible||'Procesando datos semanales…'}\n\nCreando respaldo y validando integridad…`
+  );
+  setAdminStatus(`${verb} Semana ${adminPrepared.week} · ${scope==='indicadores'?'Solo Indicadores':'Semana completa'}...`);
+  try{
+    const data = scope==='indicadores'
+      ? await adminApi('publish_indicadores',{
+          mode,
+          week:adminPrepared.week,
+          file_name:adminPrepared.fileName,
+          rows:adminPrepared.rows
+        })
+      : await adminApi('publish_week',{
+          mode,
+          week:adminPrepared.week,
+          file_name:adminPrepared.fileName,
+          indicadores_rows:adminPrepared.rows,
+          ejecutivo_rows:adminPrepared.ejecutivoRows||[],
+          coordinador_rows:adminPrepared.coordinadorRows||[],
+          gerente_rows:adminPrepared.gerenteRows||[],
+          regional_rows:adminPrepared.regionalRows||[]
+        });
+
+    const integrity=data.integridad_otras_semanas===true?'VALIDADA · otras semanas sin cambios':'NO CONFIRMADA';
+    if(scope==='indicadores'){
+      const periodo=data.periodo||periodoVisible||adminPeriodoForWeek(data.week);
+      const msg=`OK · Semana ${data.week} ${mode==='add'?'agregada':'reemplazada'} · SOLO INDICADORES.\nPeriodo: ${periodo||'-'}\nIndicadores: ${data.registros_nuevos??adminPrepared.rows.length}\nIntegridad: ${integrity}`;
+      setAdminStatus(msg,'ok');
+      finishAdminProcess(true,'Proceso terminado correctamente',msg);
+    }else{
+      const periodo=data.periodo||periodoVisible||adminPeriodoForWeek(data.week);
+      const msg=`OK · Semana ${data.week} ${mode==='add'?'agregada':'reemplazada'} · COMPLETA.\nPeriodo: ${periodo||'-'}\nIndicadores: ${data.detalles?.indicadores?.nuevos||0}\nComisiones Ejecutivo: ${data.detalles?.ejecutivo?.nuevos||0}\nCoordinadores: ${data.detalles?.coordinador?.nuevos||0}\nGerentes: ${data.detalles?.gerente?.nuevos||0}\nRegionales: ${data.detalles?.regional?.nuevos||0}\nIntegridad: ${integrity}`;
+      setAdminStatus(msg,'ok');
+      finishAdminProcess(true,'Proceso terminado correctamente',msg);
+    }
+    await reloadDashboardDataAfterAdmin();
+    clearAdminPrepared();
+  }catch(err){
+    setAdminStatus('ERROR: '+err.message,'err');
+    const detalle=(String(err.message||'').includes('Failed to fetch'))
+      ? 'No fue posible comunicarse con el Web App de Apps Script. La solicitud puede no haber llegado al servidor. Revisa Apps Script → Ejecuciones antes de repetir la operación.'
+      : 'Si la validación de integridad falló, el sistema intentó revertir la operación.';
+    finishAdminProcess(false,'No se pudo completar','ERROR: '+err.message+'\n\n'+detalle);
+  }
+}
+
+async function deleteAdminWeek(){
+  const week=Number(document.getElementById('adm-delete-week').value);
+  if(!week)return;
+
+  const scope=adminSelectedDeleteScope();
+  const c=CORTES.find(x=>Number(x.SEMANA)===week);
+  const cnt=c?EJ_IND.filter(r=>Number(r.corte)===Number(c.CORTE)).length:0;
+  const texto = scope==='indicadores'
+    ? `Eliminar SOLO INDICADORES de Semana ${week} (${cnt} indicadores).`
+    : `Eliminar TODA la Semana ${week} (${cnt} indicadores), incluyendo todas las comisiones.`;
+
+  const typed=prompt(`${texto}\n\nPara confirmar escribe exactamente ELIMINAR:`,'');
+  if(String(typed||'').trim().toUpperCase()!=='ELIMINAR'){
+    setAdminStatus('Eliminación cancelada. No se modificó ningún dato.');
+    return;
+  }
+
+  const periodoVisible=adminPeriodoForWeek(week);
+  showAdminProcess(
+    `Eliminando Semana ${week}`,
+    `${scope==='indicadores'?'Solo Indicadores':'Semana completa'}\n${periodoVisible||''}\n\nCreando respaldo y validando integridad…`
+  );
+  setAdminStatus(`Eliminando Semana ${week} · ${scope==='indicadores'?'Solo Indicadores':'Semana completa'}...`);
+  try{
+    const data = scope==='indicadores'
+      ? await adminApi('delete_indicadores',{week})
+      : await adminApi('delete_week',{week});
+
+    if(scope==='indicadores'){
+      const msg=`OK · Semana ${week} eliminada SOLO de INDICADORES.\nPeriodo: ${periodoVisible||'-'}\nFilas eliminadas: ${data.registros_antes||0}\nCORTES: ${data.cortes_conservado?'conservado':'eliminado'}`;
+      setAdminStatus(msg,'ok'); finishAdminProcess(true,'Proceso terminado correctamente',msg);
+    }else{
+      const msg=`OK · Semana ${week} eliminada completamente.\nPeriodo: ${periodoVisible||'-'}\nIndicadores: ${data.eliminados?.INDICADORES||0}\nEjecutivo: ${data.eliminados?.EJECUTIVO||0}\nCoordinador: ${data.eliminados?.COORDINADOR||0}\nGerente: ${data.eliminados?.GERENTE||0}\nRegional: ${data.eliminados?.GERENTE_REGIONAL||0}\nCORTES: eliminado`;
+      setAdminStatus(msg,'ok'); finishAdminProcess(true,'Proceso terminado correctamente',msg);
+    }
+    await reloadDashboardDataAfterAdmin();
+  }catch(err){
+    setAdminStatus('ERROR: '+err.message,'err');
+    const detalle=(String(err.message||'').includes('Failed to fetch'))
+      ? 'No fue posible comunicarse con el Web App de Apps Script. Revisa Apps Script → Ejecuciones antes de volver a intentar.'
+      : 'No realices otra operación hasta revisar el mensaje.';
+    finishAdminProcess(false,'No se pudo completar','ERROR: '+err.message+'\n\n'+detalle);
+  }
+}
+
+
+let adminUserData={pending:[],users:[]};
+async function loadAdminUsers(){
+  const pb=document.getElementById('usr-pending-body'), ab=document.getElementById('usr-active-body'); if(!pb||!ab)return;
+  try{ const d=await adminApi('admin_users'); adminUserData=d; renderPendingUsers(); renderActiveUsers(); }
+  catch(err){document.getElementById('usr-status').textContent='ERROR: '+err.message;}
+}
+function renderPendingUsers(){
+  const tb=document.getElementById('usr-pending-body'), a=adminUserData.pending||[];
+  if(!a.length){tb.innerHTML='<tr><td colspan="4" class="user-empty">No hay usuarios pendientes.</td></tr>';return;}
+  tb.innerHTML=a.map((u,i)=>`<tr><td><input type="checkbox" class="usr-pending-check" data-i="${i}"></td><td>${esc(u.nombre)}</td><td><span class="user-pill">${esc(ROLE_LABELS[u.role]||u.role)}</span></td><td>${esc((u.scopes||[]).map(s=>[s.region,s.agencia].filter(Boolean).join(' / ')).join(' · '))}</td></tr>`).join('');
+}
+function renderActiveUsers(){
+  const tb=document.getElementById('usr-active-body'), a=adminUserData.users||[];
+  if(!a.length){tb.innerHTML='<tr><td colspan="5" class="user-empty">No hay usuarios.</td></tr>';return;}
+  const roles=['ejecutivo','coordinador','gerente','regional','directivo','direccion','admin'];
+  tb.innerHTML=a.map(u=>`<tr><td><strong>${esc(u.username)}</strong></td><td>${esc(u.nombre)}</td><td><select class="admin-input usr-role" data-u="${esc(u.username)}">${roles.map(r=>`<option value="${r}" ${r===u.role?'selected':''}>${esc(ROLE_LABELS[r]||r)}</option>`).join('')}</select></td><td><select class="admin-input usr-state" data-u="${esc(u.username)}"><option value="activo" ${u.estado!=='inactivo'?'selected':''}>Activo</option><option value="inactivo" ${u.estado==='inactivo'?'selected':''}>Inactivo</option></select></td><td><button class="admin-btn secondary" onclick="saveUserRow('${jsq(u.username)}')">Guardar</button> <button class="admin-btn replace" onclick="resetUserPassword('${jsq(u.username)}')">Restablecer contraseña</button></td></tr>`).join('');
+}
+function jsq(v){return String(v||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+async function approveSelectedUsers(){
+  const idx=[...document.querySelectorAll('.usr-pending-check:checked')].map(x=>Number(x.dataset.i));
+  const users=idx.map(i=>adminUserData.pending[i]).filter(Boolean); if(!users.length){document.getElementById('usr-status').textContent='Selecciona al menos un usuario.';return;}
+  if(!confirm(`Autorizar ${users.length} usuario(s)? Se generará una contraseña temporal para cada uno.`))return;
+  try{const d=await adminApi('approve_users',{users}); const lines=(d.created||[]).map(x=>`${x.nombre} · ${x.username} · ${x.password}`); document.getElementById('usr-status').innerHTML='Usuarios creados:<br><span class="temp-pass">'+lines.map(esc).join('<br>')+'</span><br>Guarda estas contraseñas; después no se mostrarán.'; await loadAdminUsers();}
+  catch(err){document.getElementById('usr-status').textContent='ERROR: '+err.message;}
+}
+async function resetUserPassword(username){
+  const manual=prompt('Escribe una nueva contraseña (mínimo 6 caracteres) o deja vacío para generar una automática:',''); if(manual===null)return;
+  try{const d=await adminApi('reset_password',{username,password:String(manual||'').trim()}); document.getElementById('usr-status').innerHTML=`Contraseña nueva para <strong>${esc(username)}</strong>: <span class="temp-pass">${esc(d.password)}</span><br>Se muestra solo en este momento.`;}
+  catch(err){document.getElementById('usr-status').textContent='ERROR: '+err.message;}
+}
+async function saveUserRow(username){
+  const role=document.querySelector(`.usr-role[data-u="${CSS.escape(username)}"]`)?.value, estado=document.querySelector(`.usr-state[data-u="${CSS.escape(username)}"]`)?.value;
+  try{await adminApi('update_user',{username,role,estado}); document.getElementById('usr-status').textContent=`Usuario ${username} actualizado.`; await loadAdminUsers();}
+  catch(err){document.getElementById('usr-status').textContent='ERROR: '+err.message;}
+}
+
+async function reloadDashboardDataAfterAdmin(){
+  // Relogin ligero usando token: el backend devuelve los datos ya actualizados.
+  const data=await adminApi('refresh_data');
+  CORTES=data.cortes||[]; EJ_COM=data.ejecutivo_comisiones||[]; EJ_IND=data.ejecutivo_indicadores||[]; NIVEL_PROPIO=data.nivel_propio||[];
+  ALL_CORTES=CORTES.map(c=>c.CORTE); LAST_CORTE=ALL_CORTES.length?ALL_CORTES[ALL_CORTES.length-1]:null;
+  refreshAdminWeekSelect();
+  if(state.activeTab==='administracion') await loadAdminUsers();
+}
+
+
 </script>
+
+<div id="admin-process-overlay" class="admin-process-overlay" aria-live="polite">
+  <div class="admin-process-box">
+    <div class="admin-spinner"></div>
+    <div id="admin-process-title" class="admin-process-title">Procesando…</div>
+    <div id="admin-process-text" class="admin-process-text">Preparando operación.</div>
+    <button id="admin-process-close" class="admin-process-close" type="button" onclick="closeAdminProcess()">Cerrar</button>
+  </div>
+</div>
+
 </body>
 </html>
