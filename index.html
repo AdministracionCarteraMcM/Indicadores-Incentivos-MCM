@@ -2618,11 +2618,20 @@ function clearAdminPrepared(){
   adminPrepared=null; const f=document.getElementById('admin-file'); if(f)f.value=''; paintAdminPrepared(null); setAdminStatus('Selecciona un archivo semanal para comenzar.');
 }
 
-async function adminApi(action,extra={}){
+async function adminApi(action,extra={},timeoutMs=120000){
   if(!session?.token) throw new Error('La sesión administrativa no tiene token. Vuelve a iniciar sesión.');
-  const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,session_token:session.token,...extra})});
-  if(!resp.ok) throw new Error('HTTP '+resp.status);
-  const data=await resp.json(); if(!data.ok) throw new Error(data.error||'Operación rechazada'); return data;
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,session_token:session.token,...extra}),signal:controller.signal});
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const data=await resp.json();
+    if(!data.ok) throw new Error(data.error||'Operación rechazada');
+    return data;
+  }catch(err){
+    if(err&&err.name==='AbortError') throw new Error('Tiempo de espera agotado al consultar el backend.');
+    throw err;
+  }finally{clearTimeout(timer);}
 }
 
 
@@ -2828,9 +2837,23 @@ async function deleteAdminWeek(){
 
 let adminUserData={pending:[],users:[]};
 async function loadAdminUsers(){
-  const pb=document.getElementById('usr-pending-body'), ab=document.getElementById('usr-active-body'); if(!pb||!ab)return;
-  try{ const d=await adminApi('admin_users'); adminUserData=d; renderPendingUsers(); renderActiveUsers(); }
-  catch(err){document.getElementById('usr-status').textContent='ERROR: '+err.message;}
+  const pb=document.getElementById('usr-pending-body'), ab=document.getElementById('usr-active-body'), st=document.getElementById('usr-status');
+  if(!pb||!ab)return;
+  pb.innerHTML='<tr><td colspan="4" class="user-empty">Cargando usuarios pendientes…</td></tr>';
+  ab.innerHTML='<tr><td colspan="5" class="user-empty">Cargando usuarios activos…</td></tr>';
+  if(st) st.textContent='Consultando usuarios y scopes…';
+  try{
+    const d=await adminApi('admin_users',{},45000);
+    adminUserData=d;
+    renderPendingUsers();
+    renderActiveUsers();
+    if(st) st.textContent=`Lista actualizada · ${(d.pending||[]).length} pendiente(s) · ${(d.users||[]).length} activo(s).`;
+  }catch(err){
+    const msg=String(err&&err.message?err.message:err);
+    pb.innerHTML='<tr><td colspan="4" class="user-empty">No fue posible cargar los pendientes.</td></tr>';
+    ab.innerHTML='<tr><td colspan="5" class="user-empty">No fue posible cargar los usuarios activos.</td></tr>';
+    if(st) st.textContent='ERROR: '+msg+(msg.includes('Tiempo de espera')?' · Revisa Apps Script → Ejecuciones.':'');
+  }
 }
 function renderPendingUsers(){
   const tb=document.getElementById('usr-pending-body'), a=adminUserData.pending||[];
