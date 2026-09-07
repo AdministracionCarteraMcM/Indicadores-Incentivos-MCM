@@ -569,7 +569,7 @@ body{
 
 /* URL de la aplicación web publicada en Apps Script - Sheet LOCAL */
 // IMPORTANTE: pega aquí la URL /exec del Web App PARALELO después de publicarlo.
-const API_URL = 'https://script.google.com/macros/s/AKfycbxjNOoVtbEBQN5gEt89BEDIo5miSerwAcSvEt19U61gUOGvEpKAX0XgDbd5J1pe4seCtQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycby6ay6s4W3n0mh2xC34d8YHHiyRO6aUigcE0lvUt_6GgZ8JpO2fVroLHajpfEL5IOYoeA/exec';
 
 const HTML_VERSION = '2026-09-03-MCM-PARALELO-ADMIN-V7.1-FETCH-CLOSE';
 
@@ -2618,20 +2618,11 @@ function clearAdminPrepared(){
   adminPrepared=null; const f=document.getElementById('admin-file'); if(f)f.value=''; paintAdminPrepared(null); setAdminStatus('Selecciona un archivo semanal para comenzar.');
 }
 
-async function adminApi(action,extra={},timeoutMs=120000){
+async function adminApi(action,extra={}){
   if(!session?.token) throw new Error('La sesión administrativa no tiene token. Vuelve a iniciar sesión.');
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),timeoutMs);
-  try{
-    const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,session_token:session.token,...extra}),signal:controller.signal});
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
-    const data=await resp.json();
-    if(!data.ok) throw new Error(data.error||'Operación rechazada');
-    return data;
-  }catch(err){
-    if(err&&err.name==='AbortError') throw new Error('Tiempo de espera agotado al consultar el backend.');
-    throw err;
-  }finally{clearTimeout(timer);}
+  const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,session_token:session.token,...extra})});
+  if(!resp.ok) throw new Error('HTTP '+resp.status);
+  const data=await resp.json(); if(!data.ok) throw new Error(data.error||'Operación rechazada'); return data;
 }
 
 
@@ -2837,23 +2828,9 @@ async function deleteAdminWeek(){
 
 let adminUserData={pending:[],users:[]};
 async function loadAdminUsers(){
-  const pb=document.getElementById('usr-pending-body'), ab=document.getElementById('usr-active-body'), st=document.getElementById('usr-status');
-  if(!pb||!ab)return;
-  pb.innerHTML='<tr><td colspan="4" class="user-empty">Cargando usuarios pendientes…</td></tr>';
-  ab.innerHTML='<tr><td colspan="5" class="user-empty">Cargando usuarios activos…</td></tr>';
-  if(st) st.textContent='Consultando usuarios y scopes…';
-  try{
-    const d=await adminApi('admin_users',{},45000);
-    adminUserData=d;
-    renderPendingUsers();
-    renderActiveUsers();
-    if(st) st.textContent=`Lista actualizada · ${(d.pending||[]).length} pendiente(s) · ${(d.users||[]).length} activo(s).`;
-  }catch(err){
-    const msg=String(err&&err.message?err.message:err);
-    pb.innerHTML='<tr><td colspan="4" class="user-empty">No fue posible cargar los pendientes.</td></tr>';
-    ab.innerHTML='<tr><td colspan="5" class="user-empty">No fue posible cargar los usuarios activos.</td></tr>';
-    if(st) st.textContent='ERROR: '+msg+(msg.includes('Tiempo de espera')?' · Revisa Apps Script → Ejecuciones.':'');
-  }
+  const pb=document.getElementById('usr-pending-body'), ab=document.getElementById('usr-active-body'); if(!pb||!ab)return;
+  try{ const d=await adminApi('admin_users'); adminUserData=d; renderPendingUsers(); renderActiveUsers(); }
+  catch(err){document.getElementById('usr-status').textContent='ERROR: '+err.message;}
 }
 function renderPendingUsers(){
   const tb=document.getElementById('usr-pending-body'), a=adminUserData.pending||[];
