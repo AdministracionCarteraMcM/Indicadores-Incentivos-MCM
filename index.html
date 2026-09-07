@@ -1021,6 +1021,26 @@ function weightedNormalidad(rows){
   return esp? rec/esp : 0;
 }
 
+function selectedStaffScopes(){
+  if(!state.ejecutivo || !DIRECTORIO_COM.length) return null;
+  const nombreSel=state.ejecutivo.trim().toUpperCase();
+  const staff=DIRECTORIO_COM.filter(r=>String(r.empleado||r.ejecutivo||'').trim().toUpperCase()===nombreSel);
+  if(!staff.length) return null;
+  const role=String(staff[0].rol_persona||'').toLowerCase();
+  const regions=new Set(staff.map(r=>r.region).filter(Boolean));
+  const pairs=new Set(staff.map(r=>(r.region||'')+'|'+(r.agencia||'')).filter(x=>x!=='|'));
+  return {role,regions,pairs};
+}
+
+function personMatchesRow(r){
+  if(!state.ejecutivo) return true;
+  const staff=selectedStaffScopes();
+  if(!staff) return (r.ejecutivo||'').toUpperCase().includes(state.ejecutivo);
+  if(staff.role==='regional') return staff.regions.has(r.region||'');
+  if(staff.role==='gerente' || staff.role==='coordinador') return staff.pairs.has((r.region||'')+'|'+(r.agencia||''));
+  return (r.ejecutivo||'').toUpperCase().includes(state.ejecutivo);
+}
+
 function finalRows(dataset, flowFields, snapFields){
   let rows = scopedRows(dataset);
   rows = corteScopedRows(rows);
@@ -1028,7 +1048,7 @@ function finalRows(dataset, flowFields, snapFields){
     (!state.region || r.region===state.region) &&
     (!state.agencia || r.agencia===state.agencia) &&
     (!state.estatus || r.estatus===state.estatus) &&
-    (!state.ejecutivo || (r.ejecutivo||'').toUpperCase().includes(state.ejecutivo))
+    personMatchesRow(r)
   );
   if(state.selectedCortes.length>1) rows = aggregateByEjecutivo(rows, flowFields, snapFields);
   return rows;
@@ -1040,7 +1060,7 @@ function baseRowsForTrend(dataset){
     (!state.region || r.region===state.region) &&
     (!state.agencia || r.agencia===state.agencia) &&
     (!state.estatus || r.estatus===state.estatus) &&
-    (!state.ejecutivo || (r.ejecutivo||'').toUpperCase().includes(state.ejecutivo))
+    personMatchesRow(r)
   );
   return rows;
 }
