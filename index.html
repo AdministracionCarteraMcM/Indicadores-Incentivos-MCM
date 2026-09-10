@@ -387,7 +387,7 @@ body{
 .admin-select{width:100%;padding:10px 11px;border:1px solid var(--border);border-radius:8px;background:#fff;margin:6px 0 8px;}
 .admin-warning{font-size:11px;color:#8a5c10;background:#fff7e6;border:1px solid #f0d59a;border-radius:8px;padding:9px 11px;margin-top:10px;}
 @media(max-width:900px){.admin-wrap{grid-template-columns:1fr;}}
-.admin-wide{grid-column:1/-1}.user-table{width:100%;border-collapse:collapse;font-size:12px}.user-table th,.user-table td{padding:8px;border-bottom:1px solid var(--border);text-align:left}.user-table th{font-size:10px;text-transform:uppercase;color:var(--text-secondary)}.user-scroll{max-height:330px;overflow:auto;border:1px solid var(--border);border-radius:9px}.user-pill{font-size:10px;padding:3px 7px;border-radius:10px;background:#eef2ef}.temp-pass{font-family:monospace;font-weight:700;letter-spacing:.5px}.admin-input{padding:7px 8px;border:1px solid var(--border);border-radius:7px;min-width:110px}.user-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.user-empty{padding:18px;text-align:center;color:var(--text-secondary)}
+.admin-wide{grid-column:1/-1}.user-table{width:100%;border-collapse:collapse;font-size:12px}.user-table th,.user-table td{padding:8px;border-bottom:1px solid var(--border);text-align:left}.user-table th{font-size:10px;text-transform:uppercase;color:var(--text-secondary)}.user-scroll{max-height:330px;overflow:auto;border:1px solid var(--border);border-radius:9px}.user-pill{font-size:10px;padding:3px 7px;border-radius:10px;background:#eef2ef}.temp-pass{font-family:monospace;font-weight:700;letter-spacing:.5px}.admin-input{padding:7px 8px;border:1px solid var(--border);border-radius:7px;min-width:110px}.user-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.user-empty{padding:18px;text-align:center;color:var(--text-secondary)}.user-search{padding:8px 11px;border:1px solid var(--border);border-radius:8px;min-width:260px;max-width:380px;flex:1;background:#fff;color:var(--text);font-size:12px;outline:none}.user-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(128,0,48,.10)}
 
 
 
@@ -596,7 +596,7 @@ body{background:radial-gradient(circle at 8% 0%,rgba(143,31,73,.08),transparent 
         <section class="admin-card admin-wide">
           <h3>Usuarios pendientes de autorización</h3>
           <p>Personas detectadas en los scopes que todavía no tienen acceso. Marca las que quieras autorizar; el sistema creará usuario y contraseña temporal automáticamente.</p>
-          <div class="user-toolbar"><button class="admin-btn secondary" id="usr-refresh">Actualizar lista</button><button class="admin-btn add" id="usr-approve">Autorizar seleccionados</button></div>
+          <div class="user-toolbar"><input id="usr-pending-search" class="user-search" type="search" placeholder="Buscar por nombre, rol o scope..." autocomplete="off" oninput="renderPendingUsers()"><button class="admin-btn secondary" id="usr-refresh">Actualizar lista</button><button class="admin-btn add" id="usr-approve">Autorizar seleccionados</button><button class="export-btn" type="button" onclick="exportPendingUsersExcel()">Exportar Excel</button><button class="export-btn" type="button" onclick="exportPendingUsersPDF()">Exportar PDF</button></div>
           <div class="user-scroll"><table class="user-table"><thead><tr><th></th><th>Nombre</th><th>Rol</th><th>Scope detectado</th></tr></thead><tbody id="usr-pending-body"><tr><td colspan="4" class="user-empty">Cargando...</td></tr></tbody></table></div>
           <div class="admin-status" id="usr-status">Las contraseñas existentes no se muestran; una contraseña temporal nueva sí se mostrará al autorizar o restablecer.</div>
         </section>
@@ -604,6 +604,7 @@ body{background:radial-gradient(circle at 8% 0%,rgba(143,31,73,.08),transparent 
         <section class="admin-card admin-wide">
           <h3>Usuarios activos</h3>
           <p>Consulta usuarios, cambia rol o estado y restablece contraseñas. Por seguridad no se muestran las contraseñas actuales.</p>
+          <div class="user-toolbar"><input id="usr-active-search" class="user-search" type="search" placeholder="Buscar por usuario, nombre, rol o estado..." autocomplete="off" oninput="renderActiveUsers()"><button class="export-btn" type="button" onclick="exportActiveUsersExcel()">Exportar Excel</button><button class="export-btn" type="button" onclick="exportActiveUsersPDF()">Exportar PDF</button></div>
           <div class="user-scroll"><table class="user-table"><thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="usr-active-body"><tr><td colspan="5" class="user-empty">Cargando...</td></tr></tbody></table></div>
         </section>
 
@@ -2914,18 +2915,70 @@ async function loadAdminUsers(){
   try{ const d=await adminApi('admin_users'); adminUserData=d; renderPendingUsers(); renderActiveUsers(); }
   catch(err){document.getElementById('usr-status').textContent='ERROR: '+err.message;}
 }
+function normUserSearch_(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+function filteredPendingUsers_(){
+  const q=normUserSearch_(document.getElementById('usr-pending-search')?.value);
+  return (adminUserData.pending||[]).map((u,i)=>({u,i})).filter(({u})=>{
+    if(!q)return true;
+    const scope=(u.scopes||[]).map(s=>[s.region,s.agencia].filter(Boolean).join(' / ')).join(' · ');
+    return normUserSearch_([u.nombre,ROLE_LABELS[u.role]||u.role,scope].join(' ')).includes(q);
+  });
+}
+function filteredActiveUsers_(){
+  const q=normUserSearch_(document.getElementById('usr-active-search')?.value);
+  return (adminUserData.users||[]).filter(u=>!q||normUserSearch_([u.username,u.nombre,ROLE_LABELS[u.role]||u.role,u.estado].join(' ')).includes(q));
+}
 function renderPendingUsers(){
-  const tb=document.getElementById('usr-pending-body'), a=adminUserData.pending||[];
-  if(!a.length){tb.innerHTML='<tr><td colspan="4" class="user-empty">No hay usuarios pendientes.</td></tr>';return;}
-  tb.innerHTML=a.map((u,i)=>`<tr><td><input type="checkbox" class="usr-pending-check" data-i="${i}"></td><td>${esc(u.nombre)}</td><td><span class="user-pill">${esc(ROLE_LABELS[u.role]||u.role)}</span></td><td>${esc((u.scopes||[]).map(s=>[s.region,s.agencia].filter(Boolean).join(' / ')).join(' · '))}</td></tr>`).join('');
+  const tb=document.getElementById('usr-pending-body'), a=filteredPendingUsers_();
+  if(!a.length){tb.innerHTML='<tr><td colspan="4" class="user-empty">No hay coincidencias.</td></tr>';return;}
+  tb.innerHTML=a.map(({u,i})=>`<tr><td><input type="checkbox" class="usr-pending-check" data-i="${i}"></td><td>${esc(u.nombre)}</td><td><span class="user-pill">${esc(ROLE_LABELS[u.role]||u.role)}</span></td><td>${esc((u.scopes||[]).map(s=>[s.region,s.agencia].filter(Boolean).join(' / ')).join(' · '))}</td></tr>`).join('');
 }
 function renderActiveUsers(){
-  const tb=document.getElementById('usr-active-body'), a=adminUserData.users||[];
-  if(!a.length){tb.innerHTML='<tr><td colspan="5" class="user-empty">No hay usuarios.</td></tr>';return;}
+  const tb=document.getElementById('usr-active-body'), a=filteredActiveUsers_();
+  if(!a.length){tb.innerHTML='<tr><td colspan="5" class="user-empty">No hay coincidencias.</td></tr>';return;}
   const roles=['ejecutivo','coordinador','gerente','regional','directivo','direccion','admin'];
   tb.innerHTML=a.map(u=>`<tr><td><strong>${esc(u.username)}</strong></td><td>${esc(u.nombre)}</td><td><select class="admin-input usr-role" data-u="${esc(u.username)}">${roles.map(r=>`<option value="${r}" ${r===u.role?'selected':''}>${esc(ROLE_LABELS[r]||r)}</option>`).join('')}</select></td><td><select class="admin-input usr-state" data-u="${esc(u.username)}"><option value="activo" ${u.estado!=='inactivo'?'selected':''}>Activo</option><option value="inactivo" ${u.estado==='inactivo'?'selected':''}>Inactivo</option></select></td><td><button class="admin-btn secondary" onclick="saveUserRow('${jsq(u.username)}')">Guardar</button> <button class="admin-btn replace" onclick="resetUserPassword('${jsq(u.username)}')">Restablecer contraseña</button></td></tr>`).join('');
 }
 function jsq(v){return String(v||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function pendingUserExportRows(){
+  return filteredPendingUsers_().map(({u})=>({
+    'Nombre':String(u.nombre||''),
+    'Rol':String(ROLE_LABELS[u.role]||u.role||''),
+    'Scope detectado':(u.scopes||[]).map(sc=>[sc.region,sc.agencia].filter(Boolean).join(' / ')).join(' · ')
+  }));
+}
+function activeUserExportRows(){
+  return filteredActiveUsers_().map(u=>({
+    'Usuario':String(u.username||''),
+    'Nombre':String(u.nombre||''),
+    'Rol':String(ROLE_LABELS[u.role]||u.role||''),
+    'Estado':String((u.estado||'activo').toLowerCase()==='inactivo'?'Inactivo':'Activo')
+  }));
+}
+function exportUsersExcel_(rows,fileName,sheetName){
+  if(!rows.length){alert('No hay usuarios para exportar.');return;}
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const widths=Object.keys(rows[0]).map(k=>({wch:Math.min(55,Math.max(k.length+2,...rows.map(r=>String(r[k]??'').length+2)))}));
+  ws['!cols']=widths;
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,sheetName.substring(0,31));
+  XLSX.writeFile(wb,fileName);
+}
+function exportUsersPDF_(rows,title,fileName){
+  if(!rows.length){alert('No hay usuarios para exportar.');return;}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+  const headers=Object.keys(rows[0]);
+  const body=rows.map(r=>headers.map(h=>String(r[h]??'')));
+  doc.setFontSize(15); doc.text(title,40,34);
+  doc.setFontSize(8); doc.text('Generado desde Administración · Dashboard McM',40,49);
+  doc.autoTable({head:[headers],body,startY:60,styles:{fontSize:7,cellPadding:3,overflow:'linebreak'},headStyles:{fontSize:7.5},margin:{left:30,right:30},theme:'grid'});
+  doc.save(fileName);
+}
+function exportPendingUsersExcel(){exportUsersExcel_(pendingUserExportRows(),'Usuarios_Pendientes_McM.xlsx','Pendientes');}
+function exportPendingUsersPDF(){exportUsersPDF_(pendingUserExportRows(),'Usuarios pendientes de autorización','Usuarios_Pendientes_McM.pdf');}
+function exportActiveUsersExcel(){exportUsersExcel_(activeUserExportRows(),'Usuarios_Activos_McM.xlsx','Usuarios');}
+function exportActiveUsersPDF(){exportUsersPDF_(activeUserExportRows(),'Usuarios activos / registrados','Usuarios_Activos_McM.pdf');}
 async function approveSelectedUsers(){
   const idx=[...document.querySelectorAll('.usr-pending-check:checked')].map(x=>Number(x.dataset.i));
   const users=idx.map(i=>adminUserData.pending[i]).filter(Boolean); if(!users.length){document.getElementById('usr-status').textContent='Selecciona al menos un usuario.';return;}
