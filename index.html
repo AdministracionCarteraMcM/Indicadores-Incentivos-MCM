@@ -594,6 +594,19 @@ body{background:radial-gradient(circle at 8% 0%,rgba(143,31,73,.08),transparent 
           <div class="admin-warning">Se pedirá confirmación explícita antes de eliminar y se guardará el detalle en LOG_ACTUALIZACIONES.</div>
         </section>
         <section class="admin-card admin-wide">
+          <h3>Respaldos automáticos del Sheet</h3>
+          <p>Consulta los respaldos creados antes de reemplazar o eliminar semanas. Puedes filtrar por semana, seleccionar uno o varios y eliminarlos del Google Sheet. Esto <strong>no elimina la semana publicada</strong>; solamente borra las pestañas de respaldo <code>BK_ADMIN_...</code>.</p>
+          <div class="user-toolbar">
+            <select class="admin-input" id="bk-week-filter" onchange="renderAdminBackups()" style="max-width:220px;"><option value="">Todas las semanas</option></select>
+            <input id="bk-search" class="user-search" type="search" placeholder="Buscar por semana, tipo o nombre de respaldo..." autocomplete="off" oninput="renderAdminBackups()">
+            <button class="admin-btn secondary" type="button" id="bk-refresh">Actualizar respaldos</button>
+            <button class="admin-btn delete" type="button" id="bk-delete">Eliminar seleccionados</button>
+          </div>
+          <div class="user-scroll"><table class="user-table"><thead><tr><th><input type="checkbox" id="bk-check-all" title="Seleccionar visibles" onchange="toggleVisibleBackups(this.checked)"></th><th>Semana</th><th>Tipo</th><th>Fecha respaldo</th><th>Filas</th><th>Hoja de respaldo</th></tr></thead><tbody id="bk-body"><tr><td colspan="6" class="user-empty">Cargando...</td></tr></tbody></table></div>
+          <div class="admin-status" id="bk-status">Solo se pueden eliminar pestañas cuyo nombre comienza con BK_ADMIN_. Las hojas principales están protegidas por la lógica del sistema.</div>
+        </section>
+
+        <section class="admin-card admin-wide">
           <h3>Usuarios pendientes de autorización</h3>
           <p>Personas detectadas en los scopes que todavía no tienen acceso. Marca las que quieras autorizar; el sistema creará usuario y contraseña temporal automáticamente.</p>
           <div class="user-toolbar"><input id="usr-pending-search" class="user-search" type="search" placeholder="Buscar por nombre, rol o scope..." autocomplete="off" oninput="renderPendingUsers()"><button class="admin-btn secondary" id="usr-refresh">Actualizar lista</button><button class="admin-btn add" id="usr-approve">Autorizar seleccionados</button><button class="export-btn" type="button" onclick="exportPendingUsersExcel()">Exportar Excel</button><button class="export-btn" type="button" onclick="exportPendingUsersPDF()">Exportar PDF</button></div>
@@ -626,7 +639,7 @@ body{background:radial-gradient(circle at 8% 0%,rgba(143,31,73,.08),transparent 
 // IMPORTANTE: pega aquí la URL /exec del Web App PARALELO después de publicarlo.
 const API_URL = 'https://script.google.com/macros/s/AKfycby6ay6s4W3n0mh2xC34d8YHHiyRO6aUigcE0lvUt_6GgZ8JpO2fVroLHajpfEL5IOYoeA/exec';
 
-const HTML_VERSION = '2026-09-03-MCM-PARALELO-ADMIN-V7.1-FETCH-CLOSE';
+const HTML_VERSION = '2026-09-11-MCM-PARALELO-ADMIN-V8.3-USUARIOS-RESPALDOS';
 
 let CORTES = [];
 let EJ_COM = [];
@@ -2458,6 +2471,7 @@ function initAdminPanel(){
   if((session?.role||'')!=='admin') return;
   refreshAdminWeekSelect();
   loadAdminUsers();
+  loadAdminBackups();
   if(adminListenersReady) return;
   adminListenersReady = true;
   document.getElementById('admin-file').addEventListener('change', handleAdminFile);
@@ -2467,6 +2481,8 @@ function initAdminPanel(){
   document.getElementById('adm-delete').addEventListener('click', deleteAdminWeek);
   document.getElementById('usr-refresh').addEventListener('click', loadAdminUsers);
   document.getElementById('usr-approve').addEventListener('click', approveSelectedUsers);
+  document.getElementById('bk-refresh').addEventListener('click', loadAdminBackups);
+  document.getElementById('bk-delete').addEventListener('click', deleteSelectedBackups);
 }
 
 function refreshAdminWeekSelect(){
@@ -2901,6 +2917,63 @@ async function deleteAdminWeek(){
 }
 
 
+let adminBackupData={backups:[],weeks:[]};
+function backupTypeLabel_(v){
+  const map={INDICADORES:'Indicadores',EJECUTIVO:'Ejecutivo',COORDINADOR:'Coordinador',GERENTE:'Gerente',GERENTE_REGIONAL:'Gerente regional',CORTES:'Cortes',CORTES_PREV:'Cortes previo'};
+  return map[String(v||'').toUpperCase()]||String(v||'').replace(/_/g,' ');
+}
+async function loadAdminBackups(){
+  const tb=document.getElementById('bk-body'); if(!tb)return;
+  const st=document.getElementById('bk-status');
+  try{
+    if(st)st.textContent='Consultando respaldos...';
+    const d=await adminApi('list_backups');
+    adminBackupData={backups:d.backups||[],weeks:d.weeks||[]};
+    const sel=document.getElementById('bk-week-filter');
+    if(sel){
+      const current=sel.value;
+      sel.innerHTML='<option value="">Todas las semanas</option>'+adminBackupData.weeks.map(w=>`<option value="${Number(w)}">Semana ${Number(w)}</option>`).join('');
+      if([...sel.options].some(o=>o.value===current))sel.value=current;
+    }
+    renderAdminBackups();
+    if(st)st.textContent=`${adminBackupData.backups.length} respaldo(s) disponible(s). Selecciona únicamente los que ya no necesites.`;
+  }catch(err){
+    tb.innerHTML='<tr><td colspan="6" class="user-empty">No fue posible cargar los respaldos.</td></tr>';
+    if(st)st.textContent='ERROR: '+err.message;
+  }
+}
+function filteredAdminBackups_(){
+  const week=String(document.getElementById('bk-week-filter')?.value||'');
+  const q=normUserSearch_(document.getElementById('bk-search')?.value||'');
+  return (adminBackupData.backups||[]).filter(b=>{
+    if(week && String(b.week)!==week)return false;
+    if(!q)return true;
+    return normUserSearch_([b.week,backupTypeLabel_(b.source),b.created,b.name].join(' ')).includes(q);
+  });
+}
+function renderAdminBackups(){
+  const tb=document.getElementById('bk-body'); if(!tb)return;
+  const rows=filteredAdminBackups_();
+  const all=document.getElementById('bk-check-all'); if(all)all.checked=false;
+  if(!rows.length){tb.innerHTML='<tr><td colspan="6" class="user-empty">No hay respaldos que coincidan con el filtro.</td></tr>';return;}
+  tb.innerHTML=rows.map(b=>`<tr><td><input type="checkbox" class="bk-check" data-name="${esc(b.name)}"></td><td><strong>${b.week!==''?('Semana '+esc(b.week)):'-'}</strong></td><td>${esc(backupTypeLabel_(b.source))}</td><td>${esc(b.created||'-')}</td><td>${Number(b.rows||0).toLocaleString('es-MX')}</td><td style="font-size:11px;word-break:break-all;">${esc(b.name)}</td></tr>`).join('');
+}
+function toggleVisibleBackups(checked){document.querySelectorAll('#bk-body .bk-check').forEach(x=>x.checked=!!checked);}
+async function deleteSelectedBackups(){
+  const names=[...document.querySelectorAll('#bk-body .bk-check:checked')].map(x=>x.dataset.name).filter(Boolean);
+  const st=document.getElementById('bk-status');
+  if(!names.length){if(st)st.textContent='Selecciona al menos un respaldo.';return;}
+  const weeks=[...new Set((adminBackupData.backups||[]).filter(b=>names.includes(b.name)).map(b=>b.week).filter(x=>x!==''))].sort((a,b)=>a-b);
+  const msg=`Vas a eliminar ${names.length} pestaña(s) de respaldo${weeks.length?' de la(s) semana(s) '+weeks.join(', '):''}.\n\nEsto NO elimina los datos publicados de esas semanas, pero el respaldo eliminado ya no podrá recuperarse desde este Sheet.\n\n¿Continuar?`;
+  if(!confirm(msg))return;
+  try{
+    if(st)st.textContent='Eliminando respaldos seleccionados...';
+    const d=await adminApi('delete_backups',{names});
+    if(st)st.textContent=`OK · ${d.total_deleted||0} respaldo(s) eliminado(s).`;
+    await loadAdminBackups();
+  }catch(err){if(st)st.textContent='ERROR: '+err.message;}
+}
+
 let adminUserData={pending:[],users:[]};
 function esc(v){
   return String(v==null?'':v)
@@ -2912,7 +2985,7 @@ function esc(v){
 }
 async function loadAdminUsers(){
   const pb=document.getElementById('usr-pending-body'), ab=document.getElementById('usr-active-body'); if(!pb||!ab)return;
-  try{ const d=await adminApi('admin_users'); adminUserData=d; renderPendingUsers(); renderActiveUsers(); }
+  try{ const d=await adminApi('admin_users'); adminUserData=d; renderPendingUsers(); renderActiveUsers(); const st=document.getElementById('usr-status'); if(st&&d.diagnostics?.semana_actual){st.textContent=`Lista actualizada · Semana ${d.diagnostics.semana_actual} · ${d.pending?.length||0} pendiente(s).`;} }
   catch(err){document.getElementById('usr-status').textContent='ERROR: '+err.message;}
 }
 function normUserSearch_(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
@@ -3003,7 +3076,7 @@ async function reloadDashboardDataAfterAdmin(){
   CORTES=data.cortes||[]; EJ_COM=data.ejecutivo_comisiones||[]; EJ_IND=data.ejecutivo_indicadores||[]; NIVEL_PROPIO=data.nivel_propio||[];
   ALL_CORTES=CORTES.map(c=>c.CORTE); LAST_CORTE=ALL_CORTES.length?ALL_CORTES[ALL_CORTES.length-1]:null;
   refreshAdminWeekSelect();
-  if(state.activeTab==='administracion') await loadAdminUsers();
+  if(state.activeTab==='administracion'){ await loadAdminUsers(); await loadAdminBackups(); }
 }
 
 
