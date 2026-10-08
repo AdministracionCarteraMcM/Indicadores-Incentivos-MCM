@@ -539,7 +539,7 @@ body{background:radial-gradient(circle at 8% 0%,rgba(143,31,73,.08),transparent 
     <!-- =============== TAB: COMISIONES =============== -->
     <div class="tab-panel" id="tab-comisiones"></div>
 
-<div class="tab-panel" id="tab-diarios"><section class="admin-card" style="padding:22px;background:#fff;border-radius:14px"><h3>Indicadores Diarios</h3><p>Consulta los indicadores del corte diario según tu perfil autorizado.</p><label>Fecha de corte <select id="daily-date" onchange="loadDailyDate()"></select></label><div id="daily-status" style="margin:12px 0"></div><div id="daily-content"></div></section></div>
+<div class="tab-panel" id="tab-diarios"><section class="admin-card" style="padding:22px;background:#fff;border-radius:14px"><h3>Indicadores Diarios</h3><p>Consulta los indicadores del corte diario según tu perfil autorizado.</p><div id="daily-status" style="margin:12px 0"></div><div id="daily-content"></div></section></div>
 <!-- =============== TAB: ADMINISTRACIÓN =============== -->
     <div class="tab-panel" id="tab-administracion">
       <div class="admin-wrap">
@@ -647,7 +647,7 @@ body{background:radial-gradient(circle at 8% 0%,rgba(143,31,73,.08),transparent 
 
 /* URL de la aplicación web publicada en Apps Script - Sheet LOCAL */
 // IMPORTANTE: pega aquí la URL /exec del Web App PARALELO después de publicarlo.
-const EXPECTED_DAILY_API = 'V8.4.1-DIARIOS-SCOPE-CONTROL';
+const EXPECTED_DAILY_API = 'V8.4.2-DIARIOS-SCOPE-CONTROL';
 const API_URL = 'https://script.google.com/macros/s/AKfycby6ay6s4W3n0mh2xC34d8YHHiyRO6aUigcE0lvUt_6GgZ8JpO2fVroLHajpfEL5IOYoeA/exec';
 
 const HTML_VERSION = '2026-09-11-MCM-PARALELO-ADMIN-V8.4-DIARIOS-SCOPE-CONTROL';
@@ -723,7 +723,7 @@ function setLoginLoading(isLoading){
 }
 
 document.getElementById('logout-btn').addEventListener('click', ()=>{
-  session = null;
+  session = null;resetDailyViewV842();
   CORTES = []; EJ_COM = []; EJ_IND = []; ALL_CORTES = []; LAST_CORTE = null; NIVEL_PROPIO = []; DIRECTORIO_COM = [];
   document.getElementById('dashboard-screen').style.display='none';
   document.getElementById('login-screen').style.display='flex';
@@ -737,6 +737,7 @@ const ROLE_LABELS = {ejecutivo:'Ejecutivo', coordinador:'Coordinador', gerente:'
 let _listenersReady = false;
 
 function initDashboard(){
+  resetDailyViewV842();
   document.getElementById('hdr-username').textContent = session.nombre;
   document.getElementById('hdr-role').textContent = ROLE_LABELS[session.role];
   const adminAllowed = session.role==='admin';
@@ -841,12 +842,15 @@ function buildCorteMultiselect(){
   });
   panel.innerHTML = html;
 
-  panel.querySelector(`.corte-cb[value="${lastAvailable}"]`).checked = true;
+  const lastCheckbox=panel.querySelector(`.corte-cb[value="${lastAvailable}"]`);if(lastCheckbox)lastCheckbox.checked=true;
   document.getElementById('corte-all-cb').checked = false;
   state.selectedCortes = [lastAvailable];
 
-  toggle.addEventListener('click', (e)=>{ e.stopPropagation(); panel.style.display = panel.style.display==='none' ? 'block' : 'none'; });
-  document.addEventListener('click', (e)=>{ if(!document.getElementById('corte-ms').contains(e.target)) panel.style.display='none'; });
+  if(!toggle.dataset.bound){
+    toggle.dataset.bound='1';
+    toggle.addEventListener('click', (e)=>{ e.stopPropagation(); panel.style.display = panel.style.display==='none' ? 'block' : 'none'; });
+    document.addEventListener('click', (e)=>{ if(!document.getElementById('corte-ms').contains(e.target)) panel.style.display='none'; });
+  }
 
   document.getElementById('corte-all-cb').addEventListener('change', (e)=>{
     panel.querySelectorAll('.corte-cb').forEach(cb=> cb.checked = e.target.checked);
@@ -920,6 +924,7 @@ function attachTabEvents(){
       document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
       btn.classList.add('active');
       state.activeTab = btn.dataset.tab;
+      switchDailyFiltersV842(state.activeTab);
       document.getElementById('tab-'+state.activeTab).classList.add('active');
       document.getElementById('filters-bar').style.display = state.activeTab==='administracion' ? 'none' : '';
       if(state.activeTab==='administracion'){ initAdminPanel(); } else if(state.activeTab==='diarios'){initDailyTab();} else { refreshAll(); }
@@ -936,6 +941,7 @@ function corteScopedRows(rows){
 }
 
 function updateFilterOptions(isInit){
+  if(state.activeTab==='diarios'){updateDailyFilterOptionsV842();return;}
   let rows = corteScopedRows(scopedRows(EJ_COM));
 
   // Ejecutivos del alcance.
@@ -1146,6 +1152,7 @@ function baseRowsForTrend(dataset){
 
 /* ---------------- REFRESH GENERAL ---------------- */
 function refreshAll(){
+  if(state.activeTab==='diarios'){renderDailyV842();return;}
   if(state.activeTab==='indicadores') renderIndicadores();
   else renderComisiones();
 }
@@ -3102,7 +3109,7 @@ async function ensureDailyApiV84(){
  if(!resp.ok)throw Error('HTTP '+resp.status+' al comprobar Apps Script. Revisa API_URL y la implementación /exec.');
  let d;try{d=await resp.json();}catch(e){throw Error('La URL no devuelve JSON. Revisa acceso a la aplicación web.');}
  const required=['daily_begin','daily_chunk','daily_commit','daily_abort','daily_status','scope_diagnostics'];
- if(!d.ok||!String(d.api_version||'').endsWith(EXPECTED_DAILY_API)||!required.every(x=>(d.capabilities||[]).includes(x)))throw Error('Backend incompatible: '+(d.api_version||'sin versión')+'. Publica Code.gs V8.4.1 y verifica que API_URL apunte a esa implementación.');
+ if(!d.ok||!String(d.api_version||'').endsWith(EXPECTED_DAILY_API)||!required.every(x=>(d.capabilities||[]).includes(x)))throw Error('Backend incompatible: '+(d.api_version||'sin versión')+'. Publica Code.gs V8.4.2 y verifica que API_URL apunte a esa implementación.');
  return d;
 }
 function dailyProgressV84(text){
@@ -3192,25 +3199,114 @@ async function publishDailyFile(){
 }
 async function runScopeDiagnostics(){
  const out=document.getElementById('scope-diagnostics');out.textContent='Analizando...';
- try{await ensureDailyApiV84();const d=await adminApi('scope_diagnostics');out.textContent=`Candidaturas comprobadas: ${d.checked}\nSin usuario: ${d.missing_users.length}\nUsuarios inactivos detectados: ${d.inactive_users.length}\nSin SCOPE: ${d.missing_scopes.length}\n\nSIN USUARIO:\n${d.missing_users.map(x=>x.role+' · '+x.nombre).join('\n')||'Ninguno'}\n\nSIN SCOPE:\n${d.missing_scopes.map(x=>x.role+' · '+x.nombre+' · '+x.region+' · '+x.agencia).join('\n')||'Ninguno'}\n\n${d.nota}`;}
+ try{await ensureDailyApiV84();const d=await adminApi('scope_diagnostics');out.textContent=`Candidaturas comprobadas: ${d.checked}\nUsuarios inactivos detectados: ${d.inactive_users.length}\nSin SCOPE: ${d.missing_scopes.length}\n\nUSUARIOS INACTIVOS:\n${d.inactive_users.map(x=>x.role+' · '+x.nombre).join('\n')||'Ninguno'}\n\nSIN SCOPE:\n${d.missing_scopes.map(x=>x.role+' · '+x.nombre+' · '+x.region+' · '+x.agencia).join('\n')||'Ninguno'}\n\n${d.nota}`;}
  catch(e){out.textContent='ERROR: '+e.message;}
 }
+let dailyFilterModeV842=false,weeklyFiltersV842=null;
+let dailyViewV842={dates:[],date:'',rows:[],request:0,loading:false};
+function resetDailyViewV842(){dailyFilterModeV842=false;weeklyFiltersV842=null;dailyViewV842={dates:[],date:'',rows:[],request:dailyViewV842.request+1,loading:false};}
+function dailyNameKeyV842(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase();}
+function switchDailyFiltersV842(next){
+ if(next==='diarios'&&!dailyFilterModeV842){
+  weeklyFiltersV842={selectedCortes:state.selectedCortes.slice(),region:state.region,agencia:state.agencia,estatus:state.estatus,ejecutivo:state.ejecutivo};
+  dailyFilterModeV842=true;state.region='';state.agencia='';state.estatus='';state.ejecutivo='';
+  ['f-region','f-agencia','f-estatus','f-ejecutivo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('corte-ms-panel').innerHTML='';
+  document.getElementById('corte-ms-toggle').textContent='Consultando fechas…';
+ }else if(next!=='diarios'&&dailyFilterModeV842){
+  dailyFilterModeV842=false;dailyViewV842.request++;dailyViewV842.loading=false;
+  const saved=weeklyFiltersV842;buildCorteMultiselect();
+  if(saved){Object.assign(state,saved);document.querySelectorAll('.corte-cb').forEach(cb=>cb.checked=saved.selectedCortes.includes(Number(cb.value)));
+   const all=document.getElementById('corte-all-cb');if(all)all.checked=[...document.querySelectorAll('.corte-cb')].every(cb=>cb.checked);
+   document.getElementById('f-ejecutivo').value=state.ejecutivo;document.getElementById('f-estatus').value=state.estatus;
+   updateCorteToggleLabel();updateFilterOptions(false);
+  }
+ }
+}
+function buildDailyCortesV842(){
+ const panel=document.getElementById('corte-ms-panel');
+ panel.innerHTML=dailyViewV842.dates.slice().reverse().map(date=>`<label><input type="radio" name="daily-top-corte" value="${esc(date)}" ${date===dailyViewV842.date?'checked':''}> Fecha corte · ${esc(date)}</label>`).join('')||'<label>Sin cortes diarios publicados</label>';
+ panel.querySelectorAll('input[name="daily-top-corte"]').forEach(input=>input.addEventListener('change',()=>{
+  dailyViewV842.date=input.value;panel.style.display='none';setDailyCorteLabelV842();loadDailyDate();
+ }));
+ setDailyCorteLabelV842();
+}
+function setDailyCorteLabelV842(){document.getElementById('corte-ms-toggle').textContent=dailyViewV842.date?'Fecha corte · '+dailyViewV842.date:'Sin cortes diarios';}
 async function initDailyTab(){
- const sel=document.getElementById('daily-date'),status=document.getElementById('daily-status');status.textContent='Consultando fechas...';
- try{const d=await adminApi('daily_dates');sel.innerHTML=(d.dates||[]).slice().reverse().map(x=>`<option value="${x}">${x} (${d.counts[x]} registros)</option>`).join('');
- if(d.dates?.length)await loadDailyDate();else status.textContent='Todavía no hay información diaria publicada.';}
- catch(e){status.textContent='Error: '+e.message;}
+ if(state.activeTab!=='diarios'){dailyViewV842.rows=[];return;}
+ const request=++dailyViewV842.request;dailyViewV842.loading=true;
+ document.getElementById('daily-status').textContent='Consultando fechas de Indicadores Diarios…';
+ document.getElementById('daily-content').innerHTML='';
+ try{const d=await adminApi('daily_dates');if(request!==dailyViewV842.request||state.activeTab!=='diarios')return;
+  dailyViewV842.dates=(d.dates||[]).slice().sort();
+  if(!dailyViewV842.dates.includes(dailyViewV842.date))dailyViewV842.date=dailyViewV842.dates.at(-1)||'';
+  buildDailyCortesV842();
+  if(dailyViewV842.date)await loadDailyDate();
+  else{dailyViewV842.rows=[];dailyViewV842.loading=false;updateDailyFilterOptionsV842();document.getElementById('daily-status').textContent='Todavía no hay información diaria publicada.';}
+ }catch(e){if(request===dailyViewV842.request){dailyViewV842.loading=false;dailyViewV842.rows=[];document.getElementById('daily-status').textContent='Error: '+e.message;}}
 }
 async function loadDailyDate(){
- const date=document.getElementById('daily-date').value,status=document.getElementById('daily-status'),panel=document.getElementById('daily-content');if(!date)return;
- status.textContent='Cargando información autorizada...';panel.innerHTML='';
- try{const d=await adminApi('daily_data',{date}),rows=d.rows||[];
-  status.textContent=`${date} · ${rows.length} registros visibles con tu perfil`;
-  const fields=[['COBRANZA_RECIBIDA_ACUM','Cobranza recibida'],['COBRANZA_MCM_BASE','Cobranza MCM'],['COBRANZA_MAS_POR_TI_ACUM','Más por Ti'],['RECUPERACION_HEREDADA_ACUM','Cartera heredada'],['COMISION_FINAL','Comisión final'],['TOTAL_A_COBRAR','Total a cobrar']];
-  const money=v=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2}).format(v);
-  const num=x=>Number(x)||0;
-  panel.innerHTML=`<div class="kpi-row">${fields.map(([k,label])=>`<div class="kpi-card"><div class="kpi-label">${label}</div><div class="kpi-value">${money(rows.reduce((a,r)=>a+num(r[k]),0))}</div></div>`).join('')}</div><div class="table-section"><h3>Detalle del corte</h3><div style="overflow:auto;max-height:550px"><table class="data-table"><thead><tr>${['REGIONAL','SUCURSAL','ASESOR','TIPO_ESQUEMA','PAGOS_RECIBIDOS_ACUM','COMISION_FINAL','TOTAL_A_COBRAR'].map(x=>`<th>${x.replaceAll('_',' ')}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>'<tr>'+['REGIONAL','SUCURSAL','ASESOR','TIPO_ESQUEMA','PAGOS_RECIBIDOS_ACUM','COMISION_FINAL','TOTAL_A_COBRAR'].map(k=>`<td>${['PAGOS_RECIBIDOS_ACUM','COMISION_FINAL','TOTAL_A_COBRAR'].includes(k)?money(num(r[k])):esc(String(r[k]??''))}</td>`).join('')+'</tr>').join('')}</tbody></table></div></div>`;
- }catch(e){status.textContent='Error: '+e.message;}
+ const date=dailyViewV842.date;if(!date||state.activeTab!=='diarios')return;
+ const request=++dailyViewV842.request;dailyViewV842.loading=true;dailyViewV842.rows=[];
+ document.getElementById('daily-status').textContent='Cargando información autorizada del '+date+'…';
+ document.getElementById('daily-content').innerHTML='';
+ try{const d=await adminApi('daily_data',{date});if(request!==dailyViewV842.request||state.activeTab!=='diarios')return;
+  dailyViewV842.rows=d.rows||[];dailyViewV842.loading=false;updateDailyFilterOptionsV842();renderDailyV842();
+ }catch(e){if(request===dailyViewV842.request){dailyViewV842.loading=false;document.getElementById('daily-status').textContent='Error: '+e.message;}}
+}
+function updateDailyFilterOptionsV842(){
+ const rows=dailyViewV842.rows;
+ const regions=[...new Set(rows.map(r=>String(r.REGIONAL||'')).filter(Boolean))].sort();
+ if(!regions.includes(state.region))state.region='';
+ const sr=document.getElementById('f-region');sr.innerHTML='<option value="">Todas</option>'+regions.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');sr.value=state.region;
+ const local=rows.filter(r=>!state.region||String(r.REGIONAL||'')===state.region);
+ const agencies=[...new Set(local.map(r=>String(r.SUCURSAL||'')).filter(Boolean))].sort();
+ if(!agencies.includes(state.agencia))state.agencia='';
+ const sa=document.getElementById('f-agencia');sa.innerHTML='<option value="">Todas</option>'+agencies.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');sa.value=state.agencia;
+ const people=local.filter(r=>!state.agencia||String(r.SUCURSAL||'')===state.agencia);
+ const names=[...new Set(people.map(r=>String(r.ASESOR||'').trim()).filter(Boolean))].sort();
+ document.getElementById('ejecutivo-list').innerHTML=names.map(x=>`<option value="${esc(x)}" label="${esc(x)} · Ejecutivo"></option>`).join('');
+}
+function dailyFilteredRowsV842(){
+ const key=dailyNameKeyV842(state.ejecutivo),exact=dailyViewV842.rows.some(r=>dailyNameKeyV842(r.ASESOR)===key);
+ return dailyViewV842.rows.filter(r=>(!state.region||String(r.REGIONAL||'')===state.region)&&(!state.agencia||String(r.SUCURSAL||'')===state.agencia)&&(!state.estatus||dailyNameKeyV842(r.ESTATUS)===dailyNameKeyV842(state.estatus))&&(!key||(exact?dailyNameKeyV842(r.ASESOR)===key:dailyNameKeyV842(r.ASESOR).includes(key))));
+}
+function renderDailyV842(){
+ if(dailyViewV842.loading)return;
+ const rows=dailyFilteredRowsV842(),panel=document.getElementById('daily-content');
+ document.getElementById('daily-status').textContent=`Fecha corte · ${dailyViewV842.date||'—'} · ${rows.length} registros${state.ejecutivo?' · Ejecutivo: '+state.ejecutivo:''}`;
+ if(!rows.length){panel.innerHTML='<p>No hay datos diarios para los filtros seleccionados.</p>';return;}
+ panel.innerHTML=renderDailyCardsV842(rows);
+}
+// Etiquetas y columnas extraídas de las medidas HTML de IndicadoresDiarios del PBIX.
+function dailyMetricsV842(rows){
+ const n=v=>Number(v)||0,sum=k=>rows.reduce((a,r)=>a+n(r[k]),0),ratio=(a,b)=>b?a/b:0;
+ const expected=sum('PAGOS_ESPERADOS_ACUM'),received=sum('PAGOS_RECIBIDOS_ACUM');
+ const real=sum('COMISION_COBRANZA_REAL')+sum('BONO_EXCELENCIA_REAL')+sum('COMISION_MAS_POR_TI_REAL');
+ const potential=sum('COMISION_COBRANZA_POTENCIAL')+sum('BONO_EXCELENCIA_POTENCIAL')+sum('COMISION_MAS_POR_TI_POTENCIAL');
+ const byModel=(r,newField,tradField)=>{const model=dailyNameKeyV842(r.MODELO_COMISION_PAGADO);return model.includes('NUEVO')?n(r[newField]):model.includes('TRADICIONAL')?n(r[tradField]):0;};
+ return {sum,normalidad:rows.length===1?n(rows[0].NORMALIDAD_ACUM):ratio(received,expected),cumplimiento:ratio(received,expected),cobranza:ratio(sum('COBRANZA_RECIBIDA_ACUM'),sum('COBRANZA_ESPERADA_ACUM')),renovaciones:ratio(sum('RENOVACIONES_EN_TIEMPO_ACUM'),sum('CLIENTES_RENOVADOS_ACUM')),desembolso:sum('DESEMBOLSO_CLIENTES_NUEVOS_ACUM')+sum('DESEMBOLSO_RENOVACION_TIEMPO_ACUM')+sum('DESEMBOLSO_RENOVACION_TARDIA_ACUM'),real,potential,opportunity:rows.reduce((a,r)=>a+Math.max(0,n(r.COMISION_COBRANZA_POTENCIAL)+n(r.BONO_EXCELENCIA_POTENCIAL)+n(r.COMISION_MAS_POR_TI_POTENCIAL)-n(r.COMISION_COBRANZA_REAL)-n(r.BONO_EXCELENCIA_REAL)-n(r.COMISION_MAS_POR_TI_REAL)),0),advance:ratio(real,potential),colocacion:rows.reduce((a,r)=>a+byModel(r,'COMISION_COLOCACION_EJECUTIVO_NUEVO','COMISION_COLOCACION_TRADICIONAL'),0),esquema:rows.reduce((a,r)=>a+byModel(r,'COMISION_NUEVO_MAS_INCENTIVOS','COMISION_TRADICIONAL_MAS_INCENTIVOS'),0),otros:sum('COMISION_APOYO_FAMILIAR')+sum('APOYO_ECONOMICO')+sum('BONO_MENSUAL')+sum('CAMPANAS')+sum('RETROACTIVOS_OTROS_APOYOS'),neto:rows.reduce((a,r)=>a+n(r.COMISION_FINAL)-Math.abs(n(r.DESCUENTOS_TOTALES)),0)};
+}
+function renderDailyCardsV842(rows){
+ const m=dailyMetricsV842(rows),s=m.sum;
+ const money=v=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(v);
+ const count=v=>new Intl.NumberFormat('es-MX',{maximumFractionDigits:0}).format(v);
+ const pct=v=>new Intl.NumberFormat('es-MX',{style:'percent',maximumFractionDigits:2}).format(v);
+ const card=(label,value,kind='money')=>`<div class="kpi-card"><div class="kpi-label">${esc(label)}</div><div class="kpi-value" style="font-size:22px">${kind==='text'?esc(String(value)):kind==='pct'?pct(value):kind==='count'?count(value):money(value)}</div></div>`;
+ const group=(title,cards)=>`<section class="table-section" style="margin-top:18px"><h3>${esc(title)}</h3><div class="kpi-row">${cards.join('')}</div></section>`;
+ const names=[...new Set(rows.map(r=>r.ASESOR))],periods=[...new Set(rows.map(r=>r.PERIODO).filter(Boolean))],codes=[...new Set(rows.map(r=>r.COD_ASESOR))],models=[...new Set(rows.map(r=>r.MODELO_COMISION_PAGADO).filter(Boolean))];
+ let output=`<div class="kpi-card"><div class="kpi-label">INDICADORES DIARIOS</div><h3 style="margin:8px 0">${esc(names.length===1?names[0]:names.length+' ejecutivos')}</h3><div>${esc([...new Set(rows.map(r=>r.REGIONAL+' · '+r.SUCURSAL))].join(' | '))}</div><div style="margin-top:8px">CORTE: ${esc(dailyViewV842.date)} · PERIODO: ${esc(periods.join(', ')||'—')} · CÓDIGO: ${esc(codes.length===1?String(codes[0]):'Varios')}</div></div>`;
+ output+=group('¿Cómo va tu normalidad?',[card('NORMALIDAD',m.normalidad,'pct'),card('PAGOS ESPERADOS',s('PAGOS_ESPERADOS_ACUM'),'count'),card('PAGOS RECIBIDOS',s('PAGOS_RECIBIDOS_ACUM'),'count'),card('CUMPLIMIENTO',m.cumplimiento,'pct')]);
+ output+=group('¿Cómo va tu cobranza?',[card('COBRANZA',m.cobranza,'pct'),card('ESPERADA',s('COBRANZA_ESPERADA_ACUM')),card('RECIBIDA',s('COBRANZA_RECIBIDA_ACUM')),card('DIFERENCIA',s('COBRANZA_RECIBIDA_ACUM')-s('COBRANZA_ESPERADA_ACUM'))]);
+ output+=group('¿Cómo va tu colocación?',[card('RENOV. EN TIEMPO',m.renovaciones,'pct'),card('NUEVOS',s('CLIENTES_NUEVOS_ACUM'),'count'),card('RENOVADOS',s('CLIENTES_RENOVADOS_ACUM'),'count'),card('EN TIEMPO',s('RENOVACIONES_EN_TIEMPO_ACUM'),'count'),card('TARDÍAS',s('RENOVACIONES_TARDIAS_ACUM'),'count'),card('DESEMBOLSO',m.desembolso)]);
+ output+=group('¿Cómo va tu recuperación?',[card('RECUPERACIÓN HEREDADA',s('RECUPERACION_HEREDADA_ACUM')),card('CON MORA',s('RECUPERACION_HEREDADA_CON_MORA_ACUM')),card('SIN MORA',s('RECUPERACION_HEREDADA_SIN_MORA_ACUM')),card('COBRANZA MÁS POR TI',s('COBRANZA_MAS_POR_TI_ACUM'))]);
+ output+=group('¿Cuánto estás dejando de ganar?',[card('OPORTUNIDAD DE INGRESO',m.opportunity),card('INGRESO REAL',m.real),card('INGRESO POTENCIAL',m.potential),card('AVANCE AL POTENCIAL',m.advance,'pct')]);
+ output+=group('Tu comisión acumulada',[card('COMISIÓN FINAL',s('COMISION_FINAL')),card('MODELO DE COMISIÓN',models.join(', ')||'SIN DEFINIR','text'),card('COBRANZA',s('COMISION_COBRANZA_REAL')),card('BONO EXCELENCIA',s('BONO_EXCELENCIA_REAL')),card('MÁS POR TI',s('COMISION_MAS_POR_TI_REAL')),card('CARTERA HEREDADA',s('COMISION_HEREDADA_REAL')),card('COLOCACIÓN',m.colocacion),card('OTROS INCENTIVOS',m.otros),card('ESQUEMA PAGADO',m.esquema)]);
+ output+=group('Resumen de tu pago',[card('COMISIÓN FINAL',s('COMISION_FINAL')),card('DESCUENTOS',rows.reduce((a,r)=>a+Math.abs(Number(r.DESCUENTOS_TOTALES)||0),0)),card('NETO',m.neto),card('CAJA AHORRO',rows.reduce((a,r)=>a+Math.abs(Number(r.RETENCION_CAJA_AHORRO)||0),0)),card('TOTAL A COBRAR',s('TOTAL_A_COBRAR'))]);
+ output+=group('DETALLE DE DESCUENTOS',[card('APOYO FAM.',s('DESCUENTO_APOYO_FAMILIAR')),card('CONVENIO',s('DESCUENTO_CONVENIO')),card('INCAPACIDAD',s('DESCUENTO_INCAPACIDAD')),card('OTROS',s('OTROS_DESCUENTOS')),card('RETENCIÓN CAJA DE AHORRO',s('RETENCION_CAJA_AHORRO'))]);
+ const fields=[['REGIONAL','Región','text'],['SUCURSAL','Sucursal','text'],['ASESOR','Ejecutivo','text'],['COD_ASESOR','CÓDIGO','text'],['PAGOS_ESPERADOS_ACUM','Pagos esperados','count'],['PAGOS_RECIBIDOS_ACUM','Pagos recibidos','count'],['NORMALIDAD_ACUM','Normalidad','pct'],['COBRANZA_ESPERADA_ACUM','Cobranza esperada','money'],['COBRANZA_RECIBIDA_ACUM','Cobranza recibida','money'],['COMISION_FINAL','COMISIÓN FINAL','money'],['TOTAL_A_COBRAR','TOTAL A COBRAR','money']];
+ output+=`<div class="table-section"><h3>Detalle del corte</h3><div style="overflow:auto;max-height:550px"><table class="data-table"><thead><tr>${fields.map(([,label])=>`<th>${esc(label)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>'<tr>'+fields.map(([key,,kind])=>`<td>${kind==='text'?esc(String(r[key]??'')):r[key]==null||r[key]===''?'—':kind==='count'?count(Number(r[key])||0):kind==='pct'?pct(Number(r[key])||0):money(Number(r[key])||0)}</td>`).join('')+'</tr>').join('')}</tbody></table></div></div>`;
+ return output;
 }
 
 </script>
