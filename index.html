@@ -647,6 +647,7 @@ body{background:radial-gradient(circle at 8% 0%,rgba(143,31,73,.08),transparent 
 
 /* URL de la aplicación web publicada en Apps Script - Sheet LOCAL */
 // IMPORTANTE: pega aquí la URL /exec del Web App PARALELO después de publicarlo.
+const EXPECTED_DAILY_API = 'V8.4.1-DIARIOS-SCOPE-CONTROL';
 const API_URL = 'https://script.google.com/macros/s/AKfycby6ay6s4W3n0mh2xC34d8YHHiyRO6aUigcE0lvUt_6GgZ8JpO2fVroLHajpfEL5IOYoeA/exec';
 
 const HTML_VERSION = '2026-09-11-MCM-PARALELO-ADMIN-V8.4-DIARIOS-SCOPE-CONTROL';
@@ -2721,9 +2722,12 @@ function clearAdminPrepared(){
 
 async function adminApi(action,extra={}){
   if(!session?.token) throw new Error('La sesión administrativa no tiene token. Vuelve a iniciar sesión.');
-  const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,session_token:session.token,...extra})});
-  if(!resp.ok) throw new Error('HTTP '+resp.status);
-  const data=await resp.json(); if(!data.ok) throw new Error(data.error||'Operación rechazada'); return data;
+  let resp;
+  try{resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...extra,action,session_token:session.token})});}
+  catch(e){throw new Error('No se pudo comunicar con Apps Script ('+action+'). Revisa conexión, permisos y la URL /exec.');}
+  if(!resp.ok) throw new Error('HTTP '+resp.status+' en Apps Script ('+action+'). Revisa API_URL y la implementación /exec.');
+  let data;try{data=await resp.json();}catch(e){throw new Error('Apps Script no devolvió JSON ('+action+'). Revisa acceso e implementación.');}
+  if(!data.ok) throw new Error((data.error||'Operación rechazada')+(data.api_version?' · API: '+data.api_version:'')); return data;
 }
 
 
@@ -2929,7 +2933,7 @@ async function deleteAdminWeek(){
 
 let adminBackupData={backups:[],weeks:[]};
 function backupTypeLabel_(v){
-  const map={INDICADORES:'Indicadores',EJECUTIVO:'Ejecutivo',COORDINADOR:'Coordinador',GERENTE:'Gerente',GERENTE_REGIONAL:'Gerente regional',CORTES:'Cortes',CORTES_PREV:'Cortes previo'};
+  const map={DIARIOS:'Indicadores diarios',INDICADORES:'Indicadores',EJECUTIVO:'Ejecutivo',COORDINADOR:'Coordinador',GERENTE:'Gerente',GERENTE_REGIONAL:'Gerente regional',CORTES:'Cortes',CORTES_PREV:'Cortes previo'};
   return map[String(v||'').toUpperCase()]||String(v||'').replace(/_/g,' ');
 }
 async function loadAdminBackups(){
@@ -3092,7 +3096,32 @@ async function reloadDashboardDataAfterAdmin(){
 
 
 /* ==================== V8.4 · DIARIOS ==================== */
-let dailyPreparedV84=null;
+let dailyPreparedV84=null,dailyBusyV84=false;
+async function ensureDailyApiV84(){
+ let resp;try{resp=await fetch(API_URL,{cache:'no-store'});}catch(e){throw Error('No se pudo comprobar la API. Revisa conexión y API_URL.');}
+ if(!resp.ok)throw Error('HTTP '+resp.status+' al comprobar Apps Script. Revisa API_URL y la implementación /exec.');
+ let d;try{d=await resp.json();}catch(e){throw Error('La URL no devuelve JSON. Revisa acceso a la aplicación web.');}
+ const required=['daily_begin','daily_chunk','daily_commit','daily_abort','daily_status','scope_diagnostics'];
+ if(!d.ok||!String(d.api_version||'').endsWith(EXPECTED_DAILY_API)||!required.every(x=>(d.capabilities||[]).includes(x)))throw Error('Backend incompatible: '+(d.api_version||'sin versión')+'. Publica Code.gs V8.4.1 y verifica que API_URL apunte a esa implementación.');
+ return d;
+}
+function dailyProgressV84(text){
+ document.getElementById('daily-preview').textContent=text;
+ document.getElementById('admin-process-text').textContent=text;
+}
+function setDailyBusyV84(busy){
+ dailyBusyV84=busy;document.getElementById('daily-file').disabled=busy;
+ document.getElementById('daily-publish').disabled=busy||!dailyPreparedV84;
+}
+function dailyDoneV84(done){
+ dailyPreparedV84=null;
+ const text=`PUBLICADO: ${done.rows} registros (${done.from} a ${done.to}). Respaldo: ${done.backup||'primera publicación'}. Nuevos SCOPE ejecutivo: ${done.scope_ejecutivo}; coordinador: ${done.scope_coordinador}.`+(done.scope_warning?' ADVERTENCIA: '+done.scope_warning:'');
+ dailyProgressV84(text);finishAdminProcess(true,'Publicación terminada',text);
+}
+async function dailyRefreshV84(){
+ try{await loadAdminUsers();await loadAdminBackups();await initDailyTab();}
+ catch(e){document.getElementById('daily-preview').textContent+=' Aviso al actualizar vista: '+e.message;}
+}
 const dailyDateColsV84=new Set(['FECHACORTE','FECHA_INICIO_PERIODO','FECHA_FIN_PERIODO','FECHA_CIERRE_OFICIAL','FEC_INGRESO','FEC_BAJA']);
 const dailyTextColsV84=new Set(['COD_ASESOR','COD_REGIONAL','COD_SUCURSAL','COD_COORDINADOR','ASESOR','REGIONAL','SUCURSAL','COORDINADOR','ESTATUS','TIPO_ESQUEMA','PERIODO','DIA','DIA_ACUMULADO','ETAPA_APOYO','MODELO_COMISION_PAGADO','ID_PERIODO']);
 function dailyISOv84(x){
@@ -3132,20 +3161,38 @@ async function validateDailyFile(){
  }catch(e){preview.textContent='ERROR: '+e.message;}
 }
 async function publishDailyFile(){
- if(!dailyPreparedV84||session?.role!=='admin')return;
+ if(dailyBusyV84||!dailyPreparedV84||session?.role!=='admin')return;
  const p=dailyPreparedV84;if(!confirm(`REEMPLAZAR TODOS los indicadores diarios?\n${p.rows.length} registros\n${p.from} a ${p.to}\nSe guardará respaldo anterior.`))return;
- const btn=document.getElementById('daily-publish'),out=document.getElementById('daily-preview');let id='';btn.disabled=true;
+ let id='',committing=false;
+ setDailyBusyV84(true);showAdminProcess('Publicando indicadores diarios','Comprobando versión y conexión con Apps Script…');
  try{
+  await ensureDailyApiV84();dailyProgressV84('Creando carga temporal…');
   let z=await adminApi('daily_begin',{headers:p.headers,total:p.rows.length,file_name:p.fileName});id=z.id;
-  for(let offset=0;offset<p.rows.length;offset+=100){z=await adminApi('daily_chunk',{id,offset,rows:p.rows.slice(offset,offset+100)});out.textContent=`Subiendo ${z.received} de ${z.total} registros...`;}
-  const done=await adminApi('daily_commit',{id});id='';out.textContent=`PUBLICADO: ${done.rows} registros (${done.from} a ${done.to}). Respaldo: ${done.backup||'primera publicación'}. Nuevos SCOPE ejecutivo: ${done.scope_ejecutivo}; coordinador: ${done.scope_coordinador}.`;
-  dailyPreparedV84=null;await loadAdminUsers();
- }catch(e){out.textContent='ERROR: '+e.message+'. La información publicada anteriormente permanece sin cambiar si falló antes de la publicación.';if(id){try{await adminApi('daily_abort',{id});}catch(_){}}}
- finally{btn.disabled=true;}
+  for(let offset=0;offset<p.rows.length;offset+=100){
+   dailyProgressV84(`Enviando ${offset+1} a ${Math.min(offset+100,p.rows.length)} de ${p.rows.length} registros…`);
+   z=await adminApi('daily_chunk',{id,offset,rows:p.rows.slice(offset,offset+100)});
+   dailyProgressV84(`Subidos ${z.received} de ${z.total} registros (${Math.round(z.received/z.total*100)}%).`);
+  }
+  dailyProgressV84('Validando integridad, conservando respaldo y publicando…');committing=true;
+  const done=await adminApi('daily_commit',{id});id='';dailyDoneV84(done);await dailyRefreshV84();
+ }catch(e){
+  let recovered=false,uncertain=false,cleanup='';
+  if(id){try{
+   const s=await adminApi('daily_status',{id});
+   if(s.state==='committed'){dailyDoneV84(s.result);recovered=true;await dailyRefreshV84();}
+   else if(s.state==='staging'){await adminApi('daily_abort',{id});}
+   else if(committing){uncertain=true;}
+  }catch(check){if(committing)uncertain=true;else cleanup=' No se pudo limpiar la carga temporal '+id+'.';}}
+  if(!recovered){
+   const text='ERROR: '+e.message+(uncertain?' Resultado de publicación sin confirmar. Revisa Indicadores Diarios, respaldos y LOG antes de volver a publicar. ID: '+id:'. No se confirmó una publicación nueva.')+cleanup;
+   if(uncertain)dailyPreparedV84=null;
+   dailyProgressV84(text);finishAdminProcess(false,uncertain?'Verificar publicación':'Carga interrumpida',text);
+  }
+ }finally{setDailyBusyV84(false);}
 }
 async function runScopeDiagnostics(){
  const out=document.getElementById('scope-diagnostics');out.textContent='Analizando...';
- try{const d=await adminApi('scope_diagnostics');out.textContent=`Candidaturas comprobadas: ${d.checked}\nSin usuario: ${d.missing_users.length}\nUsuarios inactivos detectados: ${d.inactive_users.length}\nSin SCOPE: ${d.missing_scopes.length}\n\nSIN USUARIO:\n${d.missing_users.map(x=>x.role+' · '+x.nombre).join('\n')||'Ninguno'}\n\nSIN SCOPE:\n${d.missing_scopes.map(x=>x.role+' · '+x.nombre+' · '+x.region+' · '+x.agencia).join('\n')||'Ninguno'}\n\n${d.nota}`;}
+ try{await ensureDailyApiV84();const d=await adminApi('scope_diagnostics');out.textContent=`Candidaturas comprobadas: ${d.checked}\nSin usuario: ${d.missing_users.length}\nUsuarios inactivos detectados: ${d.inactive_users.length}\nSin SCOPE: ${d.missing_scopes.length}\n\nSIN USUARIO:\n${d.missing_users.map(x=>x.role+' · '+x.nombre).join('\n')||'Ninguno'}\n\nSIN SCOPE:\n${d.missing_scopes.map(x=>x.role+' · '+x.nombre+' · '+x.region+' · '+x.agencia).join('\n')||'Ninguno'}\n\n${d.nota}`;}
  catch(e){out.textContent='ERROR: '+e.message;}
 }
 async function initDailyTab(){
